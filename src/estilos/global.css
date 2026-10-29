@@ -1100,6 +1100,63 @@ th.num {
   padding-left: 1.2rem;
 }
 
+/* ---------- Mi catálogo ---------- */
+
+.seccion-catalogo {
+  margin-top: 1.75rem;
+}
+
+.seccion-catalogo > h2 {
+  font-size: 1.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.seccion-catalogo > .rejilla-catalogo {
+  margin-top: 0.75rem;
+}
+
+.copia-catalogo {
+  margin-top: 1rem;
+}
+
+.copia-catalogo p {
+  margin: 0 0 0.35rem;
+}
+
+.copia-catalogo__estado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem 0.75rem;
+}
+
+.botones-foto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.botones-foto > .boton {
+  flex: 1 1 12rem;
+}
+
+.herramientas-foto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+
+.herramientas-foto:empty {
+  display: none;
+}
+
+.texto-con-saltos {
+  white-space: pre-line;
+}
+
 /* ---------- Laboratorios ---------- */
 
 .laboratorio {

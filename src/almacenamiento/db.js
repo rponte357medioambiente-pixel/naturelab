@@ -7,7 +7,7 @@ import { openDB } from 'idb';
  * `if (versionAnterior < N)` en upgrade(), sin modificar los anteriores.
  */
 export const NOMBRE_BD = 'naturalab';
-export const VERSION_BD = 1;
+export const VERSION_BD = 2;
 
 export const ALMACENES = {
   investigaciones: 'investigaciones',
@@ -15,6 +15,7 @@ export const ALMACENES = {
   observaciones: 'observaciones',
   fotos: 'fotos', // Fase 2: fotografías locales como Blob, separadas de las observaciones.
   ajustes: 'ajustes',
+  especiesPropias: 'especiesPropias', // «Mi catálogo»: especies añadidas por la persona usuaria, con su foto.
 };
 
 let promesaBD = null;
@@ -41,6 +42,15 @@ export function abrirBD() {
 
           bd.createObjectStore(ALMACENES.ajustes, { keyPath: 'clave' });
         }
+        if (versionAnterior < 2) {
+          bd.createObjectStore(ALMACENES.especiesPropias, { keyPath: 'id' });
+        }
+      },
+      // Otra pestaña con una versión más nueva necesita actualizar la base: se cierra esta conexión.
+      blocking() {
+        const actual = promesaBD;
+        promesaBD = null;
+        actual?.then((bd) => bd.close()).catch(() => {});
       },
       terminated() {
         promesaBD = null;

@@ -4,7 +4,7 @@ import { useAnunciar } from '../../accesibilidad/Anunciador.jsx';
 import { ESTADOS_IDENTIFICACION } from '../../almacenamiento/modelo.js';
 import { eliminarObservacion } from '../../almacenamiento/repositorio.js';
 import { formatearNumero, plural } from '../../calculos/formato.js';
-import { nombresDeObservacion } from '../../catalogos/catalogo.js';
+import { nombresDeObservacion, tieneImagen } from '../../catalogos/catalogo.js';
 import { IconoEditar, IconoPapelera } from '../../componentes/Iconos.jsx';
 import { MiniaturaEspecie } from '../../componentes/ImagenEspecie.jsx';
 import { MiniaturaFoto, VisorFoto } from '../../fotos/FotoObservacion.jsx';
@@ -97,7 +97,7 @@ export function SeccionObservaciones() {
                   {obs.map((o) => {
                     const { nombreComun, nombreCientifico } = nombresDeObservacion(o, catalogo.buscarEspecie);
                     const especie = catalogo.buscarEspecie(o.especieId);
-                    const conImagenCatalogo = Boolean(especie?.imagen && especie?.imagenLicencia);
+                    const conImagenCatalogo = tieneImagen(especie);
                     const conImagen = Boolean(o.fotoLocalId) || conImagenCatalogo;
                     return (
                       <li key={o.id} className={`fila-registro${conImagen ? ' fila-registro--imagen' : ''}`}>

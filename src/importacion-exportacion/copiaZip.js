@@ -15,8 +15,10 @@ export const LIMITES_ZIP = {
 };
 
 export const NOMBRE_DATOS = 'proyecto.json';
+// Copia de «Mi catálogo»: mismo formato de ZIP, con otro archivo de datos.
+export const NOMBRE_DATOS_CATALOGO = 'mi-catalogo.json';
 export const RUTA_FOTO = /^fotos\/([A-Za-z0-9_-]{1,100})\.(jpg|jpeg|png|webp)$/;
-const PERMITIDOS = new Set([NOMBRE_DATOS, 'LEEME.txt', 'catalogo-referencias.json']);
+const PERMITIDOS = new Set([NOMBRE_DATOS, NOMBRE_DATOS_CATALOGO, 'LEEME.txt', 'catalogo-referencias.json']);
 // Metadatos que macOS añade al comprimir carpetas: se ignoran sin error.
 const IGNORADOS = /(^__MACOSX\/|(^|\/)\.DS_Store$)/;
 
@@ -81,9 +83,10 @@ export async function construirZip(paquete, fotos = []) {
 /**
  * Lee un ZIP de NaturaLab con controles de seguridad: solo rutas esperadas,
  * sin rutas relativas peligrosas y con límites de tamaño y número de archivos.
+ * @param {{nombreDatos?: string}} opciones  archivo JSON que debe contener el ZIP
  * @returns {{datos: object, archivos: Record<string, Uint8Array>}}
  */
-export function leerZip(bytes) {
+export function leerZip(bytes, { nombreDatos = NOMBRE_DATOS } = {}) {
   let total = 0;
   let cuenta = 0;
   const rechazados = [];
@@ -105,7 +108,7 @@ export function leerZip(bytes) {
         if (
           cuenta > LIMITES_ZIP.archivos ||
           total > LIMITES_ZIP.tamanoDescomprimidoBytes ||
-          (nombre !== NOMBRE_DATOS && archivo.originalSize > LIMITES_ZIP.tamanoFotoBytes)
+          (RUTA_FOTO.test(nombre) && archivo.originalSize > LIMITES_ZIP.tamanoFotoBytes)
         ) {
           demasiado = true;
           return false;
@@ -123,13 +126,21 @@ export function leerZip(bytes) {
     );
   }
   if (demasiado) throw new Error('El ZIP es demasiado grande o contiene demasiados archivos.');
-  if (!contenido[NOMBRE_DATOS]) throw new Error('El ZIP no contiene proyecto.json.');
+  if (!contenido[nombreDatos]) {
+    if (nombreDatos === NOMBRE_DATOS && contenido[NOMBRE_DATOS_CATALOGO]) {
+      throw new Error('Este archivo es una copia de «Mi catálogo». Impórtala desde Catálogo.');
+    }
+    if (nombreDatos === NOMBRE_DATOS_CATALOGO && contenido[NOMBRE_DATOS]) {
+      throw new Error('Este archivo es la copia de una investigación. Impórtala desde Investigaciones.');
+    }
+    throw new Error(`El ZIP no contiene ${nombreDatos}.`);
+  }
 
   let datos;
   try {
-    datos = JSON.parse(strFromU8(contenido[NOMBRE_DATOS]));
+    datos = JSON.parse(strFromU8(contenido[nombreDatos]));
   } catch {
-    throw new Error('El archivo proyecto.json del ZIP no es válido.');
+    throw new Error(`El archivo ${nombreDatos} del ZIP no es válido.`);
   }
   return { datos, archivos: contenido };
 }

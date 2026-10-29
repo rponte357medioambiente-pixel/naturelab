@@ -7,7 +7,7 @@ import { guardarObservacion, obtenerDatosInvestigacion } from '../../almacenamie
 import { useConsulta } from '../../almacenamiento/useConsulta.js';
 import { claveTaxon, validarAbundancia } from '../../calculos/biodiversidad.js';
 import { plural } from '../../calculos/formato.js';
-import { buscarEspecies, useCatalogo } from '../../catalogos/catalogo.js';
+import { buscarEspecies, tieneImagen, useCatalogo } from '../../catalogos/catalogo.js';
 import { IconoAtras, IconoCamara, IconoMas, IconoMenos } from '../../componentes/Iconos.jsx';
 import { comprimirFoto } from '../../fotos/procesarFoto.js';
 import { useFoto } from '../../fotos/FotoObservacion.jsx';
@@ -86,11 +86,12 @@ function FormularioObservacion({ datos, observacion, especies }) {
     return observacion.especieId && especies.some((e) => e.id === observacion.especieId) ? observacion.especieId : OTRA;
   });
   const [dudosa, setDudosa] = useState(observacion?.estadoIdentificacion === 'pendiente' && Boolean(observacion?.especieId));
-  const [nombreProvisional, setNombreProvisional] = useState(
-    observacion && !observacion.especieId ? observacion.nombreComun : '',
-  );
+  // Sin especie del catálogo (o si ya no existe, por ejemplo porque se borró de «Mi catálogo»),
+  // se conserva el nombre guardado como «Otra especie».
+  const fueraDelCatalogo = Boolean(observacion) && !especies.some((e) => e.id === observacion.especieId);
+  const [nombreProvisional, setNombreProvisional] = useState(fueraDelCatalogo ? observacion.nombreComun : '');
   const [cientificoProvisional, setCientificoProvisional] = useState(
-    observacion && !observacion.especieId ? observacion.nombreCientifico : '',
+    fueraDelCatalogo ? observacion.nombreCientifico : '',
   );
   const [abundancia, setAbundancia] = useState(String(observacion?.abundancia ?? 1));
   const [notas, setNotas] = useState(observacion?.notas ?? '');
@@ -124,7 +125,7 @@ function FormularioObservacion({ datos, observacion, especies }) {
 
   const resultados = useMemo(() => buscarEspecies(especies, busqueda), [especies, busqueda]);
   const especieSeleccionada = especies.find((e) => e.id === seleccion) ?? null;
-  const hayImagenes = especies.some((e) => e.imagen && e.imagenLicencia);
+  const hayImagenes = especies.some(tieneImagen);
 
   // Recordar la parcela elegida en la dirección, para seguir registrando en ella.
   useEffect(() => {
@@ -285,7 +286,8 @@ function FormularioObservacion({ datos, observacion, especies }) {
               {hayImagenes && <MiniaturaEspecie especie={e} conHueco />}
               <span className="nombres">
                 <strong>{e.nombreComun}</strong>
-                <span className="cientifico texto-suave">{e.nombreCientifico}</span>
+                {e.nombreCientifico && <span className="cientifico texto-suave">{e.nombreCientifico}</span>}
+                {e.propia && <span className="texto-suave texto-pequeno">Mi catálogo</span>}
               </span>
             </label>
           ))}

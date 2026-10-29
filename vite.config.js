@@ -37,6 +37,19 @@ export default defineConfig({
           'assets/purify.es-*.js',
           'assets/index.es-*.js',
         ],
+        // El detector se guarda la primera vez que se usa con conexión, para que después
+        // funcione sin Internet (por ejemplo, al añadir especies a «Mi catálogo» de viaje).
+        runtimeCaching: [
+          {
+            urlPattern: ({ url, sameOrigin }) =>
+              sameOrigin && /\/(mediapipe|modelos)\/|\/assets\/vision_bundle-[^/]+\.js$/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'naturalab-detector',
+              expiration: { maxEntries: 20 },
+            },
+          },
+        ],
         cleanupOutdatedCaches: true,
         navigateFallback: 'index.html',
       },

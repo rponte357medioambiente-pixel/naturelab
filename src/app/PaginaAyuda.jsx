@@ -96,6 +96,19 @@ export function PaginaAyuda() {
         </p>
       </section>
 
+      <section className="ayuda-bloque" aria-labelledby="ayuda-mi-catalogo">
+        <h2 id="ayuda-mi-catalogo">Mi catálogo</h2>
+        <p>
+          En Catálogo, «Añadir a mi catálogo» guarda una planta que encuentres, con su foto y el nombre que quieras
+          darle, sin que pertenezca a ninguna investigación. Después puedes elegirla al registrar observaciones.
+        </p>
+        <p>
+          Igual que las investigaciones, «Mi catálogo» se guarda solo en este dispositivo. Tiene su propia copia de
+          seguridad, en la misma pantalla del catálogo: descárgala de vez en cuando y úsala para llevar tus especies a
+          otro dispositivo con «Importar copia».
+        </p>
+      </section>
+
       <section className="ayuda-bloque" aria-labelledby="ayuda-pdf">
         <h2 id="ayuda-pdf">Cuaderno en PDF</h2>
         <p>

@@ -1,27 +1,22 @@
-import { rutaPublica } from '../catalogos/catalogo.js';
+import { textoAlternativoEspecie, urlImagenEspecie } from '../catalogos/catalogo.js';
 import { IconoBrote } from './Iconos.jsx';
 
 /**
  * Imagen de referencia del catálogo. Solo se muestra si la ficha tiene una imagen
- * con licencia verificada; si no, un marcador neutro.
+ * con licencia verificada, o la foto guardada si es de «Mi catálogo»; si no, un marcador neutro.
  */
 export function ImagenEspecie({ especie, compacta = false }) {
-  const ruta = especie?.imagen && especie?.imagenLicencia ? rutaPublica(especie.imagen) : null;
+  const ruta = urlImagenEspecie(especie);
   if (ruta) {
     return (
-      <img
-        className="imagen-especie"
-        src={ruta}
-        alt={`${especie.nombreComun} (${especie.nombreCientifico})`}
-        loading="lazy"
-        decoding="async"
-      />
+      <img className="imagen-especie" src={ruta} alt={textoAlternativoEspecie(especie)} loading="lazy" decoding="async" />
     );
   }
+  const etiqueta = especie?.propia ? 'Sin foto' : 'Sin imagen de referencia verificada';
   return (
-    <div className="imagen-pendiente" role="img" aria-label="Sin imagen de referencia verificada">
+    <div className="imagen-pendiente" role="img" aria-label={etiqueta}>
       <IconoBrote />
-      {!compacta && <span aria-hidden="true">Imagen pendiente de verificar</span>}
+      {!compacta && <span aria-hidden="true">{especie?.propia ? 'Sin foto' : 'Imagen pendiente de verificar'}</span>}
     </div>
   );
 }
@@ -31,7 +26,7 @@ export function ImagenEspecie({ especie, compacta = false }) {
  * salvo que se pida un hueco fijo (por ejemplo, en el selector de especies).
  */
 export function MiniaturaEspecie({ especie, conHueco = false }) {
-  const ruta = especie?.imagen && especie?.imagenLicencia ? rutaPublica(especie.imagen) : null;
+  const ruta = urlImagenEspecie(especie);
   if (ruta) {
     return <img className="miniatura-especie" src={ruta} alt="" loading="lazy" decoding="async" />;
   }

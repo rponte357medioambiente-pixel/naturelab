@@ -3,6 +3,9 @@
  * recorte 4:3, pixelado de zonas, compresión y actualización del catálogo.
  */
 
+/** Ajuste local con las fotos preparadas pendientes de copiar en el proyecto. */
+export const CLAVE_PREPARADAS = 'catalogo-fotos-preparadas';
+
 export const PROPORCION = 4 / 3;
 export const ANCHO_MAXIMO_SALIDA = 1200;
 export const MARGEN_ZONA = 0.15;

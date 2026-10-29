@@ -1,6 +1,7 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ProveedorAnuncios } from '../accesibilidad/Anunciador.jsx';
 import { PaginaCatalogo } from '../catalogos/PaginaCatalogo.jsx';
+import { PaginaEspeciePropia } from '../catalogos/PaginaEspeciePropia.jsx';
 import { PaginaFichaEspecie } from '../catalogos/PaginaFichaEspecie.jsx';
 import { PaginaPrepararFotos } from '../catalogos/fotos/PaginaPrepararFotos.jsx';
 import {
@@ -35,6 +36,8 @@ export default function App() {
             <Route path="laboratorios/microplasticos" element={<PaginaMicroplasticos />} />
             <Route path="catalogo" element={<PaginaCatalogo />} />
             <Route path="catalogo/fotos" element={<PaginaPrepararFotos />} />
+            <Route path="catalogo/nueva" element={<PaginaEspeciePropia />} />
+            <Route path="catalogo/:especieId/editar" element={<PaginaEspeciePropia />} />
             <Route path="catalogo/:especieId" element={<PaginaFichaEspecie />} />
             <Route path="investigaciones" element={<PaginaInvestigaciones />} />
             <Route path="investigaciones/nueva" element={<PaginaNuevaInvestigacion />} />

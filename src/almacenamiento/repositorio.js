@@ -292,3 +292,76 @@ export async function obtenerFotosDeObservaciones(observaciones) {
   await tx.done;
   return fotos.filter(Boolean);
 }
+
+/* ---------- Mi catálogo (especies propias) ---------- */
+
+const porNombreComun = (a, b) => String(a.nombreComun).localeCompare(String(b.nombreComun), 'es', { sensitivity: 'base' });
+
+export async function listarEspeciesPropias() {
+  const bd = await abrirBD();
+  return (await bd.getAll(A.especiesPropias)).sort(porNombreComun);
+}
+
+export async function obtenerEspeciePropia(id) {
+  if (!id) return null;
+  const bd = await abrirBD();
+  return (await bd.get(A.especiesPropias, id)) ?? null;
+}
+
+/**
+ * Guarda una especie de «Mi catálogo» con su foto dentro del mismo registro.
+ * @param {{foto?: {blob: Blob, ancho: number, alto: number} | null}} opciones
+ *   foto sin indicar: se conserva la actual; null: se elimina; objeto: se sustituye.
+ */
+export async function guardarEspeciePropia(especie, { foto } = {}) {
+  const marca = ahora();
+  let registro = null;
+  await enTransaccion([A.especiesPropias], async (tx) => {
+    const almacen = tx.objectStore(A.especiesPropias);
+    const anterior = await almacen.get(especie.id);
+    let fotoFinal;
+    if (foto === undefined) fotoFinal = anterior?.foto ?? null;
+    else if (foto === null) fotoFinal = null;
+    else {
+      fotoFinal = {
+        blob: foto.blob,
+        tipoMime: foto.blob.type,
+        tamano: foto.blob.size,
+        ancho: foto.ancho ?? null,
+        alto: foto.alto ?? null,
+      };
+    }
+    registro = {
+      ...especie,
+      foto: fotoFinal,
+      versionEsquema: VERSION_ESQUEMA,
+      fechaCreacion: anterior?.fechaCreacion ?? especie.fechaCreacion ?? marca,
+      fechaModificacion: marca,
+    };
+    await almacen.put(registro);
+  });
+  notificar();
+  solicitarPersistencia();
+  return registro;
+}
+
+export async function eliminarEspeciePropia(id) {
+  await enTransaccion([A.especiesPropias], (tx) => tx.objectStore(A.especiesPropias).delete(id));
+  notificar();
+}
+
+/** Guarda varias especies tal como llegan (importación). Mismo id: se sustituye, no se duplica. */
+export async function guardarEspeciesPropias(registros) {
+  await enTransaccion([A.especiesPropias], async (tx) => {
+    for (const r of registros) await tx.objectStore(A.especiesPropias).put(r);
+  });
+  notificar();
+  solicitarPersistencia();
+}
+
+/** Número de observaciones, en cualquier investigación, que usan una especie. */
+export async function contarObservacionesDeEspecie(especieId) {
+  const bd = await abrirBD();
+  const observaciones = await bd.getAll(A.observaciones);
+  return observaciones.filter((o) => o.especieId === especieId).length;
+}
