@@ -1,0 +1,181 @@
+{
+  "versionCatalogo": 1,
+  "fechaRevision": null,
+  "estado": "provisional",
+  "nota": "Catálogo de partida del Salar de los Canos (Vera, Almería). Nombres y descripciones pendientes de revisión botánica. Ninguna imagen se incorpora sin verificar licencia y procedencia.",
+  "especies": [
+    {
+      "id": "tamarix-canariensis",
+      "nombreComun": "Taray",
+      "nombreCientifico": "Tamarix canariensis",
+      "rango": "especie",
+      "familia": "Tamaricaceae",
+      "descripcion": "Arbusto o arbolillo de ramas largas y flexibles.",
+      "rasgos": [
+        "Hojas diminutas en forma de escama, pegadas a las ramillas",
+        "Flores pequeñas, blancas o rosadas, agrupadas en espigas densas"
+      ],
+      "habitat": "Saladares, ramblas y orillas de cauces con suelos salinos.",
+      "notas": "Puede expulsar sales a través de glándulas de las hojas.",
+      "imagen": "imagenes/especies/tamarix-canariensis.webp",
+      "imagenAutor": "Raquel Ponte",
+      "imagenFuente": "Fotografía propia",
+      "imagenLicencia": "Todos los derechos reservados",
+      "estadoValidacion": "pendiente",
+      "imagenModificaciones": "Recortada a 4:3 y comprimida"
+    },
+    {
+      "id": "anthyllis-cytisoides",
+      "nombreComun": "Albaida",
+      "nombreCientifico": "Anthyllis cytisoides",
+      "rango": "especie",
+      "familia": "Fabaceae",
+      "descripcion": "Mata de aspecto blanquecino por los pelos que cubren tallos y hojas.",
+      "rasgos": [
+        "Tallos y hojas de color gris blanquecino",
+        "Flores amarillas, de tipo amariposado, en espigas"
+      ],
+      "habitat": "Laderas secas y matorrales del sureste semiárido.",
+      "notas": "Como otras leguminosas, se asocia con bacterias que fijan nitrógeno en el suelo.",
+      "imagen": "imagenes/especies/anthyllis-cytisoides.webp",
+      "imagenAutor": "Raquel Ponte",
+      "imagenFuente": "Fotografía propia",
+      "imagenLicencia": "Todos los derechos reservados",
+      "estadoValidacion": "pendiente",
+      "imagenModificaciones": "Recortada a 4:3 y comprimida"
+    },
+    {
+      "id": "launaea-arborescens",
+      "nombreComun": "Aulaga rascavieja",
+      "nombreCientifico": "Launaea arborescens",
+      "rango": "especie",
+      "familia": "Asteraceae",
+      "descripcion": "Mata muy ramificada, de tallos verdes y casi sin hojas.",
+      "rasgos": [
+        "Ramas en zigzag que terminan en espinas",
+        "Capítulos pequeños de flores amarillas"
+      ],
+      "habitat": "Ramblas, cunetas y suelos alterados en zonas áridas.",
+      "notas": "Sus tallos verdes hacen la fotosíntesis y reducen la pérdida de agua.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente"
+    },
+    {
+      "id": "artemisia-glutinosa",
+      "nombreComun": "Boja negra",
+      "nombreCientifico": "Artemisia glutinosa",
+      "rango": "especie",
+      "familia": "Asteraceae",
+      "descripcion": "Mata aromática de ramas finas.",
+      "rasgos": [
+        "Hojas divididas en segmentos muy estrechos",
+        "Capítulos diminutos y numerosos"
+      ],
+      "habitat": "Matorrales y terrenos secos.",
+      "notas": "Identificación de partida por verificar; también se cita como Artemisia campestris subsp. glutinosa.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente"
+    },
+    {
+      "id": "lygeum-spartum",
+      "nombreComun": "Albardín",
+      "nombreCientifico": "Lygeum spartum",
+      "rango": "especie",
+      "familia": "Poaceae",
+      "descripcion": "Gramínea perenne que forma macollas densas.",
+      "rasgos": [
+        "Hojas largas, finas y enrolladas, parecidas a juncos",
+        "Inflorescencia envuelta en una bráctea blanquecina, como de papel"
+      ],
+      "habitat": "Ambientes áridos y suelos salinos o yesosos.",
+      "notas": "Planta dominante en el ejemplo del Salar de los Canos.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente"
+    },
+    {
+      "id": "limonium-sp",
+      "nombreComun": "Siempreviva",
+      "nombreCientifico": "Limonium sp.",
+      "rango": "genero",
+      "familia": "Plumbaginaceae",
+      "descripcion": "Planta con roseta de hojas en la base y tallos florales muy ramificados.",
+      "rasgos": [
+        "Flores pequeñas, a menudo de color lila",
+        "Cáliz seco y papiráceo que se conserva tras la floración"
+      ],
+      "habitat": "Saladares y costas.",
+      "notas": "Identificado solo hasta género. Mantener como Limonium sp. hasta confirmar la especie.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente"
+    },
+    {
+      "id": "salicornia-sp",
+      "nombreComun": "Salicornia",
+      "nombreCientifico": "Salicornia sp.",
+      "rango": "genero",
+      "familia": "Amaranthaceae",
+      "descripcion": "Planta suculenta de tallos articulados, sin hojas visibles.",
+      "rasgos": [
+        "Tallos carnosos formados por segmentos",
+        "Color verde que puede volverse rojizo"
+      ],
+      "habitat": "Saladares y zonas que se encharcan con agua salina.",
+      "notas": "Identificado solo hasta género. Distinguir de Sarcocornia y Arthrocnemum, de aspecto parecido.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente"
+    },
+    {
+      "id": "moricandia-arvensis",
+      "nombreComun": "Moricandia",
+      "nombreCientifico": "Moricandia arvensis",
+      "rango": "especie",
+      "familia": "Brassicaceae",
+      "descripcion": "Planta de hojas carnosas y color verde azulado.",
+      "rasgos": [
+        "Hojas que abrazan el tallo",
+        "Flores violáceas de cuatro pétalos"
+      ],
+      "habitat": "Taludes, bordes de caminos y terrenos removidos.",
+      "notas": "",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente"
+    },
+    {
+      "id": "portulaca-oleracea",
+      "nombreComun": "Verdolaga",
+      "nombreCientifico": "Portulaca oleracea",
+      "rango": "especie",
+      "familia": "Portulacaceae",
+      "descripcion": "Planta rastrera y carnosa.",
+      "rasgos": [
+        "Tallos rojizos que se extienden por el suelo",
+        "Hojas carnosas en forma de pala y flores amarillas pequeñas"
+      ],
+      "habitat": "Suelos removidos, bordes de caminos y cultivos.",
+      "notas": "",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente"
+    }
+  ]
+}

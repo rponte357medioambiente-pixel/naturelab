@@ -1,0 +1,40 @@
+{
+  "name": "naturalab",
+  "private": true,
+  "version": "0.1.0",
+  "description": "NaturaLab: cuaderno de campo para talleres de exploración ambiental (PWA sin servidor).",
+  "type": "module",
+  "scripts": {
+    "preparar-detector": "node scripts/preparar-detector.mjs",
+    "predev": "node scripts/preparar-detector.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/preparar-detector.mjs",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@fontsource/alegreya": "5.3.0",
+    "@fontsource/atkinson-hyperlegible-next": "5.3.0",
+    "@mediapipe/tasks-vision": "1.1.0",
+    "fflate": "0.8.3",
+    "idb": "8.0.3",
+    "jspdf": "4.2.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-router-dom": "7.18.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.1.1",
+    "fake-indexeddb": "6.2.5",
+    "vite": "8.3.3",
+    "vite-plugin-pwa": "2.0.0",
+    "vitest": "5.0.3",
+    "workbox-build": "7.4.1",
+    "workbox-window": "7.4.1"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}

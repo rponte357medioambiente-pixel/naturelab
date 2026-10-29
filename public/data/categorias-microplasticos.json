@@ -1,0 +1,12 @@
+{
+  "versionCatalogo": 0,
+  "estado": "borrador",
+  "nota": "Laboratorio de Microplásticos (fase 4). Categorías propuestas en la especificación, pendientes de validar contra un protocolo educativo. Una identificación visual registra una partícula sospechosa, no un microplástico confirmado.",
+  "categorias": [
+    { "id": "fibra", "nombre": "Fibra", "estadoValidacion": "pendiente" },
+    { "id": "fragmento", "nombre": "Fragmento", "estadoValidacion": "pendiente" },
+    { "id": "pelicula", "nombre": "Película", "estadoValidacion": "pendiente" },
+    { "id": "espuma", "nombre": "Espuma", "estadoValidacion": "pendiente" },
+    { "id": "pellet", "nombre": "Pellet", "estadoValidacion": "pendiente" }
+  ]
+}

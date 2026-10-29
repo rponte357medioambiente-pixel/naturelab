@@ -1,0 +1,163 @@
+import { useEffect, useState } from 'react';
+import { useAnunciar } from '../accesibilidad/Anunciador.jsx';
+import { useTituloDocumento } from '../accesibilidad/useTituloDocumento.js';
+import { estadoAlmacenamiento, solicitarPersistencia } from '../almacenamiento/repositorio.js';
+import { formatearNumero } from '../calculos/formato.js';
+import { useCatalogo } from '../catalogos/catalogo.js';
+
+const megas = (bytes) => `${formatearNumero(bytes / 1024 / 1024, 1)} MB`;
+
+export function PaginaAyuda() {
+  useTituloDocumento('Ayuda y privacidad');
+  const anunciar = useAnunciar();
+  const { catalogo } = useCatalogo();
+  const [almacen, setAlmacen] = useState(null);
+  const sinConexionLista = Boolean(navigator.serviceWorker?.controller);
+
+  const actualizarEstado = () => estadoAlmacenamiento().then(setAlmacen);
+  useEffect(() => {
+    actualizarEstado();
+  }, []);
+
+  async function pedirPersistencia() {
+    const concedido = await solicitarPersistencia({ forzar: true });
+    await actualizarEstado();
+    anunciar(
+      concedido
+        ? 'El navegador conservará los datos de NaturaLab.'
+        : 'El navegador no lo ha concedido. Exporta copias con frecuencia.',
+    );
+  }
+
+  return (
+    <>
+      <header className="encabezado-pagina">
+        <h1>Ayuda y privacidad</h1>
+        <p>Cómo funciona NaturaLab y qué ocurre con tus datos.</p>
+      </header>
+
+      <section className="ayuda-bloque" aria-labelledby="ayuda-estado">
+        <h2 id="ayuda-estado">Estado de este dispositivo</h2>
+        <ul className="lista lista-panel">
+          <li className="fila-registro">
+            <div className="principal">
+              <strong>Uso sin conexión</strong>
+              <span className="texto-suave">
+                {sinConexionLista
+                  ? 'Preparado: la app se abrirá aunque no haya Internet.'
+                  : 'Aún no está preparado. Abre la app una vez con conexión y recarga la página.'}
+              </span>
+            </div>
+          </li>
+          <li className="fila-registro">
+            <div className="principal">
+              <strong>Conservación de los datos</strong>
+              <span className="texto-suave">
+                {almacen?.persistente === true && 'El navegador se ha comprometido a no borrarlos cuando falte espacio.'}
+                {almacen?.persistente === false &&
+                  'El navegador podría borrarlos si el dispositivo se queda sin espacio.'}
+                {almacen && almacen.persistente === null && 'Este navegador no informa de ello.'}
+              </span>
+            </div>
+            {almacen?.persistente === false && (
+              <div className="herramientas">
+                <button type="button" className="boton boton--secundario" onClick={pedirPersistencia}>
+                  Pedir que los conserve
+                </button>
+              </div>
+            )}
+          </li>
+          {almacen?.usado !== null && almacen?.usado !== undefined && (
+            <li className="fila-registro">
+              <div className="principal">
+                <strong>Espacio usado</strong>
+                <span className="texto-suave">
+                  {megas(almacen.usado)}
+                  {almacen.cuota ? ` de ${megas(almacen.cuota)} disponibles` : ''}
+                </span>
+              </div>
+            </li>
+          )}
+        </ul>
+      </section>
+
+      <section className="ayuda-bloque" aria-labelledby="ayuda-datos">
+        <h2 id="ayuda-datos">Dónde se guardan tus datos</h2>
+        <p>
+          Las investigaciones, parcelas y observaciones se guardan solo en este navegador. NaturaLab no tiene cuentas
+          de usuario ni servidor, y no envía tus datos a ningún sitio.
+        </p>
+        <p>
+          Los datos pueden perderse si borras los datos del navegador, cambias de dispositivo o el sistema libera
+          espacio. Instalar la app no elimina ese riesgo. Por eso conviene <strong>exportar una copia</strong> al
+          terminar cada sesión de campo con «Copia de seguridad». Es un archivo ZIP que incluye las fotos y se
+          recupera con «Importar copia», sin descomprimirlo. Las investigaciones con cambios sin copia muestran
+          «Pendiente de exportar».
+        </p>
+      </section>
+
+      <section className="ayuda-bloque" aria-labelledby="ayuda-pdf">
+        <h2 id="ayuda-pdf">Cuaderno en PDF</h2>
+        <p>
+          «Cuaderno en PDF» genera un documento con la portada, los resultados y todas las observaciones con sus
+          fotos, listo para compartir o imprimir. Se crea en el dispositivo, también sin conexión. Sirve para leer y
+          compartir; para guardar o mover los datos, usa la copia de seguridad.
+        </p>
+      </section>
+
+      <section className="ayuda-bloque" aria-labelledby="ayuda-equipos">
+        <h2 id="ayuda-equipos">Trabajo en equipo</h2>
+        <ul>
+          <li>Con un solo dispositivo, una persona registra lo que observa el equipo.</li>
+          <li>
+            Con varios dispositivos, cada uno exporta su copia y la persona responsable la importa y elige «Fusionar».
+            Las observaciones repetidas no se cuentan dos veces.
+          </li>
+          <li>No hay sincronización en tiempo real entre dispositivos.</li>
+        </ul>
+      </section>
+
+      <section className="ayuda-bloque" aria-labelledby="ayuda-identificacion">
+        <h2 id="ayuda-identificacion">Identificar plantas</h2>
+        <p>
+          El catálogo es provisional y está pendiente de revisión botánica. Si no reconoces una planta, regístrala
+          como «Otra especie o sin identificar» con un nombre provisional y revísala después.
+        </p>
+        <p>
+          Puedes consultar una aplicación externa como Google Lens, pero NaturaLab no está conectada con ella. Ten en
+          cuenta que la foto se comparte con ese servicio según sus condiciones y que las imágenes de sus resultados
+          no se pueden reutilizar libremente.
+        </p>
+      </section>
+
+      <section className="ayuda-bloque" aria-labelledby="ayuda-privacidad">
+        <h2 id="ayuda-privacidad">Privacidad en talleres</h2>
+        <ul>
+          <li>Usa alias para los equipos, nunca nombres reales.</li>
+          <li>Describe el lugar de forma general; NaturaLab no usa el GPS.</li>
+          <li>
+            Las fotos de las observaciones se guardan solo en este dispositivo, sin datos de ubicación. Salen de él
+            únicamente si compartes la copia de seguridad o el cuaderno en PDF.
+          </li>
+          <li>Fotografía las plantas y evita caras, matrículas, direcciones y otros datos personales.</li>
+          <li>
+            En talleres con menores, la entidad organizadora debe revisar las obligaciones de protección de datos antes
+            de recoger o difundir imágenes.
+          </li>
+        </ul>
+      </section>
+
+      <section className="ayuda-bloque" aria-labelledby="ayuda-licencias">
+        <h2 id="ayuda-licencias">Versión y licencias</h2>
+        <p className="texto-suave">
+          NaturaLab {__VERSION_APP__}. Catálogo versión {catalogo?.versionCatalogo ?? '—'}
+          {catalogo?.estado === 'provisional' ? ' (provisional)' : ''}.
+        </p>
+        <p className="texto-suave">
+          Tipografías Alegreya y Atkinson Hyperlegible Next, con licencia SIL Open Font License 1.1. Las imágenes del
+          catálogo se incorporarán con su autoría, procedencia y licencia.
+        </p>
+      </section>
+    </>
+  );
+}

@@ -1,0 +1,13 @@
+node_modules/
+dist/
+dev-dist/
+coverage/
+.DS_Store
+*.log
+.env*
+
+# Detector de personas: se regenera con «npm run preparar-detector»
+public/mediapipe/
+public/modelos/
+node_modules
+dist
