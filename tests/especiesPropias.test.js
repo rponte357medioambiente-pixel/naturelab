@@ -256,3 +256,97 @@ describe('Actualización de la base de datos', () => {
     expect(await listarEspeciesPropias()).toHaveLength(1);
   });
 });
+
+describe('Fotos de campo de especies del catálogo publicado', () => {
+  it('se guardan, se sustituyen y se quitan por especie', async () => {
+    const { guardarFotoCatalogo, listarFotosCatalogo, eliminarFotoCatalogo } = await import(
+      '../src/almacenamiento/repositorio.js'
+    );
+    await guardarFotoCatalogo('lotus-creticus', { foto: fotoFalsa(1), imagenAutor: 'Raquel Ponte', imagenLicencia: 'CC BY 4.0' });
+    await guardarFotoCatalogo('lotus-creticus', { foto: fotoFalsa(2), imagenAutor: 'Raquel Ponte', imagenLicencia: 'CC BY 4.0' });
+    let fotos = await listarFotosCatalogo();
+    expect(fotos).toHaveLength(1);
+    expect(new Uint8Array(await fotos[0].foto.blob.arrayBuffer())).toEqual(jpegFalso(2));
+    await eliminarFotoCatalogo('lotus-creticus');
+    fotos = await listarFotosCatalogo();
+    expect(fotos).toHaveLength(0);
+  });
+
+  it('viajan en la copia de «Mi catálogo» junto a las especies propias', async () => {
+    const { guardarFotoCatalogo, listarFotosCatalogo } = await import('../src/almacenamiento/repositorio.js');
+    await guardarEspeciePropia(especieCardo(), { foto: fotoFalsa(3) });
+    await guardarFotoCatalogo('elymus-farctus', { foto: fotoFalsa(4), imagenAutor: 'Raquel Ponte', imagenLicencia: 'Todos los derechos reservados' });
+    const zip = await construirZipCatalogoPropio(await listarEspeciesPropias(), await listarFotosCatalogo());
+    const r = await leerCopiaCatalogoPropio(await comoArchivo(zip, 'copia.zip'));
+    expect(r.ok).toBe(true);
+    expect(r.especies).toHaveLength(1);
+    expect(r.fotosCatalogo).toHaveLength(1);
+    expect(r.fotosCatalogo[0].especieId).toBe('elymus-farctus');
+    expect(r.fotosCatalogo[0].imagenAutor).toBe('Raquel Ponte');
+    expect(new Uint8Array(await r.fotosCatalogo[0].foto.blob.arrayBuffer())).toEqual(jpegFalso(4));
+
+    const plan = planificarImportacionPropias(r.fotosCatalogo, await listarFotosCatalogo(), 'especieId');
+    expect(plan.sinCambios).toHaveLength(1);
+  });
+
+  it('las copias anteriores, sin fotos de campo, siguen siendo válidas', () => {
+    const r = validarCatalogoPropio({ formato: 'naturalab-catalogo-propio', versionEsquema: 1, especies: [] });
+    expect(r.ok).toBe(true);
+    expect(r.fotosCatalogo).toEqual([]);
+  });
+
+  it('rechaza fotos de campo de especies con identificador no válido', () => {
+    const datos = {
+      formato: 'naturalab-catalogo-propio',
+      versionEsquema: 2,
+      especies: [],
+      fotosCatalogo: [{ especieId: 'propia-xyz', foto: { archivo: 'fotos/catalogo-propia-xyz.jpg' } }],
+    };
+    expect(validarCatalogoPropio(datos, {}).ok).toBe(false);
+  });
+
+  it('la especie publicada muestra la foto de campo y recuerda la imagen original', async () => {
+    const { aplicarFotoCatalogo } = await import('../src/catalogos/especiesPropias.js');
+    const especie = { id: 'lotus-creticus', imagen: 'x.svg', imagenTipo: 'ilustracion', imagenLicencia: 'CC0 1.0' };
+    const conFoto = aplicarFotoCatalogo(especie, { imagenUrl: 'blob:1', imagenAutor: 'Raquel Ponte', imagenLicencia: 'CC BY 4.0' });
+    expect(conFoto.fotoLocal).toBe(true);
+    expect(conFoto.imagenUrl).toBe('blob:1');
+    expect(conFoto.imagenOriginal.imagenTipo).toBe('ilustracion');
+    expect(aplicarFotoCatalogo(especie, undefined)).toBe(especie);
+  });
+});
+
+describe('Actualización de la base de datos a la versión 3', () => {
+  it('añade el almacén de fotos de campo sin tocar «Mi catálogo»', async () => {
+    await new Promise((resolve, reject) => {
+      const peticion = indexedDB.open(NOMBRE_BD, 2);
+      peticion.onupgradeneeded = () => {
+        const bd = peticion.result;
+        for (const nombre of ['investigaciones', 'ajustes', 'especiesPropias']) {
+          bd.createObjectStore(nombre, { keyPath: nombre === 'ajustes' ? 'clave' : 'id' });
+        }
+        const parcelas = bd.createObjectStore('parcelas', { keyPath: 'id' });
+        parcelas.createIndex('porInvestigacion', 'investigacionId');
+        const observaciones = bd.createObjectStore('observaciones', { keyPath: 'id' });
+        observaciones.createIndex('porInvestigacion', 'investigacionId');
+        observaciones.createIndex('porParcela', 'parcelaId');
+        const fotos = bd.createObjectStore('fotos', { keyPath: 'id' });
+        fotos.createIndex('porObservacion', 'observacionId');
+      };
+      peticion.onsuccess = () => {
+        const bd = peticion.result;
+        const tx = bd.transaction('especiesPropias', 'readwrite');
+        tx.objectStore('especiesPropias').put({ ...especieCardo(), id: 'propia-antigua', foto: null });
+        tx.oncomplete = () => {
+          bd.close();
+          resolve();
+        };
+        tx.onerror = () => reject(tx.error);
+      };
+      peticion.onerror = () => reject(peticion.error);
+    });
+    const { listarFotosCatalogo } = await import('../src/almacenamiento/repositorio.js');
+    expect(await listarFotosCatalogo()).toEqual([]);
+    expect((await listarEspeciesPropias()).map((e) => e.id)).toEqual(['propia-antigua']);
+  });
+});

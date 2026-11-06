@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTituloDocumento } from '../accesibilidad/useTituloDocumento.js';
 import { listarInvestigacionesConDatos } from '../almacenamiento/repositorio.js';
 import { useConsulta } from '../almacenamiento/useConsulta.js';
-import { IconoMas } from '../componentes/Iconos.jsx';
+import { IconoCuaderno, IconoMas } from '../componentes/Iconos.jsx';
 import { TarjetaInvestigacion } from '../componentes/TarjetaInvestigacion.jsx';
 import { PanelImportacion } from '../importacion-exportacion/PanelImportacion.jsx';
 
@@ -18,10 +18,16 @@ export function PaginaInvestigaciones() {
       </header>
 
       <div className="acciones" style={{ marginTop: 0, marginBottom: '1.25rem' }}>
-        <Link className="boton" to="/investigaciones/nueva">
-          <IconoMas />
-          Nueva investigación
-        </Link>
+        <div className="acciones-apiladas">
+          <Link className="boton" to="/investigaciones/nueva">
+            <IconoMas />
+            Nueva investigación
+          </Link>
+          <Link className="boton boton--secundario" to="/modelos">
+            <IconoCuaderno />
+            Cargar un modelo
+          </Link>
+        </div>
         <PanelImportacion />
       </div>
 
@@ -35,9 +41,6 @@ export function PaginaInvestigaciones() {
       {!cargando && datos?.length === 0 && (
         <div className="vacio">
           <p>Todavía no hay investigaciones. Crea la primera o carga un modelo, como el Salar de los Canos o Río Antas.</p>
-          <Link className="boton boton--secundario" to="/modelos">
-            Cargar un modelo
-          </Link>
         </div>
       )}
 
@@ -51,11 +54,6 @@ export function PaginaInvestigaciones() {
         </ul>
       )}
 
-      {datos?.length > 0 && (
-        <p className="texto-suave texto-pequeno" style={{ marginTop: '1.25rem' }}>
-          ¿Quieres ver cómo funcionan los cálculos? <Link to="/modelos">Cargar un modelo</Link>
-        </p>
-      )}
     </>
   );
 }

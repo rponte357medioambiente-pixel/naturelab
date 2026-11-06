@@ -3,12 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAnunciar } from '../accesibilidad/Anunciador.jsx';
 import { useTituloDocumento } from '../accesibilidad/useTituloDocumento.js';
 import { crearEspeciePropia } from '../almacenamiento/modelo.js';
-import {
-  guardarEspeciePropia,
-  listarEspeciesPropias,
-  obtenerAjuste,
-  obtenerEspeciePropia,
-} from '../almacenamiento/repositorio.js';
+import { guardarEspeciePropia, obtenerEspeciePropia } from '../almacenamiento/repositorio.js';
 import { useConsulta } from '../almacenamiento/useConsulta.js';
 import { PaginaNoEncontrada } from '../app/PaginaNoEncontrada.jsx';
 import { IconoAtras } from '../componentes/Iconos.jsx';
@@ -23,18 +18,7 @@ import {
   valoresLicencia,
   VistaEncuadre,
 } from './fotos/EditorFoto.jsx';
-import { CLAVE_PREPARADAS } from './fotos/procesarImagen.js';
-
-/** Autor de la foto más reciente, para no tener que escribirlo cada vez. */
-async function autorReciente() {
-  const propias = await listarEspeciesPropias();
-  const ultima = propias
-    .filter((p) => p.imagenAutor)
-    .sort((a, b) => String(b.fechaModificacion).localeCompare(String(a.fechaModificacion)))[0];
-  if (ultima) return ultima.imagenAutor;
-  const preparadas = (await obtenerAjuste(CLAVE_PREPARADAS)) ?? {};
-  return Object.values(preparadas)[0]?.imagenAutor ?? '';
-}
+import { autorReciente } from './autorReciente.js';
 
 /** Añadir una especie a «Mi catálogo» (sin especieId) o editar una existente. */
 export function PaginaEspeciePropia() {

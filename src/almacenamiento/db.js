@@ -8,7 +8,7 @@ import { openDB } from 'idb';
  */
 // Conserva el nombre antiguo de la app a propósito: cambiarlo dejaría sin abrir los datos y las copias ya guardados.
 export const NOMBRE_BD = 'naturalab';
-export const VERSION_BD = 2;
+export const VERSION_BD = 3;
 
 export const ALMACENES = {
   investigaciones: 'investigaciones',
@@ -17,6 +17,7 @@ export const ALMACENES = {
   fotos: 'fotos', // Fase 2: fotografías locales como Blob, separadas de las observaciones.
   ajustes: 'ajustes',
   especiesPropias: 'especiesPropias', // «Mi catálogo»: especies añadidas por la persona usuaria, con su foto.
+  fotosCatalogo: 'fotosCatalogo', // Fotos de campo que sustituyen, en este dispositivo, la imagen de una especie publicada.
 };
 
 let promesaBD = null;
@@ -45,6 +46,9 @@ export function abrirBD() {
         }
         if (versionAnterior < 2) {
           bd.createObjectStore(ALMACENES.especiesPropias, { keyPath: 'id' });
+        }
+        if (versionAnterior < 3) {
+          bd.createObjectStore(ALMACENES.fotosCatalogo, { keyPath: 'especieId' });
         }
       },
       // Otra pestaña con una versión más nueva necesita actualizar la base: se cierra esta conexión.

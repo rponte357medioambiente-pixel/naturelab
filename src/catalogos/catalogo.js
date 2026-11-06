@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { listarEspeciesPropias } from '../almacenamiento/repositorio.js';
+import { listarEspeciesPropias, listarFotosCatalogo } from '../almacenamiento/repositorio.js';
 import { useConsulta } from '../almacenamiento/useConsulta.js';
 import { normalizarTexto } from '../calculos/biodiversidad.js';
-import { prepararEspeciesPropias } from './especiesPropias.js';
+import { aplicarFotoCatalogo, prepararEspeciesPropias, prepararFotosCatalogo } from './especiesPropias.js';
 
 /**
  * El catálogo es un archivo estático (public/data/especies.json) que se publica
@@ -48,10 +48,13 @@ export function cargarCatalogo() {
  * Catálogo completo: el publicado con la web más «Mi catálogo» (especies propias,
  * guardadas en este dispositivo). `catalogo` es solo el publicado; `especies` y
  * `buscarEspecie` incluyen también las propias, marcadas con `propia: true`.
+ * Si una especie publicada tiene foto de campo en este dispositivo, se muestra
+ * esa foto (`fotoLocal: true`).
  */
 export function useCatalogo() {
   const [estado, setEstado] = useState({ cargando: true, catalogo: null, error: null });
   const propias = useConsulta(() => listarEspeciesPropias().then(prepararEspeciesPropias), []);
+  const fotosCampo = useConsulta(() => listarFotosCatalogo().then(prepararFotosCatalogo), []);
   useEffect(() => {
     let activo = true;
     cargarCatalogo().then(
@@ -64,15 +67,16 @@ export function useCatalogo() {
   }, []);
 
   const especiesPropias = useMemo(() => propias.datos ?? [], [propias.datos]);
-  const especies = useMemo(
-    () => [...(estado.catalogo?.especies ?? []), ...especiesPropias],
-    [estado.catalogo, especiesPropias],
-  );
+  const especies = useMemo(() => {
+    const fotos = fotosCampo.datos;
+    const publicadas = (estado.catalogo?.especies ?? []).map((e) => aplicarFotoCatalogo(e, fotos?.get(e.id)));
+    return [...publicadas, ...especiesPropias];
+  }, [estado.catalogo, especiesPropias, fotosCampo.datos]);
   const buscarEspecie = (id) => (id ? especies.find((e) => e.id === id) ?? null : null);
   return {
     ...estado,
     // Si el catálogo publicado no carga (primera visita sin conexión), las propias siguen disponibles.
-    cargando: estado.cargando || propias.cargando,
+    cargando: estado.cargando || propias.cargando || fotosCampo.cargando,
     especies,
     especiesPropias,
     buscarEspecie,
@@ -82,7 +86,7 @@ export function useCatalogo() {
 /** URL de la imagen de una especie: la foto guardada (propias) o la publicada con licencia verificada. */
 export function urlImagenEspecie(especie) {
   if (!especie) return null;
-  if (especie.propia) return especie.imagenUrl ?? null;
+  if (especie.propia || especie.fotoLocal) return especie.imagenUrl ?? null;
   return especie.imagen && especie.imagenLicencia ? rutaPublica(especie.imagen) : null;
 }
 

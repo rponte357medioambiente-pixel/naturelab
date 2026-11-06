@@ -333,6 +333,18 @@ a {
   flex: 1 1 12rem;
 }
 
+/* Varios botones uno debajo de otro dentro de una fila de acciones */
+.acciones:has(> .acciones-apiladas) {
+  align-items: flex-start;
+}
+
+.acciones > .acciones-apiladas {
+  flex: 1 1 12rem;
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+}
+
 .acciones > .importacion {
   flex: 1 1 12rem;
   display: flex;
@@ -2195,4 +2207,25 @@ html[data-paleta='rio'] .app::before {
 
 .selector-paleta .ayuda {
   margin: 0.5rem 0 0;
+}
+
+/* ---------- Foto de campo en la ficha ---------- */
+
+.foto-campo {
+  margin: 0.25rem 0 1.25rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.foto-campo h2 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.foto-campo h3 {
+  margin-bottom: 0.4rem;
+}
+
+.foto-campo p {
+  margin: 0;
 }

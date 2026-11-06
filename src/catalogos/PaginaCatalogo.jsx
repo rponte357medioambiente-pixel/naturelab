@@ -9,7 +9,7 @@ import { CopiaMiCatalogo } from './CopiaMiCatalogo.jsx';
 
 export function PaginaCatalogo() {
   useTituloDocumento('Catálogo de especies');
-  const { cargando, error, especies, especiesPropias, catalogo } = useCatalogo();
+  const { cargando, error, especies, catalogo } = useCatalogo();
   const [consulta, setConsulta] = useState('');
   const buscando = consulta.trim() !== '';
   const resultados = useMemo(() => buscarEspecies(especies, consulta), [especies, consulta]);
@@ -69,7 +69,7 @@ export function PaginaCatalogo() {
               </p>
             )
           )}
-          {!buscando && !cargando && <CopiaMiCatalogo total={especiesPropias.length} />}
+          {!buscando && !cargando && <CopiaMiCatalogo />}
         </section>
       )}
 

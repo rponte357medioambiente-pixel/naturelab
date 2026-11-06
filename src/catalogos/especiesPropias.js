@@ -39,17 +39,74 @@ export const esEspeciePropia = (especie) => Boolean(especie?.propia);
 
 /* ---------- Formato para las pantallas del catálogo ---------- */
 
-// URL temporal de cada foto, reutilizada mientras la especie no cambie.
-const urlsFotos = new Map(); // id → { marca, url }
+// URL temporal de cada foto, reutilizada mientras el registro no cambie.
+function crearCacheUrls() {
+  const urls = new Map(); // clave → { marca, url }
+  return {
+    url(clave, blob, marca) {
+      if (!blob || typeof URL.createObjectURL !== 'function') return null;
+      const actual = urls.get(clave);
+      if (actual?.marca === marca) return actual.url;
+      if (actual) URL.revokeObjectURL(actual.url);
+      const url = URL.createObjectURL(blob);
+      urls.set(clave, { marca, url });
+      return url;
+    },
+    /** Libera las URL de los registros que ya no existen. */
+    conservar(claves) {
+      for (const [clave, { url }] of urls) {
+        if (!claves.has(clave)) {
+          URL.revokeObjectURL(url);
+          urls.delete(clave);
+        }
+      }
+    },
+  };
+}
 
-function urlDeFoto(registro) {
-  if (!registro.foto?.blob || typeof URL.createObjectURL !== 'function') return null;
-  const actual = urlsFotos.get(registro.id);
-  if (actual?.marca === registro.fechaModificacion) return actual.url;
-  if (actual) URL.revokeObjectURL(actual.url);
-  const url = URL.createObjectURL(registro.foto.blob);
-  urlsFotos.set(registro.id, { marca: registro.fechaModificacion, url });
-  return url;
+const urlsFotos = crearCacheUrls();
+const urlsFotosCatalogo = crearCacheUrls();
+
+/**
+ * Fotos de campo que sustituyen, en este dispositivo, la imagen de especies del
+ * catálogo publicado.
+ * @returns {Map<string, {imagenUrl, imagenAutor, imagenFuente, imagenLicencia, imagenModificaciones, fechaModificacion}>}
+ */
+export function prepararFotosCatalogo(registros) {
+  urlsFotosCatalogo.conservar(new Set(registros.map((r) => r.especieId)));
+  return new Map(
+    registros.map((r) => [
+      r.especieId,
+      {
+        imagenUrl: urlsFotosCatalogo.url(r.especieId, r.foto?.blob, r.fechaModificacion),
+        imagenAutor: r.imagenAutor,
+        imagenFuente: r.imagenFuente,
+        imagenLicencia: r.imagenLicencia,
+        imagenModificaciones: r.imagenModificaciones,
+        fechaModificacion: r.fechaModificacion,
+      },
+    ]),
+  );
+}
+
+/** Especie publicada con la foto de campo en lugar de su imagen; conserva la original para poder volver. */
+export function aplicarFotoCatalogo(especie, foto) {
+  if (!foto?.imagenUrl) return especie;
+  return {
+    ...especie,
+    fotoLocal: true,
+    imagenUrl: foto.imagenUrl,
+    imagenTipo: 'foto-local',
+    imagenAutor: foto.imagenAutor,
+    imagenFuente: foto.imagenFuente,
+    imagenLicencia: foto.imagenLicencia,
+    imagenModificaciones: foto.imagenModificaciones,
+    imagenOriginal: {
+      imagen: especie.imagen ?? null,
+      imagenTipo: especie.imagenTipo ?? null,
+      imagenLicencia: especie.imagenLicencia ?? null,
+    },
+  };
 }
 
 /**
@@ -57,17 +114,11 @@ function urlDeFoto(registro) {
  * catálogo publicado, marcadas con «propia» y con la URL de su foto.
  */
 export function prepararEspeciesPropias(registros) {
-  const ids = new Set(registros.map((r) => r.id));
-  for (const [id, { url }] of urlsFotos) {
-    if (!ids.has(id)) {
-      URL.revokeObjectURL(url);
-      urlsFotos.delete(id);
-    }
-  }
+  urlsFotos.conservar(new Set(registros.map((r) => r.id)));
   return registros.map((r) => {
     // eslint-disable-next-line no-unused-vars
     const { foto, ...datos } = r;
-    return { ...datos, propia: true, imagenUrl: urlDeFoto(r) };
+    return { ...datos, propia: true, imagenUrl: urlsFotos.url(r.id, r.foto?.blob, r.fechaModificacion) };
   });
 }
 
@@ -76,8 +127,9 @@ export function prepararEspeciesPropias(registros) {
 const LEEME = `NatureLab: copia de «Mi catálogo»
 
 Este archivo contiene:
-- mi-catalogo.json: las especies que has añadido a tu catálogo.
-- fotos/: sus fotografías, si las tienen.
+- mi-catalogo.json: las especies que has añadido a tu catálogo y tus fotos
+  de campo de especies del catálogo publicado.
+- fotos/: las fotografías.
 
 Para recuperarlo, abre NatureLab, ve a Catálogo y pulsa «Importar copia» en
 «Mi catálogo». No hace falta descomprimir el archivo.
@@ -85,10 +137,22 @@ Para recuperarlo, abre NatureLab, ve a Catálogo y pulsa «Importar copia» en
 Las fotografías pueden incluir lugares reconocibles: compártelo con cuidado.
 `;
 
-/** @param {object[]} registros  especies tal como están guardadas (con foto.blob) */
-export async function construirZipCatalogoPropio(registros) {
+/**
+ * @param {object[]} registros  especies tal como están guardadas (con foto.blob)
+ * @param {object[]} fotosCatalogo  fotos de campo de especies publicadas (con foto.blob)
+ */
+export async function construirZipCatalogoPropio(registros, fotosCatalogo = []) {
   const archivos = {};
   const especies = [];
+  const fotos = [];
+  for (const registro of fotosCatalogo) {
+    if (!registro.foto?.blob) continue;
+    const { foto, ...datos } = registro;
+    const tipo = foto.tipoMime ?? foto.blob.type;
+    const ruta = `fotos/catalogo-${registro.especieId}.${extensionDeTipo(tipo)}`;
+    archivos[ruta] = [new Uint8Array(await foto.blob.arrayBuffer()), { level: 0 }];
+    fotos.push({ ...datos, foto: { archivo: ruta, tipoMime: tipo, ancho: foto.ancho ?? null, alto: foto.alto ?? null } });
+  }
   for (const registro of registros) {
     const { foto, ...datos } = registro;
     let vinculo = null;
@@ -107,6 +171,7 @@ export async function construirZipCatalogoPropio(registros) {
     aplicacion: 'NatureLab',
     exportadoEn: new Date().toISOString(),
     especies,
+    fotosCatalogo: fotos,
   };
   archivos[NOMBRE_DATOS_CATALOGO] = strToU8(`${JSON.stringify(paquete, null, 2)}\n`);
   archivos['LEEME.txt'] = strToU8(LEEME);
@@ -222,10 +287,66 @@ export function validarCatalogoPropio(datos, archivos = {}) {
     especies.push(especie);
   });
   if (repetidas > 0) avisos.push(`Se han descartado ${repetidas} especies repetidas dentro del propio archivo.`);
+
+  // Fotos de campo de especies publicadas (opcional: las copias anteriores no las tienen).
+  const fotosCatalogo = [];
+  if (datos.fotosCatalogo !== undefined) {
+    if (!Array.isArray(datos.fotosCatalogo) || datos.fotosCatalogo.length > LIMITES_CATALOGO_PROPIO.especies) {
+      errores.push('La lista de fotos de campo no es válida.');
+    } else {
+      const vistas = new Set();
+      datos.fotosCatalogo.forEach((entrada, i) => {
+        const foto = limpiarFotoCatalogo(entrada, archivos, errores, i + 1);
+        if (foto && !vistas.has(foto.especieId)) {
+          vistas.add(foto.especieId);
+          fotosCatalogo.push(foto);
+        }
+      });
+    }
+  }
+
   if (errores.length > 0) {
     return { ok: false, errores: errores.slice(0, LIMITES_CATALOGO_PROPIO.erroresMostrados), totalErrores: errores.length };
   }
-  return { ok: true, especies, avisos };
+  return { ok: true, especies, fotosCatalogo, avisos };
+}
+
+// Identificador de una especie publicada (no de «Mi catálogo»).
+const ID_PUBLICADA = /^(?!propia-)[a-z0-9][a-z0-9-]{0,99}$/;
+
+function limpiarFotoCatalogo(entrada, archivos, errores, numero) {
+  const error = (mensaje) => errores.push(`Foto de campo ${numero}: ${mensaje}`);
+  if (!esObjeto(entrada) || typeof entrada.especieId !== 'string' || !ID_PUBLICADA.test(entrada.especieId)) {
+    error('no indica una especie válida.');
+    return null;
+  }
+  const ruta = entrada.foto?.archivo;
+  const bytes = typeof ruta === 'string' && RUTA_FOTO.test(ruta) ? archivos[ruta] : null;
+  const tipo = bytes ? tipoDeBytes(bytes) : null;
+  if (!bytes) {
+    error('falta la foto dentro del ZIP.');
+    return null;
+  }
+  if (!tipo) {
+    error('la foto no es una imagen JPG, PNG o WebP válida.');
+    return null;
+  }
+  const texto = (valor, max) => (typeof valor === 'string' ? valor.slice(0, max).trim() : '');
+  return {
+    especieId: entrada.especieId,
+    foto: {
+      blob: new Blob([bytes], { type: tipo }),
+      tipoMime: tipo,
+      tamano: bytes.length,
+      ancho: medidaValida(entrada.foto.ancho),
+      alto: medidaValida(entrada.foto.alto),
+    },
+    imagenAutor: texto(entrada.imagenAutor, LIMITES_CATALOGO_PROPIO.textoCorto),
+    imagenFuente: texto(entrada.imagenFuente, 500),
+    imagenLicencia: texto(entrada.imagenLicencia, LIMITES_CATALOGO_PROPIO.textoCorto),
+    imagenModificaciones: texto(entrada.imagenModificaciones, LIMITES_CATALOGO_PROPIO.textoCorto),
+    fechaModificacion: fechaValida(entrada.fechaModificacion) ? entrada.fechaModificacion : new Date().toISOString(),
+  };
 }
 
 /** Lee y valida una copia ZIP de «Mi catálogo» elegida por la persona usuaria. */
@@ -250,11 +371,11 @@ export async function leerCopiaCatalogoPropio(archivo) {
  * id nuevo → se añade; mismo id y la copia es más reciente → se actualiza;
  * mismo id y la local es igual o más reciente → se conserva la local.
  */
-export function planificarImportacionPropias(importadas, locales) {
-  const porId = new Map(locales.map((r) => [r.id, r]));
+export function planificarImportacionPropias(importadas, locales, clave = 'id') {
+  const porId = new Map(locales.map((r) => [r[clave], r]));
   const plan = { nuevas: [], actualizadas: [], sinCambios: [] };
   for (const especie of importadas) {
-    const local = porId.get(especie.id);
+    const local = porId.get(especie[clave]);
     if (!local) plan.nuevas.push(especie);
     else if ((especie.fechaModificacion ?? '') > (local.fechaModificacion ?? '')) plan.actualizadas.push(especie);
     else plan.sinCambios.push(especie);

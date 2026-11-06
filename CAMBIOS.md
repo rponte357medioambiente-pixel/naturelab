@@ -4,6 +4,18 @@ Cuaderno de campo digital para talleres de exploración ambiental. Aplicación w
 
 ---
 
+## 6 de noviembre de 2026 · Fotos de campo en el catálogo (fase 3)
+
+- En la ficha de cualquier especie del catálogo publicado, **Sustituir por tu foto** cambia su ilustración o su imagen por una foto propia, hecha con la cámara o elegida de la galería.
+- La foto pasa por el mismo proceso que el resto: encuadre 4:3, revisión de personas (con pixelado opcional) y autoría y licencia. Se guarda sin datos de ubicación.
+- Solo se ve en este dispositivo, en todo el catálogo: ficha, rejilla, selector de especies y anotaciones. La ficha la marca como «Tu foto».
+- **Volver a la ilustración** (o a la imagen del catálogo) la quita en cualquier momento.
+- Entra en la copia de seguridad de **Mi catálogo** y se recupera al importarla. Las copias anteriores siguen siendo válidas.
+- Para que la vean también otros dispositivos, se publica con «Preparar fotos del catálogo».
+- La base de datos local pasa a la versión 3, con un almacén nuevo para estas fotos; los datos existentes se conservan.
+
+---
+
 ## 6 de noviembre de 2026 · Aspecto y nuevo nombre (fase 2)
 
 ### Nombre
@@ -80,7 +92,6 @@ Cuaderno de campo digital para talleres de exploración ambiental. Aplicación w
 
 ## Pendiente
 
-- **Fase 3:** sustituir la ilustración de una especie por una foto tomada en campo, desde su ficha.
 - **Fase 4:** dibujo de plantas y animales con puntos para unir.
 - Fotos en las especies de un transecto.
 - Laboratorio de Microplásticos.

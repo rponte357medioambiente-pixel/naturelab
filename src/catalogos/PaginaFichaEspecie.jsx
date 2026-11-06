@@ -7,8 +7,9 @@ import { formatearFecha, plural } from '../calculos/formato.js';
 import { ImagenEspecie } from '../componentes/ImagenEspecie.jsx';
 import { IconoAtras, IconoEditar, IconoPapelera } from '../componentes/Iconos.jsx';
 import { PaginaNoEncontrada } from '../app/PaginaNoEncontrada.jsx';
-import { useCatalogo } from './catalogo.js';
+import { tieneImagen as conImagen, useCatalogo } from './catalogo.js';
 import { ESTADOS_VALIDACION_PROPIA } from './especiesPropias.js';
+import { FotoDeCampo } from './FotoDeCampo.jsx';
 
 export function PaginaFichaEspecie() {
   const { especieId } = useParams();
@@ -26,7 +27,7 @@ export function PaginaFichaEspecie() {
     );
   }
 
-  const tieneImagen = especie.propia ? Boolean(especie.imagenUrl) : Boolean(especie.imagen && especie.imagenLicencia);
+  const tieneImagen = conImagen(especie);
 
   return (
     <article className="ficha-especie">
@@ -39,6 +40,7 @@ export function PaginaFichaEspecie() {
         {!especie.propia && especie.imagenTipo === 'ilustracion' && especie.imagen && (
           <span className="estado estado--ocre imagen-ficha__marca">Ilustración esquemática</span>
         )}
+        {especie.fotoLocal && <span className="estado imagen-ficha__marca">Tu foto</span>}
       </div>
       <h1>{especie.nombreComun}</h1>
       {especie.nombreCientifico && <p className="cientifico nombre-cientifico">{especie.nombreCientifico}</p>}
@@ -60,6 +62,8 @@ export function PaginaFichaEspecie() {
           </>
         )}
       </p>
+
+      {!especie.propia && <FotoDeCampo key={especie.id} especie={especie} />}
 
       {especie.descripcion && <p>{especie.descripcion}</p>}
 
@@ -103,6 +107,7 @@ export function PaginaFichaEspecie() {
         <div>
           <dt>{especie.propia ? 'Foto' : 'Imagen'}</dt>
           <dd>
+            {especie.fotoLocal && <>Tu foto, solo en este dispositivo: </>}
             {tieneImagen ? (
               <>
                 {especie.imagenAutor && <>{especie.imagenAutor}. </>}
@@ -122,11 +127,11 @@ export function PaginaFichaEspecie() {
             ) : (
               'Sin imagen de referencia: se añadirá cuando se verifiquen su licencia y procedencia.'
             )}
-            {!especie.propia && (
+            {!especie.propia && !especie.fotoLocal && (
               <>
                 <br />
                 <Link to={`/catalogo/fotos?especie=${especie.id}`} className="texto-pequeno">
-                  Preparar foto de esta especie
+                  Preparar foto de esta especie para el catálogo publicado
                 </Link>
               </>
             )}

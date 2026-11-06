@@ -7,7 +7,7 @@ import { useConsulta } from '../almacenamiento/useConsulta.js';
 import { resumirBiodiversidad } from '../calculos/biodiversidad.js';
 import { formatearPorcentaje } from '../calculos/formato.js';
 import { FranjaAbundancia } from '../componentes/FranjaAbundancia.jsx';
-import { IconoMas } from '../componentes/Iconos.jsx';
+import { IconoCuaderno, IconoMas } from '../componentes/Iconos.jsx';
 import { TarjetaInvestigacion } from '../componentes/TarjetaInvestigacion.jsx';
 import { crearEjemploSalar } from '../laboratorios/biodiversidad/ejemploSalar.js';
 
@@ -42,10 +42,16 @@ export function PaginaInicio() {
         <FranjaAbundancia taxones={portada.resumen.taxones} N={portada.resumen.N} animada />
         <p className="pie-franja">{portada.pie}</p>
         <div className="acciones">
-          <Link className="boton" to="/investigaciones/nueva">
-            <IconoMas />
-            Nueva investigación
-          </Link>
+          <div className="acciones-apiladas">
+            <Link className="boton" to="/investigaciones/nueva">
+              <IconoMas />
+              Nueva investigación
+            </Link>
+            <Link className="boton boton--secundario" to="/modelos">
+              <IconoCuaderno />
+              Cargar un modelo
+            </Link>
+          </div>
           <Link className="boton boton--secundario" to="/catalogo">
             Consultar el catálogo
           </Link>
@@ -57,13 +63,10 @@ export function PaginaInicio() {
         {cargando && <p className="texto-suave">Cargando…</p>}
         {!cargando && recientes.length === 0 && (
           <div className="panel">
-            <p>
+            <p style={{ margin: 0 }}>
               Aún no hay investigaciones en este dispositivo. Crea una o carga un modelo, como el Salar de los Canos o
               Río Antas, para ver cómo se calculan los resultados.
             </p>
-            <Link className="boton boton--secundario" to="/modelos">
-              Cargar un modelo
-            </Link>
           </div>
         )}
         {recientes.length > 0 && (

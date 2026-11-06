@@ -134,6 +134,11 @@ export function PaginaAyuda() {
           seguridad, en la misma pantalla del catálogo: descárgala de vez en cuando y úsala para llevar tus especies a
           otro dispositivo con «Importar copia».
         </p>
+        <p>
+          En la ficha de cualquier especie del catálogo, «Sustituir por tu foto» cambia su ilustración o su imagen por
+          una foto tuya hecha en campo. Solo se ve en este dispositivo, entra en la copia de «Mi catálogo» y puedes
+          volver a la imagen original cuando quieras.
+        </p>
       </section>
 
       <section className="ayuda-bloque" aria-labelledby="ayuda-pdf">

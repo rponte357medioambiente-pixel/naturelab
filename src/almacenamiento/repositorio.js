@@ -371,3 +371,51 @@ export async function contarObservacionesDeEspecie(especieId) {
   const observaciones = await bd.getAll(A.observaciones);
   return observaciones.filter((o) => o.especieId === especieId).length;
 }
+
+/* ---------- Fotos de campo de especies del catálogo publicado ---------- */
+
+export async function listarFotosCatalogo() {
+  const bd = await abrirBD();
+  return bd.getAll(A.fotosCatalogo);
+}
+
+/**
+ * Guarda la foto de campo de una especie publicada. Sustituye su imagen solo en
+ * este dispositivo; si ya había una, la reemplaza.
+ * @param {{foto: {blob: Blob, ancho: number, alto: number}, imagenAutor, imagenFuente, imagenLicencia, imagenModificaciones}} datos
+ */
+export async function guardarFotoCatalogo(especieId, datos) {
+  const registro = {
+    especieId,
+    foto: {
+      blob: datos.foto.blob,
+      tipoMime: datos.foto.blob.type,
+      tamano: datos.foto.blob.size,
+      ancho: datos.foto.ancho ?? null,
+      alto: datos.foto.alto ?? null,
+    },
+    imagenAutor: datos.imagenAutor ?? '',
+    imagenFuente: datos.imagenFuente ?? '',
+    imagenLicencia: datos.imagenLicencia ?? '',
+    imagenModificaciones: datos.imagenModificaciones ?? '',
+    fechaModificacion: ahora(),
+  };
+  await enTransaccion([A.fotosCatalogo], (tx) => tx.objectStore(A.fotosCatalogo).put(registro));
+  notificar();
+  solicitarPersistencia();
+  return registro;
+}
+
+export async function eliminarFotoCatalogo(especieId) {
+  await enTransaccion([A.fotosCatalogo], (tx) => tx.objectStore(A.fotosCatalogo).delete(especieId));
+  notificar();
+}
+
+/** Guarda varias fotos tal como llegan (importación). Misma especie: se sustituye. */
+export async function guardarFotosCatalogo(registros) {
+  await enTransaccion([A.fotosCatalogo], async (tx) => {
+    for (const r of registros) await tx.objectStore(A.fotosCatalogo).put(r);
+  });
+  notificar();
+  solicitarPersistencia();
+}
