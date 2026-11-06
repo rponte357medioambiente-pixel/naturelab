@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 8 48 36" width="480" height="360" role="img" aria-label="Ilustración esquemática de grama de los arenales">
+  <rect x="0" y="8" width="48" height="36" fill="#f4f0e2"/>
+  <path d="M0 41.5c8-1.5 16-1.5 24 0s16 1.5 24 0V44H0z" fill="#e6dcbf"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M24 42C22 32 18 22 11 12" stroke="#6f9a80" stroke-width="1.6"/>
+    <path d="M24 42C26 31 29 21 36 11" stroke="#6f9a80" stroke-width="1.6"/>
+    <path d="M24 42C20 36 14 32 7 30" stroke="#80a890" stroke-width="1.4"/>
+    <path d="M24 42C28 36 34 33 41 32" stroke="#80a890" stroke-width="1.4"/>
+    <path d="M23 42C21 34 20 27 17 20" stroke="#5d8a70" stroke-width="1.2"/>
+    <path d="M24 42V10" stroke="#8a7a3c" stroke-width="1.1"/>
+  </g>
+  <g fill="#b39a52">
+    <ellipse cx="24" cy="11" rx="1.6" ry="2.6"/>
+    <ellipse cx="22.6" cy="15.2" rx="1.6" ry="2.6"/>
+    <ellipse cx="25.4" cy="19" rx="1.6" ry="2.6"/>
+    <ellipse cx="22.6" cy="22.8" rx="1.6" ry="2.6"/>
+  </g>
+</svg>

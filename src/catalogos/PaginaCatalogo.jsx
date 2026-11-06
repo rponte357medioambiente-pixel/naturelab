@@ -15,6 +15,15 @@ export function PaginaCatalogo() {
   const resultados = useMemo(() => buscarEspecies(especies, consulta), [especies, consulta]);
   const propias = resultados.filter((e) => e.propia);
   const publicadas = resultados.filter((e) => !e.propia);
+  // El catálogo publicado se agrupa por zona, en el orden en que aparecen en especies.json.
+  const zonas = useMemo(() => {
+    const grupos = new Map();
+    for (const e of publicadas) {
+      const zona = e.zona || 'Otras especies';
+      grupos.set(zona, [...(grupos.get(zona) ?? []), e]);
+    }
+    return [...grupos.entries()];
+  }, [publicadas]);
 
   return (
     <>
@@ -24,7 +33,7 @@ export function PaginaCatalogo() {
       </Link>
       <header className="encabezado-pagina">
         <h1>Catálogo de especies</h1>
-        <p>Las plantas del Salar de los Canos y las que añadas tú en tus salidas.</p>
+        <p>Las plantas de los lugares estudiados y las que añadas tú en tus salidas.</p>
       </header>
 
       <Link to="/catalogo/nueva" className="boton boton--ancho">
@@ -64,23 +73,23 @@ export function PaginaCatalogo() {
         </section>
       )}
 
-      {(!buscando || publicadas.length > 0) && (
-        <section className="seccion-catalogo" aria-labelledby="titulo-salar">
-          <h2 id="titulo-salar">Salar de los Canos</h2>
-          {catalogo?.estado === 'provisional' && (
+      {error && !buscando && (
+        <div className="aviso aviso--error seccion-catalogo" role="alert">
+          <p>
+            No se ha podido cargar el catálogo publicado. Si es la primera vez que abres NaturaLab, conéctate a Internet
+            una vez para que quede guardado en el dispositivo.
+          </p>
+        </div>
+      )}
+      {zonas.map(([zona, lista], i) => (
+        <section key={zona} className="seccion-catalogo" aria-labelledby={`titulo-zona-${i}`}>
+          <h2 id={`titulo-zona-${i}`}>{zona}</h2>
+          {i === 0 && catalogo?.estado === 'provisional' && (
             <p className="texto-suave texto-pequeno">Nombres y fichas pendientes de revisión botánica.</p>
           )}
-          {error && (
-            <div className="aviso aviso--error" role="alert">
-              <p>
-                No se ha podido cargar este catálogo. Si es la primera vez que abres NaturaLab, conéctate a Internet una
-                vez para que quede guardado en el dispositivo.
-              </p>
-            </div>
-          )}
-          <RejillaEspecies especies={publicadas} />
+          <RejillaEspecies especies={lista} />
         </section>
-      )}
+      ))}
 
       {buscando && resultados.length === 0 && !cargando && (
         <p className="texto-suave">Ninguna especie coincide con «{consulta.trim()}».</p>

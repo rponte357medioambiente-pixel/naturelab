@@ -1,5 +1,6 @@
-import { ESTADOS_IDENTIFICACION, VERSION_ESQUEMA } from '../almacenamiento/modelo.js';
+import { ESTADOS_IDENTIFICACION, MODOS_ANOTACION, TIPOS_PRACTICA, VERSION_ESQUEMA } from '../almacenamiento/modelo.js';
 import { UNIDADES_SUPERFICIE, validarAbundancia, validarSuperficie } from '../calculos/biodiversidad.js';
+import { LIMITES_TRANSECTO, validarLongitudTransecto } from '../calculos/cobertura.js';
 import { esZip, LIMITES_ZIP, leerZip, RUTA_FOTO, tipoDeBytes } from './copiaZip.js';
 
 /**
@@ -64,6 +65,41 @@ function crearLector(errores, prefijo) {
       }
       return valor;
     },
+    /** Lista de medidas en cm, todas mayores que 0. */
+    medidas(valor, campo) {
+      if (valor === undefined || valor === null) return [];
+      if (!Array.isArray(valor) || valor.length > LIMITES_TRANSECTO.manchasMax) {
+        error(`«${campo}» no es una lista de medidas válida.`);
+        return [];
+      }
+      if (!valor.every((v) => Number.isFinite(v) && v > 0 && v <= LIMITES_TRANSECTO.longitudMaxCm)) {
+        error(`«${campo}» contiene medidas no válidas.`);
+        return [];
+      }
+      return [...valor];
+    },
+    /** Tramos {desde, hasta} sobre una línea de longitud L. */
+    tramos(valor, campo, L) {
+      if (valor === undefined || valor === null) return [];
+      if (!Array.isArray(valor) || valor.length > LIMITES_TRANSECTO.manchasMax) {
+        error(`«${campo}» no es una lista de tramos válida.`);
+        return [];
+      }
+      const validos = valor.every(
+        (t) =>
+          esObjeto(t) &&
+          Number.isFinite(t.desde) &&
+          Number.isFinite(t.hasta) &&
+          t.desde >= 0 &&
+          t.hasta > t.desde &&
+          (!(L > 0) || t.hasta <= L),
+      );
+      if (!validos) {
+        error(`«${campo}» contiene tramos no válidos.`);
+        return [];
+      }
+      return valor.map((t) => ({ desde: t.desde, hasta: t.hasta }));
+    },
     error,
   };
 }
@@ -78,6 +114,8 @@ export function limpiarInvestigacion(entrada, errores) {
   if (laboratorio && !LABORATORIOS_DISPONIBLES.includes(laboratorio)) {
     lector.error(`pertenece al laboratorio «${laboratorio}», que aún no está disponible en esta versión.`);
   }
+  const tipoPractica = entrada.tipoPractica ?? 'parcela';
+  if (!Object.hasOwn(TIPOS_PRACTICA, tipoPractica)) lector.error('el tipo de práctica no es válido.');
   return {
     id: lector.id(entrada.id, 'id'),
     titulo: lector.texto(entrada.titulo, 'título', LIMITES.textoCorto, { obligatorio: true }),
@@ -86,6 +124,7 @@ export function limpiarInvestigacion(entrada, errores) {
     lugarTexto: lector.texto(entrada.lugarTexto, 'lugar', LIMITES.textoCorto),
     equipoAlias: lector.texto(entrada.equipoAlias, 'equipo', LIMITES.textoCorto),
     laboratorio,
+    tipoPractica: Object.hasOwn(TIPOS_PRACTICA, tipoPractica) ? tipoPractica : 'parcela',
     versionEsquema: VERSION_ESQUEMA,
     fechaCreacion: lector.fecha(entrada.fechaCreacion, 'fecha de creación') ?? new Date().toISOString(),
     fechaModificacion: lector.fecha(entrada.fechaModificacion, 'fecha de modificación') ?? new Date().toISOString(),
@@ -93,7 +132,8 @@ export function limpiarInvestigacion(entrada, errores) {
   };
 }
 
-export function limpiarParcela(entrada, investigacionId, errores, numero) {
+export function limpiarParcela(entrada, investigacionId, errores, numero, tipoPractica = 'parcela') {
+  if (tipoPractica === 'transecto') return limpiarTransecto(entrada, investigacionId, errores, numero);
   const lector = crearLector(errores, `Parcela ${numero}`);
   if (!esObjeto(entrada)) {
     lector.error('no tiene un formato válido.');
@@ -116,16 +156,58 @@ export function limpiarParcela(entrada, investigacionId, errores, numero) {
   };
 }
 
-export function limpiarObservacion(entrada, investigacionId, idsParcelas, errores, numero) {
-  const lector = crearLector(errores, `Observación ${numero}`);
+function limpiarTransecto(entrada, investigacionId, errores, numero) {
+  const lector = crearLector(errores, `Transecto ${numero}`);
   if (!esObjeto(entrada)) {
     lector.error('no tiene un formato válido.');
     return null;
   }
   if (entrada.investigacionId !== investigacionId) lector.error('no pertenece a esta investigación.');
-  if (!idsParcelas.has(entrada.parcelaId)) lector.error('hace referencia a una parcela que no está en el archivo.');
-  const abundancia = validarAbundancia(entrada.abundancia);
-  if (!abundancia.valida) lector.error(abundancia.mensaje.toLowerCase());
+  const longitud = validarLongitudTransecto(entrada.longitudCm);
+  if (!longitud.valida) lector.error(longitud.mensaje.toLowerCase());
+  const modo = entrada.modoAnotacion;
+  if (!Object.hasOwn(MODOS_ANOTACION, modo)) lector.error('el modo de anotación no es válido.');
+  return {
+    id: lector.id(entrada.id, 'id'),
+    investigacionId,
+    codigo: lector.texto(entrada.codigo, 'código', 40, { obligatorio: true }),
+    superficie: null,
+    unidadSuperficie: 'm2',
+    longitudCm: longitud.valida ? longitud.valor : null,
+    orientacion: lector.texto(entrada.orientacion, 'orientación', 40),
+    modoAnotacion: Object.hasOwn(MODOS_ANOTACION, modo) ? modo : 'longitudes',
+    sueloDesnudo: lector.medidas(entrada.sueloDesnudo, 'suelo desnudo'),
+    descripcion: lector.texto(entrada.descripcion, 'descripción', LIMITES.textoLargo),
+    notas: lector.texto(entrada.notas, 'notas', LIMITES.textoLargo),
+    fechaModificacion: lector.fecha(entrada.fechaModificacion, 'fecha de modificación') ?? new Date().toISOString(),
+  };
+}
+
+/**
+ * @param {Map<string, object>} [transectosPorId]  en investigaciones de transectos, para comprobar los tramos
+ */
+export function limpiarObservacion(entrada, investigacionId, idsParcelas, errores, numero, transectosPorId = null) {
+  const lector = crearLector(errores, `${transectosPorId ? 'Anotación' : 'Observación'} ${numero}`);
+  if (!esObjeto(entrada)) {
+    lector.error('no tiene un formato válido.');
+    return null;
+  }
+  if (entrada.investigacionId !== investigacionId) lector.error('no pertenece a esta investigación.');
+  if (!idsParcelas.has(entrada.parcelaId)) {
+    lector.error(`hace referencia a ${transectosPorId ? 'un transecto' : 'una parcela'} que no está en el archivo.`);
+  }
+  let manchas = {};
+  let abundancia = { valida: true, valor: null };
+  if (transectosPorId) {
+    const transecto = transectosPorId.get(entrada.parcelaId);
+    manchas = {
+      longitudes: lector.medidas(entrada.longitudes, 'longitudes'),
+      tramos: lector.tramos(entrada.tramos, 'tramos', transecto?.longitudCm),
+    };
+  } else {
+    abundancia = validarAbundancia(entrada.abundancia);
+    if (!abundancia.valida) lector.error(abundancia.mensaje.toLowerCase());
+  }
   const estado = entrada.estadoIdentificacion;
   if (!Object.hasOwn(ESTADOS_IDENTIFICACION, estado)) lector.error('el estado de identificación no es válido.');
   const especieId = lector.id(entrada.especieId, 'especie', { opcional: true });
@@ -137,6 +219,7 @@ export function limpiarObservacion(entrada, investigacionId, idsParcelas, errore
     nombreComun: lector.texto(entrada.nombreComun, 'nombre', LIMITES.textoCorto, { obligatorio: true }),
     nombreCientifico: lector.texto(entrada.nombreCientifico, 'nombre científico', LIMITES.textoCorto),
     abundancia: abundancia.valida ? abundancia.valor : null,
+    ...manchas,
     notas: lector.texto(entrada.notas, 'notas', LIMITES.textoLargo),
     fecha: lector.fecha(entrada.fecha, 'fecha') ?? new Date().toISOString(),
     estadoIdentificacion: Object.hasOwn(ESTADOS_IDENTIFICACION, estado) ? estado : 'pendiente',
@@ -183,9 +266,12 @@ function limpiarFoto(entrada, investigacionId, observacionesPorId, archivos, err
 
 /**
  * Punto único para adaptar copias de versiones anteriores del esquema.
- * Cuando exista la versión 2, añadir aquí la conversión 1 → 2.
+ * 1 → 2: las investigaciones anteriores son todas de recuento en parcela.
  */
 export function migrarPaquete(datos) {
+  if (datos.versionEsquema < 2 && esObjeto(datos.investigacion) && !datos.investigacion.tipoPractica) {
+    return { ...datos, investigacion: { ...datos.investigacion, tipoPractica: 'parcela' } };
+  }
   return datos;
 }
 
@@ -224,15 +310,17 @@ export function validarPaquete(datos, { archivos = null } = {}) {
   const parcelas = [];
   const idsParcelas = new Set();
   const codigos = new Set();
+  const tipoPractica = investigacion?.tipoPractica ?? 'parcela';
+  const unidad = tipoPractica === 'transecto' ? 'Transecto' : 'Parcela';
   migrado.parcelas.forEach((entrada, i) => {
-    const parcela = limpiarParcela(entrada, investigacionId, errores, i + 1);
+    const parcela = limpiarParcela(entrada, investigacionId, errores, i + 1, tipoPractica);
     if (!parcela) return;
     if (idsParcelas.has(parcela.id)) {
-      errores.push(`Parcela ${i + 1}: su identificador está repetido.`);
+      errores.push(`${unidad} ${i + 1}: su identificador está repetido.`);
       return;
     }
     const codigo = parcela.codigo.toLocaleLowerCase('es');
-    if (codigos.has(codigo)) errores.push(`Parcela ${i + 1}: el código «${parcela.codigo}» está repetido.`);
+    if (codigos.has(codigo)) errores.push(`${unidad} ${i + 1}: el código «${parcela.codigo}» está repetido.`);
     codigos.add(codigo);
     idsParcelas.add(parcela.id);
     parcelas.push(parcela);
@@ -241,8 +329,9 @@ export function validarPaquete(datos, { archivos = null } = {}) {
   const observaciones = [];
   const idsObservaciones = new Set();
   let repetidas = 0;
+  const transectosPorId = tipoPractica === 'transecto' ? new Map(parcelas.map((p) => [p.id, p])) : null;
   migrado.observaciones.forEach((entrada, i) => {
-    const observacion = limpiarObservacion(entrada, investigacionId, idsParcelas, errores, i + 1);
+    const observacion = limpiarObservacion(entrada, investigacionId, idsParcelas, errores, i + 1, transectosPorId);
     if (!observacion) return;
     if (idsObservaciones.has(observacion.id)) {
       repetidas += 1;

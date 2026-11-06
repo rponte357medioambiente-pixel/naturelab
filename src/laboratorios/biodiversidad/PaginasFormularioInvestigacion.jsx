@@ -2,7 +2,15 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAnunciar } from '../../accesibilidad/Anunciador.jsx';
 import { useTituloDocumento } from '../../accesibilidad/useTituloDocumento.js';
-import { crearInvestigacion, crearParcela } from '../../almacenamiento/modelo.js';
+import {
+  crearInvestigacion,
+  crearParcela,
+  crearTransecto,
+  esTransecto,
+  MODOS_ANOTACION,
+  ORIENTACIONES,
+  TIPOS_PRACTICA,
+} from '../../almacenamiento/modelo.js';
 import {
   eliminarInvestigacion,
   guardarInvestigacion,
@@ -11,6 +19,7 @@ import {
 } from '../../almacenamiento/repositorio.js';
 import { useConsulta } from '../../almacenamiento/useConsulta.js';
 import { UNIDADES_SUPERFICIE, validarSuperficie } from '../../calculos/biodiversidad.js';
+import { validarLongitudTransecto } from '../../calculos/cobertura.js';
 import { hoyISO } from '../../calculos/formato.js';
 import { IconoAtras, IconoPapelera } from '../../componentes/Iconos.jsx';
 import { PaginaNoEncontrada } from '../../app/PaginaNoEncontrada.jsx';
@@ -25,7 +34,7 @@ export function PaginaNuevaInvestigacion() {
       </Link>
       <header className="encabezado-pagina">
         <h1>Nueva investigación</h1>
-        <p>Laboratorio de Biodiversidad. Podrás cambiar estos datos más adelante.</p>
+        <p>Laboratorio de Biodiversidad. El tipo de práctica no se puede cambiar después; el resto, sí.</p>
       </header>
       <FormularioInvestigacion />
     </>
@@ -66,7 +75,13 @@ function FormularioInvestigacion({ inicial }) {
     codigoParcela: 'P1',
     superficie: '',
     unidadSuperficie: 'm2',
+    tipoPractica: inicial?.tipoPractica ?? 'parcela',
+    codigoTransecto: 'T1',
+    longitudCm: '400',
+    orientacion: ORIENTACIONES[0],
+    modoAnotacion: 'longitudes',
   }));
+  const conTransectos = campos.tipoPractica === 'transecto';
   const [errores, setErrores] = useState({});
   const [guardando, setGuardando] = useState(false);
 
@@ -78,9 +93,14 @@ function FormularioInvestigacion({ inicial }) {
     const titulo = campos.titulo.trim();
     if (!titulo) nuevosErrores.titulo = 'Escribe un título para identificar la investigación.';
     const superficie = validarSuperficie(campos.superficie);
-    if (esNueva) {
+    const longitud = validarLongitudTransecto(campos.longitudCm);
+    if (esNueva && !conTransectos) {
       if (!campos.codigoParcela.trim()) nuevosErrores.codigoParcela = 'Escribe un código para la parcela.';
       if (!superficie.valida) nuevosErrores.superficie = superficie.mensaje;
+    }
+    if (esNueva && conTransectos) {
+      if (!campos.codigoTransecto.trim()) nuevosErrores.codigoTransecto = 'Escribe un código para el transecto.';
+      if (!longitud.valida) nuevosErrores.longitudCm = longitud.mensaje;
     }
     setErrores(nuevosErrores);
     if (Object.keys(nuevosErrores).length > 0) {
@@ -98,7 +118,18 @@ function FormularioInvestigacion({ inicial }) {
 
     setGuardando(true);
     try {
-      if (esNueva) {
+      if (esNueva && conTransectos) {
+        const investigacion = crearInvestigacion({ ...datos, tipoPractica: 'transecto' });
+        const transecto = crearTransecto(investigacion.id, {
+          codigo: campos.codigoTransecto.trim(),
+          longitudCm: longitud.valor,
+          orientacion: campos.orientacion,
+          modoAnotacion: campos.modoAnotacion,
+        });
+        await guardarLote({ investigacion, parcelas: [transecto], observaciones: [] });
+        anunciar('Investigación creada en este dispositivo.');
+        navegar(`/investigaciones/${investigacion.id}/transectos/${transecto.id}`, { replace: true });
+      } else if (esNueva) {
         const investigacion = crearInvestigacion(datos);
         const parcela = crearParcela(investigacion.id, {
           codigo: campos.codigoParcela.trim(),
@@ -132,6 +163,14 @@ function FormularioInvestigacion({ inicial }) {
           aria-describedby={errores.titulo ? 'error-titulo' : undefined}
         />
       </Campo>
+
+      {esNueva ? (
+        <SelectorTipoPractica valor={campos.tipoPractica} alCambiar={(tipo) => setCampos((c) => ({ ...c, tipoPractica: tipo }))} />
+      ) : (
+        <p className="texto-suave" style={{ margin: 0 }}>
+          Tipo de práctica: <strong>{TIPOS_PRACTICA[campos.tipoPractica]?.nombre}</strong>
+        </p>
+      )}
 
       <Campo id="fechaObservacion" etiqueta="Fecha de observación">
         <input id="campo-fechaObservacion" type="date" value={campos.fechaObservacion} onChange={cambiar('fechaObservacion')} />
@@ -174,7 +213,25 @@ function FormularioInvestigacion({ inicial }) {
         />
       </Campo>
 
-      {esNueva && (
+      {esNueva && conTransectos && (
+        <fieldset className="formulario">
+          <legend>
+            <h2 style={{ marginBottom: 0 }}>Primer transecto</h2>
+          </legend>
+          <p className="texto-suave texto-pequeno" style={{ margin: 0 }}>
+            Podrás añadir más transectos desde la investigación, por ejemplo uno Norte-Sur.
+          </p>
+          <CamposTransecto
+            prefijo=""
+            campos={campos}
+            errores={errores}
+            alCambiar={(campo, valor) => setCampos((c) => ({ ...c, [campo]: valor }))}
+            codigo="codigoTransecto"
+          />
+        </fieldset>
+      )}
+
+      {esNueva && !conTransectos && (
         <fieldset className="formulario">
           <legend>
             <h2 style={{ marginBottom: 0 }}>Primera parcela</h2>
@@ -208,6 +265,93 @@ function FormularioInvestigacion({ inicial }) {
         </button>
       </div>
     </form>
+  );
+}
+
+function SelectorTipoPractica({ valor, alCambiar }) {
+  return (
+    <fieldset className="opciones-tarjeta">
+      <legend>Tipo de práctica</legend>
+      {Object.entries(TIPOS_PRACTICA).map(([id, tipo]) => (
+        <label key={id} className="opcion-tarjeta">
+          <input type="radio" name="tipoPractica" value={id} checked={valor === id} onChange={() => alCambiar(id)} />
+          <span>
+            <strong>{tipo.nombre}</strong>
+            <span className="texto-suave">{tipo.descripcion}</span>
+          </span>
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
+/**
+ * Campos de un transecto: código, longitud, orientación y modo de anotación.
+ * @param {string} codigo  nombre del campo que guarda el código en `campos`
+ * @param {boolean} modoBloqueado  el modo no se puede cambiar si ya hay manchas anotadas
+ */
+export function CamposTransecto({ prefijo, campos, errores, alCambiar, codigo = 'codigo', modoBloqueado = false }) {
+  return (
+    <>
+      <Campo id={`${prefijo}${codigo}`} etiqueta="Código del transecto" error={errores[codigo]}>
+        <input
+          id={`campo-${prefijo}${codigo}`}
+          value={campos[codigo]}
+          onChange={(e) => alCambiar(codigo, e.target.value)}
+          maxLength={40}
+          aria-invalid={Boolean(errores[codigo])}
+          aria-describedby={errores[codigo] ? `error-${prefijo}${codigo}` : undefined}
+        />
+      </Campo>
+      <div className="fila-campos">
+        <Campo id={`${prefijo}longitudCm`} etiqueta="Longitud (cm)" error={errores.longitudCm}>
+          <input
+            id={`campo-${prefijo}longitudCm`}
+            inputMode="decimal"
+            value={campos.longitudCm}
+            onChange={(e) => alCambiar('longitudCm', e.target.value)}
+            placeholder="400"
+            aria-invalid={Boolean(errores.longitudCm)}
+            aria-describedby={errores.longitudCm ? `error-${prefijo}longitudCm` : undefined}
+          />
+        </Campo>
+        <Campo id={`${prefijo}orientacion`} etiqueta="Orientación">
+          <select
+            id={`campo-${prefijo}orientacion`}
+            value={campos.orientacion}
+            onChange={(e) => alCambiar('orientacion', e.target.value)}
+          >
+            {[...new Set([...ORIENTACIONES, campos.orientacion].filter(Boolean))].map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </Campo>
+      </div>
+      <fieldset className="selector-segmentado" disabled={modoBloqueado}>
+        <legend>Cómo anotar las manchas</legend>
+        <div className="segmentos">
+          {Object.entries(MODOS_ANOTACION).map(([id, modo]) => (
+            <label key={id}>
+              <input
+                type="radio"
+                name={`${prefijo}modo`}
+                value={id}
+                checked={campos.modoAnotacion === id}
+                onChange={() => alCambiar('modoAnotacion', id)}
+              />
+              <span>{modo.nombre}</span>
+            </label>
+          ))}
+        </div>
+        <p className="ayuda">
+          {modoBloqueado
+            ? 'No se puede cambiar porque ya hay manchas anotadas en este transecto.'
+            : MODOS_ANOTACION[campos.modoAnotacion]?.ayuda}
+        </p>
+      </fieldset>
+    </>
   );
 }
 
@@ -274,10 +418,11 @@ function ZonaEliminar({ datos }) {
   const navegar = useNavigate();
   const anunciar = useAnunciar();
   const { investigacion, observaciones } = datos;
+  const transectos = esTransecto(investigacion);
 
   async function eliminar() {
     const confirmado = window.confirm(
-      `¿Eliminar «${investigacion.titulo}» y sus ${observaciones.length} observaciones de este dispositivo? No se puede deshacer. Si la necesitas, exporta antes una copia.`,
+      `¿Eliminar «${investigacion.titulo}» y sus ${observaciones.length} ${transectos ? 'anotaciones' : 'observaciones'} de este dispositivo? No se puede deshacer. Si la necesitas, exporta antes una copia.`,
     );
     if (!confirmado) return;
     try {
@@ -292,7 +437,9 @@ function ZonaEliminar({ datos }) {
   return (
     <section className="seccion" aria-labelledby="titulo-eliminar">
       <h2 id="titulo-eliminar">Eliminar investigación</h2>
-      <p className="texto-suave">Se borrarán sus parcelas y observaciones de este dispositivo.</p>
+      <p className="texto-suave">
+        Se borrarán sus {transectos ? 'transectos y anotaciones' : 'parcelas y observaciones'} de este dispositivo.
+      </p>
       <button type="button" className="boton boton--peligro" onClick={eliminar}>
         <IconoPapelera />
         Eliminar investigación

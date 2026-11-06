@@ -1427,3 +1427,403 @@ input[type='range']:disabled {
 .solo-impresion {
   display: none;
 }
+
+/* ---------- Tipo de práctica y selectores ---------- */
+
+.opciones-tarjeta {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.opciones-tarjeta legend {
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 0.4rem;
+}
+
+.opcion-tarjeta {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-control);
+  background: var(--papel);
+  cursor: pointer;
+}
+
+.opcion-tarjeta:has(input:checked) {
+  border: 2px solid var(--albardin);
+  padding: calc(0.8rem - 1px) calc(0.9rem - 1px);
+}
+
+.opcion-tarjeta input {
+  width: 1.3rem;
+  height: 1.3rem;
+  margin: 0.1rem 0 0;
+  accent-color: var(--albardin);
+  flex-shrink: 0;
+}
+
+.opcion-tarjeta > span {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.opcion-tarjeta .texto-suave {
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.selector-segmentado {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.selector-segmentado legend {
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 0.4rem;
+}
+
+.selector-segmentado .segmentos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radio-control);
+  background: var(--sal);
+}
+
+.selector-segmentado label {
+  position: relative;
+  display: flex;
+}
+
+.selector-segmentado input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.selector-segmentado label span {
+  flex: 1;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: calc(var(--radio-control) - 3px);
+  font-weight: 600;
+  color: var(--albardin-oscuro);
+}
+
+.selector-segmentado input:checked + span {
+  background: var(--albardin);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.selector-segmentado input:focus-visible + span {
+  outline: 3px solid var(--albardin);
+  outline-offset: 2px;
+}
+
+.selector-segmentado:disabled label span {
+  opacity: 0.6;
+}
+
+.selector-segmentado .ayuda {
+  margin: 0.4rem 0 0;
+}
+
+.pastillas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.pastillas button {
+  min-height: 40px;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--linea);
+  background: var(--papel);
+  color: var(--albardin-oscuro);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pastillas button[aria-pressed='true'] {
+  background: var(--albardin);
+  border-color: var(--albardin);
+  color: #ffffff;
+}
+
+/* ---------- Anotación de transectos ---------- */
+
+.resumen-anotacion {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.resumen-anotacion p {
+  margin: 0;
+}
+
+.resumen-anotacion__fila {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+
+.barra-progreso {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--albardin-claro);
+  overflow: hidden;
+}
+
+.barra-progreso span {
+  display: block;
+  height: 100%;
+  max-width: 100%;
+  background: var(--albardin);
+}
+
+.aviso-texto {
+  color: var(--ocre);
+}
+
+.lista-anotaciones {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.fila-anotacion {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.75rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--papel);
+}
+
+.fila-anotacion--suelo {
+  border-style: dashed;
+}
+
+.fila-anotacion .miniatura-especie {
+  width: 3.5rem;
+  flex-shrink: 0;
+}
+
+.miniatura-especie--suelo {
+  background: repeating-linear-gradient(-30deg, #efe6cc 0 6px, #e4d7b2 6px 9px);
+}
+
+.fila-anotacion__cuerpo {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.entrada-longitudes {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.entrada-longitudes input {
+  min-height: 44px;
+}
+
+.panel-edicion {
+  border-top: 1px solid var(--linea);
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.tramos {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.tramos legend {
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 0.25rem;
+}
+
+.tramo__campos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.tramo__campos label {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.tramo__campos input {
+  min-height: 44px;
+  min-width: 0;
+}
+
+/* Franja del transecto: un carril por especie */
+.franja-transecto {
+  margin: 0;
+  display: grid;
+  gap: 0.3rem;
+  --arena-oscura: #c9b98a;
+}
+
+.carril-fila {
+  display: grid;
+  grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.carril-nombre {
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.carril {
+  position: relative;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--sal);
+  overflow: hidden;
+}
+
+.carril span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.carril--suelo {
+  background: transparent;
+  outline: 1px dashed var(--linea);
+}
+
+.franja-transecto .escala {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--tinta-suave);
+}
+
+/* Resultados de cobertura */
+.barras-cobertura {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.barras-cobertura li {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.barras-cobertura__texto {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.barras-cobertura__barra {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--sal);
+  overflow: hidden;
+}
+
+.barras-cobertura__barra span {
+  display: block;
+  height: 100%;
+}
+
+/* ---------- Modelos ---------- */
+
+.lista-modelos {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.tarjeta-modelo {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tarjeta-modelo + .tarjeta-modelo {
+  margin-top: 0;
+}
+
+.tarjeta-modelo__cabecera {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.tarjeta-modelo__cabecera h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.3rem;
+}
+
+.tarjeta-modelo__cabecera p {
+  margin: 0.3rem 0 0;
+}
+
+.tarjeta-modelo__icono {
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radio-control);
+  background: var(--albardin-claro);
+  color: var(--albardin);
+}
+
+.tarjeta-modelo__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tarjeta-modelo__acciones > span {
+  flex: 1 1 10rem;
+}
+
+/* Ficha: marca de ilustración sobre la imagen */
+.imagen-ficha {
+  position: relative;
+}
+
+.imagen-ficha__marca {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+}

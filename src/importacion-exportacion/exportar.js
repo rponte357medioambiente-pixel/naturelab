@@ -142,3 +142,103 @@ export function csvResultados(resumen, ambito) {
   ];
   return aCsv(filas);
 }
+
+/* ---------- CSV de transectos ---------- */
+
+/** Una fila por especie y transecto, con cada mancha tal como se anotó. */
+export function csvAnotaciones({ parcelas, observaciones }, buscarEspecie = () => null) {
+  const filas = [
+    [
+      'Transecto',
+      'Longitud (cm)',
+      'Orientación',
+      'Nombre común',
+      'Nombre científico',
+      'Familia',
+      'Manchas',
+      'Medidas (cm)',
+      'Total (cm)',
+      'Identificación',
+      'Notas',
+    ],
+  ];
+  for (const t of parcelas) {
+    const lista = observaciones.filter((o) => o.parcelaId === t.id);
+    for (const o of lista) {
+      const especie = buscarEspecie(o.especieId);
+      const medidas =
+        t.modoAnotacion === 'tramos'
+          ? (o.tramos ?? []).map((x) => `${numeroCsv(x.desde)}–${numeroCsv(x.hasta)}`)
+          : (o.longitudes ?? []).map((v) => numeroCsv(v));
+      const total =
+        t.modoAnotacion === 'tramos'
+          ? (o.tramos ?? []).reduce((s, x) => s + (x.hasta - x.desde), 0)
+          : (o.longitudes ?? []).reduce((s, v) => s + v, 0);
+      filas.push([
+        t.codigo,
+        num(t.longitudCm),
+        t.orientacion,
+        especie?.nombreComun ?? o.nombreComun,
+        especie?.nombreCientifico ?? o.nombreCientifico,
+        especie?.familia ?? '',
+        num(medidas.length),
+        medidas.join(t.modoAnotacion === 'tramos' ? '; ' : '+'),
+        num(total),
+        ESTADOS_IDENTIFICACION[o.estadoIdentificacion] ?? '',
+        o.notas,
+      ]);
+    }
+    if (t.modoAnotacion !== 'tramos' && (t.sueloDesnudo ?? []).length > 0) {
+      filas.push([
+        t.codigo,
+        num(t.longitudCm),
+        t.orientacion,
+        'Suelo desnudo',
+        '',
+        '',
+        num(t.sueloDesnudo.length),
+        t.sueloDesnudo.map((v) => numeroCsv(v)).join('+'),
+        num(t.sueloDesnudo.reduce((s, v) => s + v, 0)),
+        '',
+        '',
+      ]);
+    }
+  }
+  return aCsv(filas);
+}
+
+export function csvCobertura(resumen, ambito) {
+  const varios = resumen.numeroTransectos > 1;
+  const filas = [
+    ['Ámbito', ambito],
+    ['Longitud total (cm)', num(resumen.L)],
+    [],
+    [
+      'Especie',
+      'Nombre científico',
+      'Total (cm)',
+      'Manchas',
+      'Cobertura (%)',
+      ...(varios ? ['Transectos en que aparece'] : []),
+      'Identificación',
+    ],
+    ...resumen.taxones.map((t) => [
+      t.nombreComun,
+      t.nombreCientifico,
+      num(t.cm),
+      num(t.numeroManchas),
+      num(t.proporcion * 100, 2),
+      ...(varios ? [`${t.frecuencia} de ${resumen.numeroTransectos}`] : []),
+      t.pendiente ? 'Pendiente de revisar' : 'Confirmada',
+    ]),
+    [],
+    ['Indicador', 'Valor'],
+    ['Especies (S)', num(resumen.S)],
+    ['Cobertura total (%)', num(resumen.coberturaTotal * 100, 2)],
+    ['Suelo desnudo (cm)', num(resumen.sueloCm)],
+    ['Suelo desnudo (%)', num(resumen.suelo * 100, 2)],
+    ['Solapes entre especies (cm)', num(resumen.solapeCm)],
+    ['Falta por anotar (cm)', num(resumen.faltanCm)],
+  ];
+  return aCsv(filas);
+}

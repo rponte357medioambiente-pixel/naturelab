@@ -34,7 +34,12 @@ export function PaginaFichaEspecie() {
         <IconoAtras />
         Catálogo
       </Link>
-      <ImagenEspecie especie={especie} />
+      <div className="imagen-ficha">
+        <ImagenEspecie especie={especie} />
+        {!especie.propia && especie.imagenTipo === 'ilustracion' && especie.imagen && (
+          <span className="estado estado--ocre imagen-ficha__marca">Ilustración esquemática</span>
+        )}
+      </div>
       <h1>{especie.nombreComun}</h1>
       {especie.nombreCientifico && <p className="cientifico nombre-cientifico">{especie.nombreCientifico}</p>}
 

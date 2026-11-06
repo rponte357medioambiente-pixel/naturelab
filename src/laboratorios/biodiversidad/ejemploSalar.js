@@ -32,6 +32,7 @@ export function crearEjemploSalar() {
       lugarTexto: 'Salar de los Canos, Vera (Almería)',
       equipoAlias: '',
       laboratorio: 'biodiversidad',
+      tipoPractica: 'parcela',
       versionEsquema: VERSION_ESQUEMA,
       fechaCreacion: marca,
       fechaModificacion: marca,

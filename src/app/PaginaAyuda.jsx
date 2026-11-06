@@ -96,6 +96,24 @@ export function PaginaAyuda() {
         </p>
       </section>
 
+      <section className="ayuda-bloque" aria-labelledby="ayuda-practicas">
+        <h2 id="ayuda-practicas">Tipos de práctica</h2>
+        <p>
+          <strong>Recuento en parcela:</strong> cuentas los individuos de cada especie dentro de una superficie. NaturaLab
+          calcula la riqueza, los índices de Shannon y Pielou y la densidad.
+        </p>
+        <p>
+          <strong>Transecto lineal:</strong> tiendes una cuerda y mides cuánto ocupa cada especie bajo ella. Puedes anotar
+          solo lo que mide cada mancha (por ejemplo, 1+12+5+28) o dónde empieza y termina sobre la cinta. NaturaLab
+          calcula la cobertura de cada especie, la cobertura total y el suelo desnudo. Si dos plantas se solapan, cuentan
+          las dos. Puedes añadir varios transectos, por ejemplo uno Este-Oeste y otro Norte-Sur.
+        </p>
+        <p>
+          En Investigaciones, «Cargar un modelo» copia en el dispositivo investigaciones completas, como el Salar de los
+          Canos o Río Antas, para practicar o usarlas como punto de partida.
+        </p>
+      </section>
+
       <section className="ayuda-bloque" aria-labelledby="ayuda-mi-catalogo">
         <h2 id="ayuda-mi-catalogo">Mi catálogo</h2>
         <p>

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Link, NavLink, Outlet, useParams } from 'react-router-dom';
+import { Link, Navigate, NavLink, Outlet, useOutletContext, useParams } from 'react-router-dom';
 import { useAnunciar } from '../../accesibilidad/Anunciador.jsx';
 import { useTituloDocumento } from '../../accesibilidad/useTituloDocumento.js';
-import { necesitaCopia } from '../../almacenamiento/modelo.js';
+import { esTransecto, necesitaCopia, TIPOS_PRACTICA } from '../../almacenamiento/modelo.js';
 import {
   marcarExportada,
   obtenerDatosInvestigacion,
@@ -56,6 +56,7 @@ export function PaginaInvestigacion() {
 
   const { investigacion, parcelas, observaciones } = datos;
   const pendiente = necesitaCopia(investigacion);
+  const conTransectos = esTransecto(investigacion);
 
   async function guardarCopia() {
     setOcupado('copia');
@@ -116,6 +117,7 @@ export function PaginaInvestigacion() {
             {investigacion.fechaObservacion && <span>{formatearFecha(investigacion.fechaObservacion)}</span>}
             {investigacion.lugarTexto && <span>{investigacion.lugarTexto}</span>}
             {investigacion.equipoAlias && <span>{investigacion.equipoAlias}</span>}
+            <span>{TIPOS_PRACTICA[investigacion.tipoPractica ?? 'parcela']?.nombre}</span>
             <span className="no-imprimir">
               <EstadoCopia pendiente={pendiente} />
             </span>
@@ -172,14 +174,23 @@ export function PaginaInvestigacion() {
       )}
 
       <nav className="pestanas" aria-label="Apartados de la investigación">
-        <NavLink to="parcelas">Parcelas</NavLink>
-        <NavLink to="observaciones">Observaciones</NavLink>
-        <NavLink to="resultados">Resultados</NavLink>
+        {conTransectos ? (
+          <>
+            <NavLink to="transectos">Transectos</NavLink>
+            <NavLink to="cobertura">Resultados</NavLink>
+          </>
+        ) : (
+          <>
+            <NavLink to="parcelas">Parcelas</NavLink>
+            <NavLink to="observaciones">Observaciones</NavLink>
+            <NavLink to="resultados">Resultados</NavLink>
+          </>
+        )}
       </nav>
 
       <Outlet context={{ ...datos, catalogo }} />
 
-      {parcelas.length > 0 && (
+      {!conTransectos && parcelas.length > 0 && (
         <div className="accion-fija no-imprimir">
           <Link className="boton" to={`/investigaciones/${investigacion.id}/observar`}>
             <IconoMas />
@@ -189,4 +200,21 @@ export function PaginaInvestigacion() {
       )}
     </>
   );
+}
+
+/** Apartado inicial de la investigación según su tipo de práctica. */
+export function IndiceInvestigacion() {
+  const { investigacion } = useOutletContext();
+  return <Navigate to={esTransecto(investigacion) ? 'transectos' : 'observaciones'} replace />;
+}
+
+/**
+ * Muestra un apartado solo en investigaciones del tipo indicado; si no, lleva al
+ * apartado inicial (por ejemplo, al abrir «parcelas» en una de transectos).
+ */
+export function SoloTipo({ tipo, children }) {
+  const { investigacion } = useOutletContext();
+  const actual = esTransecto(investigacion) ? 'transecto' : 'parcela';
+  if (actual !== tipo) return <Navigate to={actual === 'transecto' ? '../transectos' : '../observaciones'} replace />;
+  return children;
 }

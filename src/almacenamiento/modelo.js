@@ -3,8 +3,33 @@ import { generarId } from './ids.js';
 /**
  * Modelo de datos (apartado 5.2). La versión del esquema viaja en cada
  * investigación y en cada exportación para poder migrar en el futuro.
+ *
+ * Versión 2: tipo de práctica «transecto lineal». Un transecto se guarda en el
+ * almacén de parcelas (es la unidad de muestreo) con su longitud, orientación y
+ * modo de anotación; cada especie anotada es una observación con sus manchas.
  */
-export const VERSION_ESQUEMA = 1;
+export const VERSION_ESQUEMA = 2;
+
+export const TIPOS_PRACTICA = {
+  parcela: {
+    nombre: 'Recuento en parcela',
+    descripcion: 'Cuentas los individuos de cada especie dentro de una superficie. Calcula riqueza, Shannon, Pielou y densidad.',
+  },
+  transecto: {
+    nombre: 'Transecto lineal',
+    descripcion:
+      'Mides cuánto ocupa cada especie a lo largo de una cuerda. Calcula cobertura por especie, cobertura total y suelo desnudo.',
+  },
+};
+
+export const esTransecto = (investigacion) => investigacion?.tipoPractica === 'transecto';
+
+export const ORIENTACIONES = ['Este-Oeste', 'Norte-Sur', 'Noreste-Suroeste', 'Noroeste-Sureste'];
+
+export const MODOS_ANOTACION = {
+  longitudes: { nombre: 'Longitudes', ayuda: 'Escribes lo que mide cada mancha: 1+12+5+28.' },
+  tramos: { nombre: 'Inicio y fin', ayuda: 'Anotas dónde empieza y termina cada mancha sobre la cinta.' },
+};
 
 export const ESTADOS_IDENTIFICACION = {
   confirmada: 'Confirmada',
@@ -24,6 +49,7 @@ export function crearInvestigacion(campos = {}) {
     lugarTexto: '',
     equipoAlias: '',
     laboratorio: 'biodiversidad',
+    tipoPractica: 'parcela',
     versionEsquema: VERSION_ESQUEMA,
     fechaCreacion: marca,
     fechaModificacion: marca,
@@ -44,6 +70,28 @@ export function crearParcela(investigacionId, campos = {}) {
     fechaModificacion: ahora(),
     ...campos,
   };
+}
+
+/** Transecto: una línea de muestreo. Se guarda en el almacén de parcelas. */
+export function crearTransecto(investigacionId, campos = {}) {
+  return crearParcela(investigacionId, {
+    codigo: 'T1',
+    longitudCm: 400,
+    orientacion: ORIENTACIONES[0],
+    modoAnotacion: 'longitudes',
+    sueloDesnudo: [],
+    ...campos,
+  });
+}
+
+/** Especie anotada en un transecto, con sus manchas (longitudes o tramos, según el modo). */
+export function crearIntercepcion(investigacionId, transectoId, campos = {}) {
+  return crearObservacion(investigacionId, transectoId, {
+    abundancia: null,
+    longitudes: [],
+    tramos: [],
+    ...campos,
+  });
 }
 
 export function crearObservacion(investigacionId, parcelaId, campos = {}) {

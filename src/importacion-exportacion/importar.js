@@ -6,7 +6,18 @@
  * - Id nuevo: se añade.
  */
 
-const CAMPOS_PARCELA = ['codigo', 'superficie', 'unidadSuperficie', 'descripcion', 'notas'];
+const CAMPOS_PARCELA = [
+  'codigo',
+  'superficie',
+  'unidadSuperficie',
+  'descripcion',
+  'notas',
+  // Transectos
+  'longitudCm',
+  'orientacion',
+  'modoAnotacion',
+  'sueloDesnudo',
+];
 const CAMPOS_OBSERVACION = [
   'parcelaId',
   'especieId',
@@ -16,10 +27,21 @@ const CAMPOS_OBSERVACION = [
   'notas',
   'estadoIdentificacion',
   'fotoLocalId',
+  // Anotaciones de transecto
+  'longitudes',
+  'tramos',
 ];
 
+/** Compara un campo; las listas (manchas, tramos) se comparan por su contenido. */
+function mismoValor(a, b) {
+  const x = a ?? null;
+  const y = b ?? null;
+  if (typeof x === 'object' || typeof y === 'object') return JSON.stringify(x) === JSON.stringify(y);
+  return x === y;
+}
+
 function mismoContenido(a, b, campos) {
-  return campos.every((campo) => (a[campo] ?? null) === (b[campo] ?? null));
+  return campos.every((campo) => mismoValor(a[campo], b[campo]));
 }
 
 function clasificar(importados, locales, campos, tipo) {

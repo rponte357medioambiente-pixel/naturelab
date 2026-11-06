@@ -1,12 +1,33 @@
 import { Link } from 'react-router-dom';
-import { necesitaCopia } from '../almacenamiento/modelo.js';
+import { esTransecto, necesitaCopia } from '../almacenamiento/modelo.js';
 import { resumirBiodiversidad } from '../calculos/biodiversidad.js';
-import { formatearFecha, plural } from '../calculos/formato.js';
+import { resumirCobertura } from '../calculos/cobertura.js';
+import { formatearFecha, formatearPorcentaje, plural } from '../calculos/formato.js';
 import { FranjaAbundancia } from './FranjaAbundancia.jsx';
 import { EstadoCopia } from './EstadoCopia.jsx';
 
+/** Resumen breve para la tarjeta, según el tipo de práctica. */
+function resumenTarjeta(investigacion, parcelas, observaciones) {
+  if (esTransecto(investigacion)) {
+    const r = resumirCobertura(parcelas, observaciones);
+    const conCm = r.taxones.filter((t) => t.cm > 0);
+    return {
+      texto: `${plural(r.S, 'especie', 'especies')}, ${plural(parcelas.length, 'transecto', 'transectos')}${r.S ? `, cobertura ${formatearPorcentaje(r.coberturaTotal)}` : ''}`,
+      // La franja usa los cm de cada especie en lugar de individuos.
+      taxones: conCm.map((t) => ({ ...t, abundancia: t.cm, proporcion: t.cm / (r.sumaEspeciesCm || 1) })),
+      N: r.sumaEspeciesCm,
+    };
+  }
+  const r = resumirBiodiversidad(observaciones, parcelas);
+  return {
+    texto: `${plural(r.S, 'especie', 'especies')}, ${plural(r.N, 'individuo', 'individuos')}`,
+    taxones: r.taxones,
+    N: r.N,
+  };
+}
+
 export function TarjetaInvestigacion({ investigacion, parcelas, observaciones }) {
-  const resumen = resumirBiodiversidad(observaciones, parcelas);
+  const resumen = resumenTarjeta(investigacion, parcelas, observaciones);
   const fecha = investigacion.fechaObservacion
     ? formatearFecha(investigacion.fechaObservacion)
     : `Actualizada el ${formatearFecha(investigacion.fechaModificacion)}`;
@@ -17,9 +38,7 @@ export function TarjetaInvestigacion({ investigacion, parcelas, observaciones })
       <div className="metadatos">
         <span>{fecha}</span>
         {investigacion.lugarTexto && <span>{investigacion.lugarTexto}</span>}
-        <span>
-          {plural(resumen.S, 'especie', 'especies')}, {plural(resumen.N, 'individuo', 'individuos')}
-        </span>
+        <span>{resumen.texto}</span>
         {observaciones.length > 0 && <EstadoCopia pendiente={necesitaCopia(investigacion)} />}
       </div>
       <FranjaAbundancia taxones={resumen.taxones} N={resumen.N} mini />

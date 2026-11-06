@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAnunciar } from '../../accesibilidad/Anunciador.jsx';
 import { useTituloDocumento } from '../../accesibilidad/useTituloDocumento.js';
-import { crearObservacion } from '../../almacenamiento/modelo.js';
+import { crearObservacion, esTransecto } from '../../almacenamiento/modelo.js';
 import { guardarObservacion, obtenerDatosInvestigacion } from '../../almacenamiento/repositorio.js';
 import { useConsulta } from '../../almacenamiento/useConsulta.js';
 import { claveTaxon, validarAbundancia } from '../../calculos/biodiversidad.js';
@@ -25,6 +25,7 @@ export function PaginaRegistrarObservacion() {
 
   if (cargando || catalogo.cargando) return <p className="texto-suave">Cargando…</p>;
   if (!datos) return <PaginaNoEncontrada titulo="Investigación no encontrada" />;
+  if (esTransecto(datos.investigacion)) return <Navigate to={`/investigaciones/${id}/transectos`} replace />;
 
   const observacion = esEdicion ? datos.observaciones.find((o) => o.id === observacionId) : null;
   if (esEdicion && !observacion) return <PaginaNoEncontrada titulo="Observación no encontrada" />;

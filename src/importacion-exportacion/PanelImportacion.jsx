@@ -115,8 +115,9 @@ export function PanelImportacion() {
           <p>
             <strong>{estado.paquete.investigacion.titulo}</strong>
             <br />
-            {plural(estado.paquete.parcelas.length, 'parcela', 'parcelas')},{' '}
-            {plural(estado.paquete.observaciones.length, 'observación', 'observaciones')}
+            {estado.paquete.investigacion.tipoPractica === 'transecto'
+              ? `${plural(estado.paquete.parcelas.length, 'transecto', 'transectos')}, ${plural(estado.paquete.observaciones.length, 'especie anotada', 'especies anotadas')}`
+              : `${plural(estado.paquete.parcelas.length, 'parcela', 'parcelas')}, ${plural(estado.paquete.observaciones.length, 'observación', 'observaciones')}`}
             {estado.paquete.fotos.length > 0 && `, ${plural(estado.paquete.fotos.length, 'foto', 'fotos')}`}.
           </p>
           {estado.avisos.map((a) => (
@@ -146,7 +147,11 @@ export function PanelImportacion() {
               <ul>
                 <li>{plural(estado.plan.observaciones.nuevos.length, 'observación nueva', 'observaciones nuevas')}</li>
                 <li>{plural(estado.plan.observaciones.iguales.length, 'observación que ya tienes', 'observaciones que ya tienes')}</li>
-                <li>{plural(estado.plan.parcelas.nuevos.length, 'parcela nueva', 'parcelas nuevas')}</li>
+                <li>
+                  {estado.paquete.investigacion.tipoPractica === 'transecto'
+                    ? plural(estado.plan.parcelas.nuevos.length, 'transecto nuevo', 'transectos nuevos')
+                    : plural(estado.plan.parcelas.nuevos.length, 'parcela nueva', 'parcelas nuevas')}
+                </li>
                 {estado.plan.totalConflictos > 0 && (
                   <li>
                     <strong>

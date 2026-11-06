@@ -1,8 +1,8 @@
 {
-  "versionCatalogo": 1,
+  "versionCatalogo": 2,
   "fechaRevision": null,
   "estado": "provisional",
-  "nota": "Catálogo de partida del Salar de los Canos (Vera, Almería). Nombres y descripciones pendientes de revisión botánica. Ninguna imagen se incorpora sin verificar licencia y procedencia.",
+  "nota": "Catálogo de partida del Salar de los Canos y de la duna del río Antas (Vera, Almería). Nombres y descripciones pendientes de revisión botánica. Las imágenes son fotografías con licencia verificada o ilustraciones esquemáticas propias.",
   "especies": [
     {
       "id": "tamarix-canariensis",
@@ -22,7 +22,8 @@
       "imagenFuente": "Fotografía propia",
       "imagenLicencia": "Todos los derechos reservados",
       "estadoValidacion": "pendiente",
-      "imagenModificaciones": "Recortada a 4:3 y comprimida"
+      "imagenModificaciones": "Recortada a 4:3 y comprimida",
+      "zona": "Salar de los Canos"
     },
     {
       "id": "anthyllis-cytisoides",
@@ -42,7 +43,8 @@
       "imagenFuente": "Fotografía propia",
       "imagenLicencia": "Todos los derechos reservados",
       "estadoValidacion": "pendiente",
-      "imagenModificaciones": "Recortada a 4:3 y comprimida"
+      "imagenModificaciones": "Recortada a 4:3 y comprimida",
+      "zona": "Salar de los Canos"
     },
     {
       "id": "launaea-arborescens",
@@ -61,7 +63,8 @@
       "imagenAutor": null,
       "imagenFuente": null,
       "imagenLicencia": null,
-      "estadoValidacion": "pendiente"
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos"
     },
     {
       "id": "artemisia-glutinosa",
@@ -80,7 +83,8 @@
       "imagenAutor": null,
       "imagenFuente": null,
       "imagenLicencia": null,
-      "estadoValidacion": "pendiente"
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos"
     },
     {
       "id": "lygeum-spartum",
@@ -99,7 +103,8 @@
       "imagenAutor": null,
       "imagenFuente": null,
       "imagenLicencia": null,
-      "estadoValidacion": "pendiente"
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos"
     },
     {
       "id": "limonium-sp",
@@ -118,7 +123,8 @@
       "imagenAutor": null,
       "imagenFuente": null,
       "imagenLicencia": null,
-      "estadoValidacion": "pendiente"
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos"
     },
     {
       "id": "salicornia-sp",
@@ -137,7 +143,8 @@
       "imagenAutor": null,
       "imagenFuente": null,
       "imagenLicencia": null,
-      "estadoValidacion": "pendiente"
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos"
     },
     {
       "id": "moricandia-arvensis",
@@ -156,7 +163,8 @@
       "imagenAutor": null,
       "imagenFuente": null,
       "imagenLicencia": null,
-      "estadoValidacion": "pendiente"
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos"
     },
     {
       "id": "portulaca-oleracea",
@@ -175,7 +183,93 @@
       "imagenAutor": null,
       "imagenFuente": null,
       "imagenLicencia": null,
-      "estadoValidacion": "pendiente"
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos"
+    },
+    {
+      "id": "elymus-farctus",
+      "nombreComun": "Grama de los arenales",
+      "nombreCientifico": "Elymus farctus",
+      "rango": "especie",
+      "familia": "Poaceae",
+      "descripcion": "Gramínea perenne de las dunas embrionarias, con largos tallos subterráneos (rizomas).",
+      "rasgos": [
+        "Hojas rígidas de color verde azulado, que se enrollan con la sequía",
+        "Espiga recta con las espiguillas alternas a cada lado del tallo"
+      ],
+      "habitat": "Arenas de la primera línea de dunas, cerca del mar.",
+      "notas": "También se conoce como Thinopyrum junceum. Fija la arena con sus rizomas y tolera la sal y el enterramiento. Dominante en el modelo de Río Antas.",
+      "estadoValidacion": "pendiente",
+      "zona": "Duna del río Antas",
+      "imagen": "imagenes/especies/ilustraciones/elymus-farctus.svg",
+      "imagenTipo": "ilustracion",
+      "imagenAutor": "NaturaLab",
+      "imagenFuente": "Ilustración esquemática",
+      "imagenLicencia": "CC0 1.0"
+    },
+    {
+      "id": "lotus-creticus",
+      "nombreComun": "Cuernecillo de mar",
+      "nombreCientifico": "Lotus creticus",
+      "rango": "especie",
+      "familia": "Fabaceae",
+      "descripcion": "Mata rastrera o algo erguida, cubierta de pelos plateados.",
+      "rasgos": [
+        "Hojas pequeñas de aspecto plateado y sedoso",
+        "Flores amarillas en grupos, como las del guisante",
+        "Legumbres finas y alargadas, como cuernecillos"
+      ],
+      "habitat": "Arenales y dunas costeras.",
+      "notas": "Como otras leguminosas, enriquece la arena en nitrógeno gracias a las bacterias de sus raíces.",
+      "estadoValidacion": "pendiente",
+      "zona": "Duna del río Antas",
+      "imagen": "imagenes/especies/ilustraciones/lotus-creticus.svg",
+      "imagenTipo": "ilustracion",
+      "imagenAutor": "NaturaLab",
+      "imagenFuente": "Ilustración esquemática",
+      "imagenLicencia": "CC0 1.0"
+    },
+    {
+      "id": "paronychia-argentea",
+      "nombreComun": "Hierba carnicera",
+      "nombreCientifico": "Paronychia argentea",
+      "rango": "especie",
+      "familia": "Caryophyllaceae",
+      "descripcion": "Planta pequeña y tendida que forma alfombras sobre el suelo.",
+      "rasgos": [
+        "Tallos rastreros con hojas pequeñas y opuestas",
+        "Flores diminutas ocultas por brácteas blancas y plateadas, como de papel"
+      ],
+      "habitat": "Suelos secos, arenosos o pedregosos, también cerca de la costa.",
+      "notas": "Se conoce también como sanguinaria o nevadilla.",
+      "estadoValidacion": "pendiente",
+      "zona": "Duna del río Antas",
+      "imagen": "imagenes/especies/ilustraciones/paronychia-argentea.svg",
+      "imagenTipo": "ilustracion",
+      "imagenAutor": "NaturaLab",
+      "imagenFuente": "Ilustración esquemática",
+      "imagenLicencia": "CC0 1.0"
+    },
+    {
+      "id": "salsola-kali",
+      "nombreComun": "Planta rodante",
+      "nombreCientifico": "Salsola kali",
+      "rango": "especie",
+      "familia": "Amaranthaceae",
+      "descripcion": "Planta anual muy ramificada, de hojas carnosas terminadas en una punta espinosa.",
+      "rasgos": [
+        "Hojas cortas, gruesas y pinchudas",
+        "Flores pequeñas en las axilas de las hojas"
+      ],
+      "habitat": "Playas y arenas cercanas a la línea de restos que deja el mar.",
+      "notas": "Seca, la planta puede romperse por la base y rodar con el viento.",
+      "estadoValidacion": "pendiente",
+      "zona": "Duna del río Antas",
+      "imagen": "imagenes/especies/ilustraciones/salsola-kali.svg",
+      "imagenTipo": "ilustracion",
+      "imagenAutor": "NaturaLab",
+      "imagenFuente": "Ilustración esquemática",
+      "imagenLicencia": "CC0 1.0"
     }
   ]
 }
