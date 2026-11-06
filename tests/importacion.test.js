@@ -17,7 +17,7 @@ describe('Validación de copias', () => {
     expect(r.paquete.observaciones.map((o) => o.abundancia)).toEqual([2, 1, 4, 1, 20, 1, 1, 2, 1]);
   });
 
-  it('rechaza archivos que no son de NaturaLab', () => {
+  it('rechaza archivos que no son de NatureLab', () => {
     expect(validarPaquete({ version: 1, records: [] }).ok).toBe(false);
     expect(validarPaquete(null).ok).toBe(false);
     expect(validarPaquete([]).ok).toBe(false);

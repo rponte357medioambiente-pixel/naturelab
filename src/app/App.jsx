@@ -1,5 +1,6 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { ProveedorAnuncios } from '../accesibilidad/Anunciador.jsx';
+import { ProveedorApariencia } from '../apariencia/Apariencia.jsx';
 import { PaginaCatalogo } from '../catalogos/PaginaCatalogo.jsx';
 import { PaginaEspeciePropia } from '../catalogos/PaginaEspeciePropia.jsx';
 import { PaginaFichaEspecie } from '../catalogos/PaginaFichaEspecie.jsx';
@@ -36,37 +37,39 @@ import { PaginaNoEncontrada } from './PaginaNoEncontrada.jsx';
 export default function App() {
   return (
     <HashRouter>
-      <ProveedorAnuncios>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route index element={<PaginaInicio />} />
-            <Route path="laboratorios" element={<PaginaLaboratorios />} />
-            <Route path="laboratorios/microplasticos" element={<PaginaMicroplasticos />} />
-            <Route path="catalogo" element={<PaginaCatalogo />} />
-            <Route path="catalogo/fotos" element={<PaginaPrepararFotos />} />
-            <Route path="catalogo/nueva" element={<PaginaEspeciePropia />} />
-            <Route path="catalogo/:especieId/editar" element={<PaginaEspeciePropia />} />
-            <Route path="catalogo/:especieId" element={<PaginaFichaEspecie />} />
-            <Route path="investigaciones" element={<PaginaInvestigaciones />} />
-            <Route path="investigaciones/nueva" element={<PaginaNuevaInvestigacion />} />
-            <Route path="investigaciones/:id/editar" element={<PaginaEditarInvestigacion />} />
-            <Route path="investigaciones/:id/observar" element={<PaginaRegistrarObservacion />} />
-            <Route path="investigaciones/:id/observaciones/:observacionId" element={<PaginaRegistrarObservacion />} />
-            <Route path="investigaciones/:id/transectos/:transectoId" element={<PaginaTransecto />} />
-            <Route path="investigaciones/:id" element={<PaginaInvestigacion />}>
-              <Route index element={<IndiceInvestigacion />} />
-              <Route path="parcelas" element={<SoloTipo tipo="parcela"><SeccionParcelas /></SoloTipo>} />
-              <Route path="observaciones" element={<SoloTipo tipo="parcela"><SeccionObservaciones /></SoloTipo>} />
-              <Route path="resultados" element={<SoloTipo tipo="parcela"><SeccionResultados /></SoloTipo>} />
-              <Route path="transectos" element={<SoloTipo tipo="transecto"><SeccionTransectos /></SoloTipo>} />
-              <Route path="cobertura" element={<SoloTipo tipo="transecto"><SeccionCobertura /></SoloTipo>} />
+      <ProveedorApariencia>
+        <ProveedorAnuncios>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route index element={<PaginaInicio />} />
+              <Route path="laboratorios" element={<PaginaLaboratorios />} />
+              <Route path="laboratorios/microplasticos" element={<PaginaMicroplasticos />} />
+              <Route path="catalogo" element={<PaginaCatalogo />} />
+              <Route path="catalogo/fotos" element={<PaginaPrepararFotos />} />
+              <Route path="catalogo/nueva" element={<PaginaEspeciePropia />} />
+              <Route path="catalogo/:especieId/editar" element={<PaginaEspeciePropia />} />
+              <Route path="catalogo/:especieId" element={<PaginaFichaEspecie />} />
+              <Route path="investigaciones" element={<PaginaInvestigaciones />} />
+              <Route path="investigaciones/nueva" element={<PaginaNuevaInvestigacion />} />
+              <Route path="investigaciones/:id/editar" element={<PaginaEditarInvestigacion />} />
+              <Route path="investigaciones/:id/observar" element={<PaginaRegistrarObservacion />} />
+              <Route path="investigaciones/:id/observaciones/:observacionId" element={<PaginaRegistrarObservacion />} />
+              <Route path="investigaciones/:id/transectos/:transectoId" element={<PaginaTransecto />} />
+              <Route path="investigaciones/:id" element={<PaginaInvestigacion />}>
+                <Route index element={<IndiceInvestigacion />} />
+                <Route path="parcelas" element={<SoloTipo tipo="parcela"><SeccionParcelas /></SoloTipo>} />
+                <Route path="observaciones" element={<SoloTipo tipo="parcela"><SeccionObservaciones /></SoloTipo>} />
+                <Route path="resultados" element={<SoloTipo tipo="parcela"><SeccionResultados /></SoloTipo>} />
+                <Route path="transectos" element={<SoloTipo tipo="transecto"><SeccionTransectos /></SoloTipo>} />
+                <Route path="cobertura" element={<SoloTipo tipo="transecto"><SeccionCobertura /></SoloTipo>} />
+              </Route>
+              <Route path="modelos" element={<PaginaModelos />} />
+              <Route path="ayuda" element={<PaginaAyuda />} />
+              <Route path="*" element={<PaginaNoEncontrada />} />
             </Route>
-            <Route path="modelos" element={<PaginaModelos />} />
-            <Route path="ayuda" element={<PaginaAyuda />} />
-            <Route path="*" element={<PaginaNoEncontrada />} />
-          </Route>
-        </Routes>
-      </ProveedorAnuncios>
+          </Routes>
+        </ProveedorAnuncios>
+      </ProveedorApariencia>
     </HashRouter>
   );
 }

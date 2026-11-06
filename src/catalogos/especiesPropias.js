@@ -18,6 +18,7 @@ import {
  *   fotos/            una imagen por especie que tenga foto
  *   LEEME.txt
  */
+// Conserva el nombre antiguo de la app a propósito: cambiarlo dejaría sin abrir los datos y las copias ya guardados.
 export const FORMATO_CATALOGO_PROPIO = 'naturalab-catalogo-propio';
 
 export const ESTADOS_VALIDACION_PROPIA = {
@@ -72,13 +73,13 @@ export function prepararEspeciesPropias(registros) {
 
 /* ---------- Copia ZIP ---------- */
 
-const LEEME = `NaturaLab: copia de «Mi catálogo»
+const LEEME = `NatureLab: copia de «Mi catálogo»
 
 Este archivo contiene:
 - mi-catalogo.json: las especies que has añadido a tu catálogo.
 - fotos/: sus fotografías, si las tienen.
 
-Para recuperarlo, abre NaturaLab, ve a Catálogo y pulsa «Importar copia» en
+Para recuperarlo, abre NatureLab, ve a Catálogo y pulsa «Importar copia» en
 «Mi catálogo». No hace falta descomprimir el archivo.
 
 Las fotografías pueden incluir lugares reconocibles: compártelo con cuidado.
@@ -103,7 +104,7 @@ export async function construirZipCatalogoPropio(registros) {
   const paquete = {
     formato: FORMATO_CATALOGO_PROPIO,
     versionEsquema: VERSION_ESQUEMA,
-    aplicacion: 'NaturaLab',
+    aplicacion: 'NatureLab',
     exportadoEn: new Date().toISOString(),
     especies,
   };
@@ -113,7 +114,7 @@ export async function construirZipCatalogoPropio(registros) {
 }
 
 export function nombreArchivoCatalogoPropio() {
-  return `naturalab-mi-catalogo-${new Date().toISOString().slice(0, 10)}.zip`;
+  return `naturelab-mi-catalogo-${new Date().toISOString().slice(0, 10)}.zip`;
 }
 
 /* ---------- Importación ---------- */
@@ -198,7 +199,7 @@ export function validarCatalogoPropio(datos, archivos = {}) {
     return fallo('La copia no indica una versión de esquema válida.');
   }
   if (datos.versionEsquema > VERSION_ESQUEMA) {
-    return fallo('La copia se creó con una versión más reciente de NaturaLab. Actualiza la aplicación y vuelve a intentarlo.');
+    return fallo('La copia se creó con una versión más reciente de NatureLab. Actualiza la aplicación y vuelve a intentarlo.');
   }
   if (!Array.isArray(datos.especies)) return fallo('Falta la lista de especies.');
   if (datos.especies.length > LIMITES_CATALOGO_PROPIO.especies) {

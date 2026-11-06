@@ -65,7 +65,7 @@ export async function generarPdfCuaderno(datos, { buscarEspecie = () => null, ob
   const { jsPDF } = await import('jspdf');
   const { investigacion, parcelas, observaciones } = datos;
   const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
-  doc.setProperties({ title: textoPdf(investigacion.titulo), creator: 'NaturaLab' });
+  doc.setProperties({ title: textoPdf(investigacion.titulo), creator: 'NatureLab' });
 
   let y = PAGINA.margen;
   const limite = PAGINA.alto - PAGINA.margen - PAGINA.pie;
@@ -119,7 +119,7 @@ export async function generarPdfCuaderno(datos, { buscarEspecie = () => null, ob
 
   /* ---------- Portada y resumen ---------- */
 
-  parrafo('NaturaLab, cuaderno de campo', { tamano: 9, color: COLOR.suave }, { espacioDespues: 1 });
+  parrafo('NatureLab, cuaderno de campo', { tamano: 9, color: COLOR.suave }, { espacioDespues: 1 });
   parrafo(investigacion.titulo, { tamano: 24, estilo: 'bold', familia: 'times' }, { espacioDespues: 3 });
   const meta = [
     investigacion.fechaObservacion && `Fecha: ${formatearFecha(investigacion.fechaObservacion)}`,
@@ -448,7 +448,7 @@ export async function generarPdfCuaderno(datos, { buscarEspecie = () => null, ob
   /* ---------- Pie de página ---------- */
 
   const total = doc.getNumberOfPages();
-  const generado = `Generado con NaturaLab el ${formatearFecha(new Date().toISOString())}`;
+  const generado = `Generado con NatureLab el ${formatearFecha(new Date().toISOString())}`;
   for (let i = 1; i <= total; i += 1) {
     doc.setPage(i);
     fuente({ tamano: 8, color: COLOR.suave });

@@ -22,7 +22,7 @@ export async function comprobarAlmacenamiento() {
 let persistenciaSolicitada = false;
 
 /**
- * Pide al navegador que no borre los datos de NaturaLab cuando falte espacio.
+ * Pide al navegador que no borre los datos de NatureLab cuando falte espacio.
  * El navegador puede concederlo o no; no garantiza persistencia absoluta.
  */
 export async function solicitarPersistencia({ forzar = false } = {}) {
@@ -64,6 +64,12 @@ export async function listarInvestigacionesConDatos() {
     parcelas: parcelas.filter((p) => p.investigacionId === investigacion.id).sort(porCodigo),
     observaciones: observaciones.filter((o) => o.investigacionId === investigacion.id),
   }));
+}
+
+export async function obtenerInvestigacion(id) {
+  if (!id) return null;
+  const bd = await abrirBD();
+  return (await bd.get(A.investigaciones, id)) ?? null;
 }
 
 export async function obtenerDatosInvestigacion(id) {

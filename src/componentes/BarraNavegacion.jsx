@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { IconoAyuda, IconoCuaderno, IconoInicio, IconoLaboratorio } from './Iconos.jsx';
+import { IconoCatalogo, IconoCuaderno, IconoInicio, IconoLaboratorio } from './Iconos.jsx';
 
 const ENLACES = [
   { ruta: '/', texto: 'Inicio', Icono: IconoInicio, coincide: (p) => p === '/' },
@@ -7,7 +7,7 @@ const ENLACES = [
     ruta: '/laboratorios',
     texto: 'Laboratorios',
     Icono: IconoLaboratorio,
-    coincide: (p) => p.startsWith('/laboratorios') || p.startsWith('/catalogo'),
+    coincide: (p) => p.startsWith('/laboratorios'),
   },
   {
     ruta: '/investigaciones',
@@ -15,7 +15,8 @@ const ENLACES = [
     Icono: IconoCuaderno,
     coincide: (p) => p.startsWith('/investigaciones'),
   },
-  { ruta: '/ayuda', texto: 'Ayuda', Icono: IconoAyuda, coincide: (p) => p.startsWith('/ayuda') },
+  // La ayuda está en el menú de configuración de la cabecera.
+  { ruta: '/catalogo', texto: 'Catálogo', Icono: IconoCatalogo, coincide: (p) => p.startsWith('/catalogo') },
 ];
 
 export function BarraNavegacion() {

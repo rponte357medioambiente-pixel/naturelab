@@ -1,5 +1,5 @@
 /**
- * Cálculos de biodiversidad de NaturaLab (apartado 5.5 de la especificación).
+ * Cálculos de biodiversidad de NatureLab (apartado 5.5 de la especificación).
  *
  * Funciones puras, sin acceso a almacenamiento ni a la interfaz, para poder
  * probarlas de forma aislada. Fórmulas:

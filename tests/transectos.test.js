@@ -126,3 +126,17 @@ describe('CSV de transectos', () => {
     expect(cobertura).toContain('"Cobertura total (%)";"100,00"');
   });
 });
+
+describe('paleta de la investigación en las copias', () => {
+  it('conserva una paleta válida y descarta una desconocida', () => {
+    const modelo = crearModeloRioAntas();
+    const conPaleta = validarPaquete(construirPaquete(modelo, null));
+    expect(conPaleta.paquete.investigacion.paleta).toBe('terracota');
+
+    const rara = construirPaquete(modelo, null);
+    rara.investigacion.paleta = 'neon';
+    const r = validarPaquete(rara);
+    expect(r.ok).toBe(true);
+    expect(r.paquete.investigacion.paleta).toBeNull();
+  });
+});

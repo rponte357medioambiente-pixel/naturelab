@@ -22,13 +22,13 @@ const PERMITIDOS = new Set([NOMBRE_DATOS, NOMBRE_DATOS_CATALOGO, 'LEEME.txt', 'c
 // Metadatos que macOS añade al comprimir carpetas: se ignoran sin error.
 const IGNORADOS = /(^__MACOSX\/|(^|\/)\.DS_Store$)/;
 
-const LEEME = `NaturaLab: copia de seguridad de una investigación
+const LEEME = `NatureLab: copia de seguridad de una investigación
 
 Este archivo contiene:
 - proyecto.json: la investigación, sus parcelas y sus observaciones.
 - fotos/: las fotografías de las observaciones, si las hay.
 
-Para recuperarla, abre NaturaLab, ve a Investigaciones y pulsa «Importar copia».
+Para recuperarla, abre NatureLab, ve a Investigaciones y pulsa «Importar copia».
 No hace falta descomprimir el archivo.
 
 Las fotografías pueden incluir a personas o lugares: compártelo con cuidado.
@@ -81,7 +81,7 @@ export async function construirZip(paquete, fotos = []) {
 }
 
 /**
- * Lee un ZIP de NaturaLab con controles de seguridad: solo rutas esperadas,
+ * Lee un ZIP de NatureLab con controles de seguridad: solo rutas esperadas,
  * sin rutas relativas peligrosas y con límites de tamaño y número de archivos.
  * @param {{nombreDatos?: string}} opciones  archivo JSON que debe contener el ZIP
  * @returns {{datos: object, archivos: Record<string, Uint8Array>}}
@@ -122,7 +122,7 @@ export function leerZip(bytes, { nombreDatos = NOMBRE_DATOS } = {}) {
 
   if (rechazados.length > 0) {
     throw new Error(
-      `El ZIP contiene archivos que no son de NaturaLab (${rechazados.slice(0, 3).join(', ')}${rechazados.length > 3 ? '…' : ''}).`,
+      `El ZIP contiene archivos que no son de NatureLab (${rechazados.slice(0, 3).join(', ')}${rechazados.length > 3 ? '…' : ''}).`,
     );
   }
   if (demasiado) throw new Error('El ZIP es demasiado grande o contiene demasiados archivos.');

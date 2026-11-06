@@ -50,6 +50,7 @@ export function crearInvestigacion(campos = {}) {
     equipoAlias: '',
     laboratorio: 'biodiversidad',
     tipoPractica: 'parcela',
+    paleta: null, // null: la paleta general de la app
     versionEsquema: VERSION_ESQUEMA,
     fechaCreacion: marca,
     fechaModificacion: marca,

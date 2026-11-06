@@ -29,6 +29,7 @@ export function crearModeloRioAntas() {
       equipoAlias: '',
       laboratorio: 'biodiversidad',
       tipoPractica: 'transecto',
+      paleta: 'terracota',
       versionEsquema: VERSION_ESQUEMA,
       fechaCreacion: marca,
       fechaModificacion: marca,

@@ -232,7 +232,7 @@ export function SeccionResultados() {
       </div>
 
       <p className="solo-impresion texto-pequeno">
-        Informe generado el {formatearFecha(new Date().toISOString())} con NaturaLab. Catálogo provisional, pendiente de
+        Informe generado el {formatearFecha(new Date().toISOString())} con NatureLab. Catálogo provisional, pendiente de
         revisión botánica.
       </p>
     </section>

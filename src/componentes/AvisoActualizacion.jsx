@@ -16,7 +16,7 @@ export function AvisoActualizacion() {
 
   useEffect(() => {
     if (listaSinConexion) {
-      anunciar('NaturaLab ya puede usarse sin conexión en este dispositivo.', { duracion: 5000 });
+      anunciar('NatureLab ya puede usarse sin conexión en este dispositivo.', { duracion: 5000 });
       setListaSinConexion(false);
     }
   }, [listaSinConexion, anunciar, setListaSinConexion]);
@@ -25,7 +25,7 @@ export function AvisoActualizacion() {
   return (
     <div className="banda-sistema">
       <div className="aviso" role="status">
-        <p>Hay una versión nueva de NaturaLab. Tus datos se conservan al actualizar.</p>
+        <p>Hay una versión nueva de NatureLab. Tus datos se conservan al actualizar.</p>
         <button type="button" className="boton" onClick={() => updateServiceWorker(true)}>
           Actualizar ahora
         </button>

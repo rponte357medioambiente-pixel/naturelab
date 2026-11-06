@@ -24,7 +24,7 @@ export function PaginaAyuda() {
     await actualizarEstado();
     anunciar(
       concedido
-        ? 'El navegador conservará los datos de NaturaLab.'
+        ? 'El navegador conservará los datos de NatureLab.'
         : 'El navegador no lo ha concedido. Exporta copias con frecuencia.',
     );
   }
@@ -33,7 +33,7 @@ export function PaginaAyuda() {
     <>
       <header className="encabezado-pagina">
         <h1>Ayuda y privacidad</h1>
-        <p>Cómo funciona NaturaLab y qué ocurre con tus datos.</p>
+        <p>Cómo funciona NatureLab y qué ocurre con tus datos.</p>
       </header>
 
       <section className="ayuda-bloque" aria-labelledby="ayuda-estado">
@@ -84,7 +84,7 @@ export function PaginaAyuda() {
       <section className="ayuda-bloque" aria-labelledby="ayuda-datos">
         <h2 id="ayuda-datos">Dónde se guardan tus datos</h2>
         <p>
-          Las investigaciones, parcelas y observaciones se guardan solo en este navegador. NaturaLab no tiene cuentas
+          Las investigaciones, parcelas y observaciones se guardan solo en este navegador. NatureLab no tiene cuentas
           de usuario ni servidor, y no envía tus datos a ningún sitio.
         </p>
         <p>
@@ -99,18 +99,27 @@ export function PaginaAyuda() {
       <section className="ayuda-bloque" aria-labelledby="ayuda-practicas">
         <h2 id="ayuda-practicas">Tipos de práctica</h2>
         <p>
-          <strong>Recuento en parcela:</strong> cuentas los individuos de cada especie dentro de una superficie. NaturaLab
+          <strong>Recuento en parcela:</strong> cuentas los individuos de cada especie dentro de una superficie. NatureLab
           calcula la riqueza, los índices de Shannon y Pielou y la densidad.
         </p>
         <p>
           <strong>Transecto lineal:</strong> tiendes una cuerda y mides cuánto ocupa cada especie bajo ella. Puedes anotar
-          solo lo que mide cada mancha (por ejemplo, 1+12+5+28) o dónde empieza y termina sobre la cinta. NaturaLab
+          solo lo que mide cada mancha (por ejemplo, 1+12+5+28) o dónde empieza y termina sobre la cinta. NatureLab
           calcula la cobertura de cada especie, la cobertura total y el suelo desnudo. Si dos plantas se solapan, cuentan
           las dos. Puedes añadir varios transectos, por ejemplo uno Este-Oeste y otro Norte-Sur.
         </p>
         <p>
           En Investigaciones, «Cargar un modelo» copia en el dispositivo investigaciones completas, como el Salar de los
           Canos o Río Antas, para practicar o usarlas como punto de partida.
+        </p>
+      </section>
+
+      <section className="ayuda-bloque" aria-labelledby="ayuda-aspecto">
+        <h2 id="ayuda-aspecto">Paletas y tamaño del texto</h2>
+        <p>
+          En el menú de configuración, el engranaje de arriba a la derecha, eliges la paleta general de la app y el
+          tamaño del texto. Cada investigación puede tener además su propia paleta, por ejemplo Mar para una de
+          microplásticos en la playa: se elige al crearla o al editarla.
         </p>
       </section>
 
@@ -155,7 +164,7 @@ export function PaginaAyuda() {
           como «Otra especie o sin identificar» con un nombre provisional y revísala después.
         </p>
         <p>
-          Puedes consultar una aplicación externa como Google Lens, pero NaturaLab no está conectada con ella. Ten en
+          Puedes consultar una aplicación externa como Google Lens, pero NatureLab no está conectada con ella. Ten en
           cuenta que la foto se comparte con ese servicio según sus condiciones y que las imágenes de sus resultados
           no se pueden reutilizar libremente.
         </p>
@@ -165,7 +174,7 @@ export function PaginaAyuda() {
         <h2 id="ayuda-privacidad">Privacidad en talleres</h2>
         <ul>
           <li>Usa alias para los equipos, nunca nombres reales.</li>
-          <li>Describe el lugar de forma general; NaturaLab no usa el GPS.</li>
+          <li>Describe el lugar de forma general; NatureLab no usa el GPS.</li>
           <li>
             Las fotos de las observaciones se guardan solo en este dispositivo, sin datos de ubicación. Salen de él
             únicamente si compartes la copia de seguridad o el cuaderno en PDF.
@@ -181,7 +190,7 @@ export function PaginaAyuda() {
       <section className="ayuda-bloque" aria-labelledby="ayuda-licencias">
         <h2 id="ayuda-licencias">Versión y licencias</h2>
         <p className="texto-suave">
-          NaturaLab {__VERSION_APP__}. Catálogo versión {catalogo?.versionCatalogo ?? '—'}
+          NatureLab {__VERSION_APP__}. Catálogo versión {catalogo?.versionCatalogo ?? '—'}
           {catalogo?.estado === 'provisional' ? ' (provisional)' : ''}.
         </p>
         <p className="texto-suave">

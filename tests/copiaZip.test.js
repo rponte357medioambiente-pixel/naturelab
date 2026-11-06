@@ -75,7 +75,7 @@ describe('Copia ZIP con fotos', () => {
       const zip = zipSync({ 'proyecto.json': paquete, [intruso]: strToU8('x') });
       const r = await leerArchivoCopia(new File([zip], 'copia.zip'));
       expect(r.ok).toBe(false);
-      expect(r.errores[0]).toMatch(/no son de NaturaLab/);
+      expect(r.errores[0]).toMatch(/no son de NatureLab/);
     }
   });
 

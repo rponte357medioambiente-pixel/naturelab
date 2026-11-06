@@ -6,6 +6,7 @@ import { openDB } from 'idb';
  * Para cambiar el esquema: subir VERSION_BD y añadir un bloque
  * `if (versionAnterior < N)` en upgrade(), sin modificar los anteriores.
  */
+// Conserva el nombre antiguo de la app a propósito: cambiarlo dejaría sin abrir los datos y las copias ya guardados.
 export const NOMBRE_BD = 'naturalab';
 export const VERSION_BD = 2;
 

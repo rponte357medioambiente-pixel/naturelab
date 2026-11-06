@@ -15,7 +15,7 @@ export function construirPaquete({ investigacion, parcelas, observaciones }, cat
   return {
     formato: FORMATO_PAQUETE,
     versionEsquema: VERSION_ESQUEMA,
-    aplicacion: 'NaturaLab',
+    aplicacion: 'NatureLab',
     exportadoEn: new Date().toISOString(),
     versionCatalogo: catalogo?.versionCatalogo ?? null,
     investigacion: investigacionExportable,
@@ -41,7 +41,7 @@ export function convertirEnSlug(texto) {
 
 export function nombreArchivo(investigacion, sufijo, extension) {
   const fecha = new Date().toISOString().slice(0, 10);
-  return `naturalab-${convertirEnSlug(investigacion?.titulo)}-${sufijo}-${fecha}.${extension}`;
+  return `naturelab-${convertirEnSlug(investigacion?.titulo)}-${sufijo}-${fecha}.${extension}`;
 }
 
 /* ---------- CSV ---------- */

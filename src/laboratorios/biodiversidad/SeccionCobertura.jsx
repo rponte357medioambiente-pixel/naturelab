@@ -243,7 +243,7 @@ export function SeccionCobertura() {
       </div>
 
       <p className="solo-impresion texto-pequeno">
-        Informe generado el {formatearFecha(new Date().toISOString())} con NaturaLab.
+        Informe generado el {formatearFecha(new Date().toISOString())} con NatureLab.
       </p>
     </section>
   );

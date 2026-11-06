@@ -1,6 +1,7 @@
 import { ESTADOS_IDENTIFICACION, MODOS_ANOTACION, TIPOS_PRACTICA, VERSION_ESQUEMA } from '../almacenamiento/modelo.js';
 import { UNIDADES_SUPERFICIE, validarAbundancia, validarSuperficie } from '../calculos/biodiversidad.js';
 import { LIMITES_TRANSECTO, validarLongitudTransecto } from '../calculos/cobertura.js';
+import { esPaletaValida } from '../apariencia/paletas.js';
 import { esZip, LIMITES_ZIP, leerZip, RUTA_FOTO, tipoDeBytes } from './copiaZip.js';
 
 /**
@@ -8,6 +9,7 @@ import { esZip, LIMITES_ZIP, leerZip, RUTA_FOTO, tipoDeBytes } from './copiaZip.
  * un archivo se trata como datos: se validan tipos y tamaños y se reconstruyen
  * los objetos solo con los campos conocidos.
  */
+// Conserva el nombre antiguo de la app a propósito: cambiarlo dejaría sin abrir los datos y las copias ya guardados.
 export const FORMATO_PAQUETE = 'naturalab-investigacion';
 
 export const LIMITES = {
@@ -125,6 +127,8 @@ export function limpiarInvestigacion(entrada, errores) {
     equipoAlias: lector.texto(entrada.equipoAlias, 'equipo', LIMITES.textoCorto),
     laboratorio,
     tipoPractica: Object.hasOwn(TIPOS_PRACTICA, tipoPractica) ? tipoPractica : 'parcela',
+    // Una paleta desconocida (de una versión futura) no impide importar: se usa la general.
+    paleta: esPaletaValida(entrada.paleta) ? entrada.paleta : null,
     versionEsquema: VERSION_ESQUEMA,
     fechaCreacion: lector.fecha(entrada.fechaCreacion, 'fecha de creación') ?? new Date().toISOString(),
     fechaModificacion: lector.fecha(entrada.fechaModificacion, 'fecha de modificación') ?? new Date().toISOString(),
@@ -283,13 +287,13 @@ export function validarPaquete(datos, { archivos = null } = {}) {
   const fallo = (mensaje) => ({ ok: false, errores: [mensaje], totalErrores: 1 });
 
   if (!esObjeto(datos) || datos.formato !== FORMATO_PAQUETE) {
-    return fallo('El archivo no es una copia de investigación de NaturaLab.');
+    return fallo('El archivo no es una copia de investigación de NatureLab.');
   }
   if (!Number.isInteger(datos.versionEsquema) || datos.versionEsquema < 1) {
     return fallo('La copia no indica una versión de esquema válida.');
   }
   if (datos.versionEsquema > VERSION_ESQUEMA) {
-    return fallo('La copia se creó con una versión más reciente de NaturaLab. Actualiza la aplicación y vuelve a intentarlo.');
+    return fallo('La copia se creó con una versión más reciente de NatureLab. Actualiza la aplicación y vuelve a intentarlo.');
   }
 
   const migrado = migrarPaquete(datos);

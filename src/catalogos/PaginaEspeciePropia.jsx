@@ -282,7 +282,7 @@ function FormularioEspeciePropia({ registro, autorInicial }) {
             aria-describedby="ayuda-especie-lugar"
           />
           <p className="ayuda" id="ayuda-especie-lugar">
-            Descríbelo en general, por ejemplo «Cabo de Gata, rambla». NaturaLab no usa el GPS.
+            Descríbelo en general, por ejemplo «Cabo de Gata, rambla». NatureLab no usa el GPS.
           </p>
         </div>
         <div className="campo">

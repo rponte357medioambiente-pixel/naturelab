@@ -76,7 +76,7 @@ export function PaginaCatalogo() {
       {error && !buscando && (
         <div className="aviso aviso--error seccion-catalogo" role="alert">
           <p>
-            No se ha podido cargar el catálogo publicado. Si es la primera vez que abres NaturaLab, conéctate a Internet
+            No se ha podido cargar el catálogo publicado. Si es la primera vez que abres NatureLab, conéctate a Internet
             una vez para que quede guardado en el dispositivo.
           </p>
         </div>

@@ -33,6 +33,7 @@ export function crearEjemploSalar() {
       equipoAlias: '',
       laboratorio: 'biodiversidad',
       tipoPractica: 'parcela',
+      paleta: 'atardecer',
       versionEsquema: VERSION_ESQUEMA,
       fechaCreacion: marca,
       fechaModificacion: marca,

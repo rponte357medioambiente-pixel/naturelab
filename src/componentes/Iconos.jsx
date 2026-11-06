@@ -42,6 +42,20 @@ export const IconoAyuda = (p) => (
   </Icono>
 );
 
+export const IconoCatalogo = (p) => (
+  <Icono {...p}>
+    <path d="M5 20c0-8.5 5-14.5 14-15.5-1 8.8-6 13.8-14 15.5z" />
+    <path d="M5 20l7-7.5" />
+  </Icono>
+);
+
+export const IconoAjustes = (p) => (
+  <Icono {...p}>
+    <path d="M10.3 4.3c.4-1.8 3-1.8 3.4 0a1.7 1.7 0 0 0 2.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 0 0 1 2.5c1.8.5 1.8 3.1 0 3.5a1.7 1.7 0 0 0-1 2.6c.9 1.5-.9 3.3-2.4 2.4a1.7 1.7 0 0 0-2.6 1c-.4 1.8-3 1.8-3.4 0a1.7 1.7 0 0 0-2.6-1c-1.5.9-3.3-.9-2.4-2.4a1.7 1.7 0 0 0-1-2.6c-1.8-.4-1.8-3 0-3.5a1.7 1.7 0 0 0 1-2.5c-.9-1.6.9-3.3 2.4-2.4a1.7 1.7 0 0 0 2.6-1.1z" />
+    <circle cx="12" cy="12" r="3" />
+  </Icono>
+);
+
 export const IconoMas = (p) => (
   <Icono {...p}>
     <path d="M12 5v14M5 12h14" />
@@ -128,15 +142,15 @@ export const IconoBrote = (p) => (
   </Icono>
 );
 
-/** Marca de NaturaLab: tres hojas de albardín sobre el suelo. */
-export const MarcaNaturaLab = (p) => (
+/** Marca de NatureLab: tres hojas sobre el suelo, con el color de la paleta. */
+export const MarcaNatureLab = (p) => (
   <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" {...p}>
-    <rect width="48" height="48" rx="11" fill="#1f5a3d" />
-    <g fill="none" stroke="#eef2ee" strokeWidth="3.2" strokeLinecap="round">
+    <rect width="48" height="48" rx="11" fill="var(--albardin)" />
+    <g fill="none" stroke="#fffaf4" strokeWidth="3.2" strokeLinecap="round">
       <path d="M24 38c0-9-.6-16.5-2-25" />
       <path d="M24 38c-1.6-7.5-5.5-13-10.5-17.5" />
       <path d="M24 38c2-7 6.4-11.6 11.2-14.6" />
     </g>
-    <path d="M12 38.5h24" stroke="#b5c9bb" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M12 38.5h24" stroke="var(--albardin-claro)" strokeWidth="2.4" strokeLinecap="round" />
   </svg>
 );

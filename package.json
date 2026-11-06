@@ -2,7 +2,7 @@
   "name": "naturalab",
   "private": true,
   "version": "0.1.0",
-  "description": "NaturaLab: cuaderno de campo para talleres de exploración ambiental (PWA sin servidor).",
+  "description": "NatureLab: cuaderno de campo para talleres de exploración ambiental (PWA sin servidor).",
   "type": "module",
   "scripts": {
     "preparar-detector": "node scripts/preparar-detector.mjs",

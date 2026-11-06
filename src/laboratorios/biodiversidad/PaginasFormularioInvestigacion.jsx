@@ -18,6 +18,8 @@ import {
   obtenerDatosInvestigacion,
 } from '../../almacenamiento/repositorio.js';
 import { useConsulta } from '../../almacenamiento/useConsulta.js';
+import { useApariencia, useVistaPreviaPaleta } from '../../apariencia/Apariencia.jsx';
+import { SelectorPaleta } from '../../apariencia/SelectorPaleta.jsx';
 import { UNIDADES_SUPERFICIE, validarSuperficie } from '../../calculos/biodiversidad.js';
 import { validarLongitudTransecto } from '../../calculos/cobertura.js';
 import { hoyISO } from '../../calculos/formato.js';
@@ -66,7 +68,9 @@ function FormularioInvestigacion({ inicial }) {
   const esNueva = !inicial;
   const navegar = useNavigate();
   const anunciar = useAnunciar();
+  const { ajustes } = useApariencia();
   const [campos, setCampos] = useState(() => ({
+    paleta: inicial?.paleta ?? ajustes.paletaGeneral,
     titulo: inicial?.titulo ?? '',
     fechaObservacion: inicial?.fechaObservacion ?? hoyISO(),
     lugarTexto: inicial?.lugarTexto ?? '',
@@ -82,6 +86,8 @@ function FormularioInvestigacion({ inicial }) {
     modoAnotacion: 'longitudes',
   }));
   const conTransectos = campos.tipoPractica === 'transecto';
+  // La pantalla se ve con la paleta elegida mientras se rellena el formulario.
+  useVistaPreviaPaleta(campos.paleta);
   const [errores, setErrores] = useState({});
   const [guardando, setGuardando] = useState(false);
 
@@ -110,6 +116,7 @@ function FormularioInvestigacion({ inicial }) {
 
     const datos = {
       titulo,
+      paleta: campos.paleta,
       fechaObservacion: campos.fechaObservacion,
       lugarTexto: campos.lugarTexto.trim(),
       equipoAlias: campos.equipoAlias.trim(),
@@ -163,6 +170,14 @@ function FormularioInvestigacion({ inicial }) {
           aria-describedby={errores.titulo ? 'error-titulo' : undefined}
         />
       </Campo>
+
+      <SelectorPaleta
+        nombre="paleta-investigacion"
+        leyenda="Paleta de la investigación"
+        valor={campos.paleta}
+        alCambiar={(paleta) => setCampos((c) => ({ ...c, paleta }))}
+        ayuda="Se aplica a todas las pantallas de esta investigación."
+      />
 
       {esNueva ? (
         <SelectorTipoPractica valor={campos.tipoPractica} alCambiar={(tipo) => setCampos((c) => ({ ...c, tipoPractica: tipo }))} />

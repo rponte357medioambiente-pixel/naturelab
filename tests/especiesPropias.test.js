@@ -218,7 +218,7 @@ describe('Mi catálogo: validación e importación', () => {
 
 describe('Actualización de la base de datos', () => {
   it('pasa de la versión 1 a la 2 sin perder las investigaciones guardadas', async () => {
-    // Base de datos tal como la dejaba la versión anterior de NaturaLab.
+    // Base de datos tal como la dejaba la versión anterior de NatureLab.
     await new Promise((resolve, reject) => {
       const peticion = indexedDB.open(NOMBRE_BD, 1);
       peticion.onupgradeneeded = () => {
