@@ -15,6 +15,14 @@ const IconoJuego = () => (
   </svg>
 );
 
+const IconoFichas = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+    <rect x="3" y="5" width="8" height="14" rx="1.5" strokeDasharray="2.5 2" />
+    <rect x="13" y="5" width="8" height="14" rx="1.5" strokeDasharray="2.5 2" />
+    <path d="M15.5 9.5h3M15.5 12h3M15.5 14.5h2" />
+  </svg>
+);
+
 export function PaginaCatalogo() {
   useTituloDocumento('Catálogo de especies');
   const { cargando, error, especies, catalogo } = useCatalogo();
@@ -52,6 +60,10 @@ export function PaginaCatalogo() {
         <Link to="/catalogo/juego" className="boton boton--secundario boton--ancho">
           <IconoJuego />
           Jugar: ¿qué especie es?
+        </Link>
+        <Link to="/catalogo/fichas" className="boton boton--secundario boton--ancho">
+          <IconoFichas />
+          Fichas para imprimir
         </Link>
       </div>
 

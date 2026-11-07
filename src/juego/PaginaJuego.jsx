@@ -6,6 +6,7 @@ import { useConsulta } from '../almacenamiento/useConsulta.js';
 import { plural } from '../calculos/formato.js';
 import { tieneImagen, urlImagenEspecie, useCatalogo } from '../catalogos/catalogo.js';
 import { IconoAtras } from '../componentes/Iconos.jsx';
+import { idsSeleccionados, SeleccionEspecies, textoSeleccion } from '../catalogos/SeleccionEspecies.jsx';
 import {
   crearPartida,
   especiesJugables,
@@ -27,14 +28,7 @@ export function PaginaJuego() {
   if (catalogo.cargando || investigaciones.cargando) return <p className="texto-suave">Cargando…</p>;
 
   function empezar(cfg = config) {
-    const ids =
-      cfg.origen === 'investigaciones'
-        ? new Set(
-            (investigaciones.datos ?? [])
-              .filter((d) => cfg.ids.includes(d.investigacion.id))
-              .flatMap((d) => d.observaciones.map((o) => o.especieId).filter(Boolean)),
-          )
-        : null;
+    const ids = idsSeleccionados(cfg.origen, cfg.ids, investigaciones.datos ?? []);
     const jugables = especiesJugables(catalogo.especies, tieneImagen, { ids, nombre: cfg.nombre });
     const preguntas = crearPartida(jugables, catalogo.especies, { preguntas: cfg.preguntas, nombre: cfg.nombre });
     setPartida({ preguntas, respuestas: [], actual: 0, config: cfg });
@@ -87,20 +81,13 @@ function Segmentos({ leyenda, nombre, opciones, valor, alCambiar }) {
 
 function Configurar({ config, setConfig, catalogo, investigaciones, alEmpezar }) {
   const cambiar = (cambios) => setConfig((c) => ({ ...c, ...cambios }));
-  const especiesDe = (datos) => new Set(datos.observaciones.map((o) => o.especieId).filter(Boolean));
   const conImagen = (ids) => especiesJugables(catalogo.especies, tieneImagen, { ids, nombre: config.nombre }).length;
-  const totalCatalogo = conImagen(null);
-  const elegidas = useMemo(() => {
-    if (config.origen === 'todo') return null;
-    return new Set(investigaciones.filter((d) => config.ids.includes(d.investigacion.id)).flatMap((d) => [...especiesDe(d)]));
-  }, [config.origen, config.ids, investigaciones]);
+  const elegidas = useMemo(
+    () => idsSeleccionados(config.origen, config.ids, investigaciones),
+    [config.origen, config.ids, investigaciones],
+  );
   const disponibles = conImagen(elegidas);
   const preguntas = Math.min(config.preguntas, disponibles);
-  const conEspecies = investigaciones.filter((d) => especiesDe(d).size > 0);
-
-  function alternar(id) {
-    cambiar({ ids: config.ids.includes(id) ? config.ids.filter((x) => x !== id) : [...config.ids, id] });
-  }
 
   return (
     <>
@@ -120,46 +107,14 @@ function Configurar({ config, setConfig, catalogo, investigaciones, alEmpezar })
           if (disponibles > 0) alEmpezar();
         }}
       >
-        <fieldset className="opciones-tarjeta">
-          <legend>Con qué especies</legend>
-          <label className="opcion-tarjeta">
-            <input type="radio" name="origen-juego" checked={config.origen === 'todo'} onChange={() => cambiar({ origen: 'todo' })} />
-            <span>
-              <strong>Todo el catálogo</strong>
-              <span className="texto-suave">{plural(totalCatalogo, 'especie con imagen', 'especies con imagen')}</span>
-            </span>
-          </label>
-          <label className="opcion-tarjeta">
-            <input
-              type="radio"
-              name="origen-juego"
-              checked={config.origen === 'investigaciones'}
-              onChange={() => cambiar({ origen: 'investigaciones' })}
-              disabled={conEspecies.length === 0}
-            />
-            <span>
-              <strong>Las de mis investigaciones</strong>
-              <span className="texto-suave">
-                {conEspecies.length === 0 ? 'Todavía no hay investigaciones con especies.' : 'Elige una o varias.'}
-              </span>
-            </span>
-          </label>
-          {config.origen === 'investigaciones' && (
-            <div className="juego-investigaciones">
-              {conEspecies.map((d) => (
-                <label key={d.investigacion.id} className="casilla">
-                  <input type="checkbox" checked={config.ids.includes(d.investigacion.id)} onChange={() => alternar(d.investigacion.id)} />
-                  <span>
-                    {d.investigacion.titulo}
-                    <span className="texto-suave texto-pequeno" style={{ display: 'block' }}>
-                      {plural(conImagen(especiesDe(d)), 'especie con imagen', 'especies con imagen')}
-                    </span>
-                  </span>
-                </label>
-              ))}
-            </div>
-          )}
-        </fieldset>
+        <SeleccionEspecies
+          nombre="juego"
+          origen={config.origen}
+          ids={config.ids}
+          investigaciones={investigaciones}
+          contar={conImagen}
+          alCambiar={cambiar}
+        />
 
         <Segmentos
           leyenda="Responder con"
@@ -310,13 +265,7 @@ function Pregunta({ partida, setPartida, alSalir }) {
 function Resultado({ partida, investigaciones, alRepetir, alCambiar }) {
   const { aciertos, total, fallos } = resumirPartida(partida.preguntas, partida.respuestas);
   const { config } = partida;
-  const origen =
-    config.origen === 'todo'
-      ? 'Todo el catálogo'
-      : investigaciones
-          .filter((d) => config.ids.includes(d.investigacion.id))
-          .map((d) => d.investigacion.titulo)
-          .join(', ');
+  const origen = textoSeleccion(config.origen, config.ids, investigaciones);
   const titulo = useRef(null);
   useEffect(() => titulo.current?.focus(), []);
 

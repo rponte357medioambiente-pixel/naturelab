@@ -138,6 +138,16 @@ export function PaginaAyuda() {
         </p>
       </section>
 
+      <section className="ayuda-bloque" aria-labelledby="ayuda-fichas">
+        <h2 id="ayuda-fichas">Fichas para imprimir</h2>
+        <p>
+          En Catálogo, «Fichas para imprimir» crea un PDF con una fila por especie: su imagen con el nombre y, al lado,
+          sus características. Sin recortar sirve para estudiar; recortado por las líneas de puntos, para emparejar cada
+          imagen con su ficha. Las letras van barajadas y las soluciones y los créditos de las imágenes están en la última
+          página. Se puede hacer con todo el catálogo o con las especies de las investigaciones que elijas.
+        </p>
+      </section>
+
       <section className="ayuda-bloque" aria-labelledby="ayuda-aspecto">
         <h2 id="ayuda-aspecto">Paletas y tamaño del texto</h2>
         <p>

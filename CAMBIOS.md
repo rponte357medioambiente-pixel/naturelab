@@ -4,6 +4,15 @@ Cuaderno de campo digital para talleres de exploración ambiental. Aplicación w
 
 ---
 
+## 7 de noviembre de 2026 · Fichas para imprimir
+
+- Nuevo botón en el Catálogo: **Fichas para imprimir**. Crea un PDF en A4 con una fila por especie: a la izquierda, su imagen con el nombre y un número; a la derecha, sus características (familia, descripción, cómo reconocerla y dónde vive) con una letra.
+- Sin recortar, cada fila es una ficha para estudiar. Recortadas por las líneas de puntos, sirven para jugar a emparejar cada imagen con sus características: las letras van barajadas, y las soluciones y los créditos de las imágenes están en la última página.
+- Se elige con qué especies, como en el juego: todo el catálogo o las de una o varias investigaciones. Entran las especies con foto o ilustración, incluidas las fotos de campo y las de Mi catálogo.
+- El PDF usa el color de la paleta activa y se puede compartir o descargar.
+
+---
+
 ## 7 de noviembre de 2026 · Juego «¿Qué especie es?» (fase 5)
 
 - Nuevo botón en el Catálogo: **Jugar: ¿qué especie es?**. Se ve la imagen de una especie y se elige su nombre entre cuatro.
