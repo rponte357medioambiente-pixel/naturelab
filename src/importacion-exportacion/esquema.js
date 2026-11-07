@@ -1,8 +1,14 @@
-import { ESTADOS_IDENTIFICACION, MODOS_ANOTACION, TIPOS_PRACTICA, VERSION_ESQUEMA } from '../almacenamiento/modelo.js';
+import {
+  ESTADOS_IDENTIFICACION,
+  MODOS_ANOTACION,
+  MODOS_DIBUJO,
+  TIPOS_PRACTICA,
+  VERSION_ESQUEMA,
+} from '../almacenamiento/modelo.js';
 import { UNIDADES_SUPERFICIE, validarAbundancia, validarSuperficie } from '../calculos/biodiversidad.js';
 import { LIMITES_TRANSECTO, validarLongitudTransecto } from '../calculos/cobertura.js';
 import { esPaletaValida } from '../apariencia/paletas.js';
-import { esZip, LIMITES_ZIP, leerZip, RUTA_FOTO, tipoDeBytes } from './copiaZip.js';
+import { LIMITES_ZIP, RUTA_DIBUJO, RUTA_FOTO, esZip, leerZip, tipoDeBytes } from './copiaZip.js';
 
 /**
  * Formato de intercambio de una investigación (apartado 8). Todo lo que llega de
@@ -268,6 +274,47 @@ function limpiarFoto(entrada, investigacionId, observacionesPorId, archivos, err
   };
 }
 
+const NIVELES_DIBUJO = new Set(['facil', 'medio', 'dificil']);
+
+function limpiarDibujo(entrada, investigacionId, archivos, errores, numero) {
+  const lector = crearLector(errores, `Dibujo ${numero}`);
+  if (!esObjeto(entrada)) {
+    lector.error('no tiene un formato válido.');
+    return null;
+  }
+  const id = lector.id(entrada.id, 'id');
+  if (entrada.investigacionId !== investigacionId) lector.error('no pertenece a esta investigación.');
+  if (typeof entrada.archivo !== 'string' || !RUTA_DIBUJO.test(entrada.archivo) || !archivos[entrada.archivo]) {
+    lector.error('falta su imagen dentro del ZIP.');
+    return null;
+  }
+  const bytes = archivos[entrada.archivo];
+  if (tipoDeBytes(bytes) !== 'image/png') {
+    lector.error('no es una imagen PNG válida.');
+    return null;
+  }
+  const modo = Object.hasOwn(MODOS_DIBUJO, entrada.modo) ? entrada.modo : null;
+  if (!modo) lector.error('el modo de dibujo no es válido.');
+  if (!id || !modo) return null;
+  const numeroValido = (v) => (Number.isFinite(v) && v > 0 && v < 100000 ? Math.round(v) : null);
+  return {
+    id,
+    investigacionId,
+    especieId: typeof entrada.especieId === 'string' && entrada.especieId ? entrada.especieId.slice(0, 120) : null,
+    nombreComun: lector.texto(entrada.nombreComun, 'nombre común', LIMITES.textoCorto, { obligatorio: true }),
+    nombreCientifico: lector.texto(entrada.nombreCientifico, 'nombre científico', LIMITES.textoCorto),
+    modo,
+    nivel: modo === 'puntos' && NIVELES_DIBUJO.has(entrada.nivel) ? entrada.nivel : null,
+    alias: lector.texto(entrada.alias, 'alias', 60),
+    fecha: lector.fecha(entrada.fecha, 'fecha') ?? new Date().toISOString(),
+    blob: new Blob([bytes], { type: 'image/png' }),
+    tipoMime: 'image/png',
+    tamano: bytes.length,
+    ancho: numeroValido(entrada.ancho),
+    alto: numeroValido(entrada.alto),
+  };
+}
+
 /**
  * Punto único para adaptar copias de versiones anteriores del esquema.
  * 1 → 2: las investigaciones anteriores son todas de recuento en parcela.
@@ -365,13 +412,31 @@ export function validarPaquete(datos, { archivos = null } = {}) {
     }
   }
 
+  const dibujos = [];
+  if (Array.isArray(migrado.dibujos) && migrado.dibujos.length > 0) {
+    if (!archivos) {
+      avisos.push('Esta copia no incluye los dibujos. Para recuperarlos, importa la copia en formato ZIP.');
+    } else if (migrado.dibujos.length > LIMITES.observaciones) {
+      errores.push('La copia tiene demasiados dibujos.');
+    } else {
+      const vistos = new Set();
+      migrado.dibujos.forEach((entrada, i) => {
+        const dibujo = limpiarDibujo(entrada, investigacionId, archivos, errores, i + 1);
+        if (dibujo && !vistos.has(dibujo.id)) {
+          vistos.add(dibujo.id);
+          dibujos.push(dibujo);
+        }
+      });
+    }
+  }
+
   if (errores.length > 0) {
     return { ok: false, errores: errores.slice(0, LIMITES.erroresMostrados), totalErrores: errores.length };
   }
 
   return {
     ok: true,
-    paquete: { investigacion, parcelas, observaciones, fotos, versionCatalogo: migrado.versionCatalogo ?? null },
+    paquete: { investigacion, parcelas, observaciones, fotos, dibujos, versionCatalogo: migrado.versionCatalogo ?? null },
     avisos,
   };
 }

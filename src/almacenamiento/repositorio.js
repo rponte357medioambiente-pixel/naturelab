@@ -74,11 +74,12 @@ export async function obtenerInvestigacion(id) {
 
 export async function obtenerDatosInvestigacion(id) {
   const bd = await abrirBD();
-  const tx = bd.transaction([A.investigaciones, A.parcelas, A.observaciones]);
-  const [investigacion, parcelas, observaciones] = await Promise.all([
+  const tx = bd.transaction([A.investigaciones, A.parcelas, A.observaciones, A.dibujos]);
+  const [investigacion, parcelas, observaciones, dibujos] = await Promise.all([
     tx.objectStore(A.investigaciones).get(id),
     tx.objectStore(A.parcelas).index('porInvestigacion').getAll(id),
     tx.objectStore(A.observaciones).index('porInvestigacion').getAll(id),
+    tx.objectStore(A.dibujos).index('porInvestigacion').getAll(id),
     tx.done,
   ]);
   if (!investigacion) return null;
@@ -86,6 +87,8 @@ export async function obtenerDatosInvestigacion(id) {
     investigacion,
     parcelas: parcelas.sort(porCodigo),
     observaciones: observaciones.sort(masRecientePrimero('fecha')),
+    // Del más antiguo al más reciente, en el orden en que se hicieron.
+    dibujos: dibujos.sort((a, b) => String(a.fecha).localeCompare(String(b.fecha))),
   };
 }
 
@@ -219,10 +222,11 @@ export async function eliminarParcela(id) {
 }
 
 export async function eliminarInvestigacion(id) {
-  await enTransaccion([A.investigaciones, A.parcelas, A.observaciones, A.fotos], async (tx) => {
+  await enTransaccion([A.investigaciones, A.parcelas, A.observaciones, A.fotos, A.dibujos], async (tx) => {
     const idsObs = await borrarPorIndice(tx.objectStore(A.observaciones), 'porInvestigacion', id);
     for (const idObs of idsObs) await borrarPorIndice(tx.objectStore(A.fotos), 'porObservacion', idObs);
     await borrarPorIndice(tx.objectStore(A.parcelas), 'porInvestigacion', id);
+    await borrarPorIndice(tx.objectStore(A.dibujos), 'porInvestigacion', id);
     await tx.objectStore(A.investigaciones).delete(id);
   });
   notificar();
@@ -232,10 +236,10 @@ export async function eliminarInvestigacion(id) {
  * Guarda una investigación completa en una sola transacción (importación y ejemplo).
  * Los registros se escriben por identificador: repetir la operación no duplica datos.
  */
-export async function guardarLote({ investigacion, parcelas = [], observaciones = [], fotos = [] }) {
+export async function guardarLote({ investigacion, parcelas = [], observaciones = [], fotos = [], dibujos = [] }) {
   const marca = ahora();
   const idsFotosNuevas = new Set(fotos.map((f) => f.id));
-  await enTransaccion([A.investigaciones, A.parcelas, A.observaciones, A.fotos], async (tx) => {
+  await enTransaccion([A.investigaciones, A.parcelas, A.observaciones, A.fotos, A.dibujos], async (tx) => {
     await tx.objectStore(A.investigaciones).put({ ...investigacion, fechaModificacion: marca });
     for (const p of parcelas) await tx.objectStore(A.parcelas).put(p);
     for (const o of observaciones) {
@@ -247,6 +251,7 @@ export async function guardarLote({ investigacion, parcelas = [], observaciones 
       await tx.objectStore(A.observaciones).put(o);
     }
     for (const f of fotos) await tx.objectStore(A.fotos).put(f);
+    for (const d of dibujos) await tx.objectStore(A.dibujos).put(d);
   });
   notificar();
   solicitarPersistencia();
@@ -418,4 +423,39 @@ export async function guardarFotosCatalogo(registros) {
   });
   notificar();
   solicitarPersistencia();
+}
+
+/* ---------- Dibujos de los estudiantes ---------- */
+
+/**
+ * Guarda un dibujo en su investigación.
+ * @param {object} dibujo  creado con crearDibujo()
+ * @param {{blob: Blob, ancho: number, alto: number}} imagen  la imagen final (PNG)
+ */
+export async function guardarDibujo(dibujo, imagen) {
+  const registro = {
+    ...dibujo,
+    blob: imagen.blob,
+    tipoMime: imagen.blob.type,
+    tamano: imagen.blob.size,
+    ancho: imagen.ancho ?? null,
+    alto: imagen.alto ?? null,
+  };
+  await enTransaccion([A.investigaciones, A.dibujos], async (tx) => {
+    await tx.objectStore(A.dibujos).put(registro);
+    await tocarInvestigacion(tx, dibujo.investigacionId, ahora());
+  });
+  notificar();
+  solicitarPersistencia();
+  return registro;
+}
+
+export async function eliminarDibujo(id) {
+  await enTransaccion([A.investigaciones, A.dibujos], async (tx) => {
+    const dibujo = await tx.objectStore(A.dibujos).get(id);
+    if (!dibujo) return;
+    await tx.objectStore(A.dibujos).delete(id);
+    await tocarInvestigacion(tx, dibujo.investigacionId, ahora());
+  });
+  notificar();
 }

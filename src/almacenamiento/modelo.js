@@ -143,6 +143,27 @@ export function crearEspeciePropia(campos = {}) {
   };
 }
 
+/**
+ * Dibujo de un estudiante: la imagen final (PNG) y sus datos. Se guarda en su
+ * investigación y viaja en la copia de seguridad y en el PDF.
+ */
+export const MODOS_DIBUJO = { puntos: 'Unir los puntos', libre: 'Dibujo libre' };
+
+export function crearDibujo(investigacionId, campos = {}) {
+  return {
+    id: generarId(),
+    investigacionId,
+    especieId: null,
+    nombreComun: '',
+    nombreCientifico: '',
+    modo: 'libre',
+    nivel: null,
+    alias: '',
+    fecha: ahora(),
+    ...campos,
+  };
+}
+
 /** Indica si una investigación tiene cambios posteriores a su última copia exportada. */
 export function necesitaCopia(investigacion) {
   if (!investigacion) return false;

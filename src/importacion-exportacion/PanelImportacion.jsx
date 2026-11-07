@@ -118,7 +118,8 @@ export function PanelImportacion() {
             {estado.paquete.investigacion.tipoPractica === 'transecto'
               ? `${plural(estado.paquete.parcelas.length, 'transecto', 'transectos')}, ${plural(estado.paquete.observaciones.length, 'especie anotada', 'especies anotadas')}`
               : `${plural(estado.paquete.parcelas.length, 'parcela', 'parcelas')}, ${plural(estado.paquete.observaciones.length, 'observación', 'observaciones')}`}
-            {estado.paquete.fotos.length > 0 && `, ${plural(estado.paquete.fotos.length, 'foto', 'fotos')}`}.
+            {estado.paquete.fotos.length > 0 && `, ${plural(estado.paquete.fotos.length, 'foto', 'fotos')}`}
+            {(estado.paquete.dibujos ?? []).length > 0 && `, ${plural(estado.paquete.dibujos.length, 'dibujo', 'dibujos')}`}.
           </p>
           {estado.avisos.map((a) => (
             <p key={a} className="aviso aviso--ocre">
@@ -152,6 +153,15 @@ export function PanelImportacion() {
                     ? plural(estado.plan.parcelas.nuevos.length, 'transecto nuevo', 'transectos nuevos')
                     : plural(estado.plan.parcelas.nuevos.length, 'parcela nueva', 'parcelas nuevas')}
                 </li>
+                {(estado.paquete.dibujos ?? []).length > 0 && (
+                  <li>
+                    {plural(
+                      estado.paquete.dibujos.filter((d) => !(estado.existente.dibujos ?? []).some((e) => e.id === d.id)).length,
+                      'dibujo nuevo',
+                      'dibujos nuevos',
+                    )}
+                  </li>
+                )}
                 {estado.plan.totalConflictos > 0 && (
                   <li>
                     <strong>

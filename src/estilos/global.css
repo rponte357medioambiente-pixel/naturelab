@@ -2229,3 +2229,142 @@ html[data-paleta='rio'] .app::before {
 .foto-campo p {
   margin: 0;
 }
+
+/* ---------- Dibujos ---------- */
+
+.opciones-tarjeta--fila {
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+
+.selector-segmentado--tres .segmentos {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.selector-segmentado--tres label span {
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 52px;
+  line-height: 1.15;
+}
+
+.selector-segmentado--tres small {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.lienzo-dibujo {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lienzo-dibujo__estado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+}
+
+.lienzo-dibujo__hoja {
+  display: block;
+  width: 100%;
+  max-width: 34rem;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  /* Al dibujar, el dedo no desplaza la página ni hace zoom */
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.lienzo-dibujo__herramientas {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lienzo-dibujo__colores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.lienzo-dibujo__color {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 1px var(--linea);
+  cursor: pointer;
+}
+
+.lienzo-dibujo__color[aria-checked='true'] {
+  box-shadow: 0 0 0 3px var(--albardin-oscuro);
+}
+
+.lienzo-dibujo__grosor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 700;
+}
+
+.lienzo-dibujo__grosor input {
+  flex: 1;
+  accent-color: var(--albardin);
+}
+
+.lienzo-dibujo__botones {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.lienzo-dibujo__botones .boton {
+  padding-inline: 0.25rem;
+}
+
+.rejilla-dibujos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.75rem;
+}
+
+.tarjeta-dibujo {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  height: 100%;
+}
+
+.tarjeta-dibujo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  border: 1px solid var(--linea);
+  background: #ffffff;
+}
+
+.tarjeta-dibujo > div:first-of-type {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.tarjeta-dibujo__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.boton-enlace {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}

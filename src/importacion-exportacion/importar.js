@@ -129,6 +129,8 @@ export function prepararFusion(paquete, existente, plan, resolucion = 'mantenerL
     parcelas: [...parcelasNuevas, ...conflictosParcelas],
     observaciones,
     fotos: (paquete.fotos ?? []).filter((f) => idsEscritas.has(f.observacionId)),
+    // Los dibujos no se modifican: se añaden los que aún no están.
+    dibujos: (paquete.dibujos ?? []).filter((d) => !(existente.dibujos ?? []).some((e) => e.id === d.id)),
   };
 }
 
@@ -159,5 +161,6 @@ export function prepararCopiaNueva(paquete, generarId) {
       observacionId: idsObservaciones.get(f.observacionId),
       investigacionId,
     })),
+    dibujos: (paquete.dibujos ?? []).map((d) => ({ ...d, id: generarId(), investigacionId })),
   };
 }

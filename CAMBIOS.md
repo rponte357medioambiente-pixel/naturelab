@@ -4,6 +4,31 @@ Cuaderno de campo digital para talleres de exploración ambiental. Aplicación w
 
 ---
 
+## 7 de noviembre de 2026 · Dibujos (fase 4)
+
+### Pestaña «Dibujos»
+
+- Cada investigación, de parcela o de transecto, tiene una pestaña **Dibujos** con los dibujos de los estudiantes, la especie, el alias y la fecha. Cada dibujo se puede descargar en PNG o eliminar.
+- Al crear un dibujo se elige la especie (primero las de la investigación, después el resto del catálogo), un alias opcional y el modo:
+  - **Unir los puntos**: el contorno de la especie con sus puntos numerados. Se toca cada número en orden y la línea se traza sola; si se toca otro, el que toca parpadea. Al cerrar la figura se puede colorear.
+  - **Dibujo libre**: una hoja en blanco.
+- Herramientas: 8 colores, grosor, lápiz, goma, deshacer y borrar.
+- Funciona con el dedo, el ratón y lápices digitales (Apple Pencil, S Pen…). Con lápiz, el trazo sigue la presión y la mano apoyada no pinta.
+
+### Plantillas
+
+- Una plantilla por especie del catálogo (13), con tres niveles: el fácil usa los puntos justos para reconocer la forma (entre 15 y 29, según la especie); el medio y el difícil, unos 30 y 50.
+- Están en `public/data/plantillas.json` y se generan con `scripts/generar-plantillas.py` (Python 3 con shapely). Para añadir una especie: definir su forma en `scripts/plantillas_contornos.py` y ejecutar el generador.
+- Las especies sin plantilla se pueden dibujar en modo libre.
+
+### Cuaderno y copias
+
+- Los dibujos salen en el cuaderno en PDF, en una página propia.
+- Viajan en la copia de seguridad de la investigación (carpeta `dibujos/` del ZIP). Al fusionar se añaden los que faltan; al importar como copia reciben identificadores nuevos. Las copias anteriores siguen siendo válidas.
+- La base de datos local pasa a la versión 4, con un almacén nuevo para los dibujos; los datos existentes se conservan.
+
+---
+
 ## 6 de noviembre de 2026 · Fotos de campo en el catálogo (fase 3)
 
 - En la ficha de cualquier especie del catálogo publicado, **Sustituir por tu foto** cambia su ilustración o su imagen por una foto propia, hecha con la cámara o elegida de la galería.
@@ -92,7 +117,8 @@ Cuaderno de campo digital para talleres de exploración ambiental. Aplicación w
 
 ## Pendiente
 
-- **Fase 4:** dibujo de plantas y animales con puntos para unir.
+- **Fase 4b:** crear plantillas de «unir los puntos» desde la app, tocando el contorno sobre la foto o la ilustración de una especie (también para las de Mi catálogo).
+- Animales en el catálogo y sus plantillas.
 - Fotos en las especies de un transecto.
 - Laboratorio de Microplásticos.
 - Fondos de las paletas en mayor resolución.

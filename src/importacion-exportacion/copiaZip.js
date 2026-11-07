@@ -18,6 +18,8 @@ export const NOMBRE_DATOS = 'proyecto.json';
 // Copia de «Mi catálogo»: mismo formato de ZIP, con otro archivo de datos.
 export const NOMBRE_DATOS_CATALOGO = 'mi-catalogo.json';
 export const RUTA_FOTO = /^fotos\/([A-Za-z0-9_-]{1,100})\.(jpg|jpeg|png|webp)$/;
+// Dibujos de los estudiantes (fase 4): siempre en PNG.
+export const RUTA_DIBUJO = /^dibujos\/([A-Za-z0-9_-]{1,100})\.png$/;
 const PERMITIDOS = new Set([NOMBRE_DATOS, NOMBRE_DATOS_CATALOGO, 'LEEME.txt', 'catalogo-referencias.json']);
 // Metadatos que macOS añade al comprimir carpetas: se ignoran sin error.
 const IGNORADOS = /(^__MACOSX\/|(^|\/)\.DS_Store$)/;
@@ -27,6 +29,7 @@ const LEEME = `NatureLab: copia de seguridad de una investigación
 Este archivo contiene:
 - proyecto.json: la investigación, sus parcelas y sus observaciones.
 - fotos/: las fotografías de las observaciones, si las hay.
+- dibujos/: los dibujos de la investigación, si los hay.
 
 Para recuperarla, abre NatureLab, ve a Investigaciones y pulsa «Importar copia».
 No hace falta descomprimir el archivo.
@@ -58,9 +61,18 @@ export function esZip(bytes) {
  * @param {object[]} fotos  registros de fotos (con blob)
  * @returns {Promise<Blob>}
  */
-export async function construirZip(paquete, fotos = []) {
+export async function construirZip(paquete, fotos = [], dibujos = []) {
   const archivos = {};
   const vinculos = [];
+  const vinculosDibujos = [];
+  for (const dibujo of dibujos) {
+    if (!dibujo.blob) continue;
+    const ruta = `dibujos/${dibujo.id}.png`;
+    archivos[ruta] = [new Uint8Array(await dibujo.blob.arrayBuffer()), { level: 0 }];
+    // eslint-disable-next-line no-unused-vars
+    const { blob, tipoMime, tamano, ...datos } = dibujo;
+    vinculosDibujos.push({ ...datos, archivo: ruta });
+  }
   for (const foto of fotos) {
     const ruta = `fotos/${foto.id}.${extensionDeTipo(foto.tipoMime ?? foto.blob.type)}`;
     // Las imágenes ya están comprimidas: se guardan sin volver a comprimir.
@@ -75,7 +87,9 @@ export async function construirZip(paquete, fotos = []) {
       fecha: foto.fecha ?? null,
     });
   }
-  archivos[NOMBRE_DATOS] = strToU8(`${JSON.stringify({ ...paquete, fotos: vinculos }, null, 2)}\n`);
+  archivos[NOMBRE_DATOS] = strToU8(
+    `${JSON.stringify({ ...paquete, fotos: vinculos, dibujos: vinculosDibujos }, null, 2)}\n`,
+  );
   archivos['LEEME.txt'] = strToU8(LEEME);
   return new Blob([zipSync(archivos, { level: 6 })], { type: 'application/zip' });
 }
@@ -100,7 +114,7 @@ export function leerZip(bytes, { nombreDatos = NOMBRE_DATOS } = {}) {
         if (nombre.endsWith('/') || IGNORADOS.test(nombre)) return false;
         cuenta += 1;
         const seguro = !nombre.includes('..') && !nombre.startsWith('/') && !nombre.includes('\\');
-        if (!seguro || !(PERMITIDOS.has(nombre) || RUTA_FOTO.test(nombre))) {
+        if (!seguro || !(PERMITIDOS.has(nombre) || RUTA_FOTO.test(nombre) || RUTA_DIBUJO.test(nombre))) {
           rechazados.push(nombre);
           return false;
         }
@@ -108,7 +122,7 @@ export function leerZip(bytes, { nombreDatos = NOMBRE_DATOS } = {}) {
         if (
           cuenta > LIMITES_ZIP.archivos ||
           total > LIMITES_ZIP.tamanoDescomprimidoBytes ||
-          (RUTA_FOTO.test(nombre) && archivo.originalSize > LIMITES_ZIP.tamanoFotoBytes)
+          ((RUTA_FOTO.test(nombre) || RUTA_DIBUJO.test(nombre)) && archivo.originalSize > LIMITES_ZIP.tamanoFotoBytes)
         ) {
           demasiado = true;
           return false;

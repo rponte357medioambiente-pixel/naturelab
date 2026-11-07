@@ -445,6 +445,54 @@ export async function generarPdfCuaderno(datos, { buscarEspecie = () => null, ob
     }
   }
 
+  /* ---------- Dibujos ---------- */
+
+  const dibujos = datos.dibujos ?? [];
+  if (dibujos.length > 0 && prepararFoto) {
+    nuevaPagina();
+    titulo('Dibujos');
+    const hueco = 8;
+    const lado = (ANCHO_UTIL - hueco) / 2;
+    let columna = 0;
+    let altoFila = 0;
+    for (const d of dibujos) {
+      let imagen = null;
+      try {
+        imagen = await prepararFoto(d);
+      } catch {
+        imagen = null;
+      }
+      if (!imagen) continue;
+      const nombre = buscarEspecie(d.especieId)?.nombreComun ?? d.nombreComun;
+      const lineas = [
+        { texto: nombre, estilo: { tamano: 11, estilo: 'bold' } },
+        { texto: `${d.alias || 'Sin alias'} · ${formatearFecha(d.fecha)}`, estilo: { tamano: 9, color: COLOR.suave } },
+        { texto: d.modo === 'puntos' ? 'Unir los puntos' : 'Dibujo libre', estilo: { tamano: 9, color: COLOR.suave } },
+      ];
+      const altoTexto = lineas.reduce((acum, l) => acum + fuente(l.estilo), 0);
+      const altoBloque = lado + 2 + altoTexto + 6;
+      if (columna === 0) asegurar(altoBloque);
+      const x = PAGINA.margen + columna * (lado + hueco);
+      doc.setDrawColor(220, 210, 200);
+      doc.rect(x, y, lado, lado);
+      doc.addImage(imagen.datos, 'JPEG', x + 0.5, y + 0.5, lado - 1, lado - 1, undefined, 'FAST');
+      let yTexto = y + lado + 2;
+      for (const l of lineas) {
+        const alto = fuente(l.estilo);
+        doc.text(doc.splitTextToSize(textoPdf(l.texto), lado)[0], x, yTexto + alto * 0.72);
+        yTexto += alto;
+      }
+      altoFila = Math.max(altoFila, altoBloque);
+      columna += 1;
+      if (columna === 2) {
+        y += altoFila;
+        columna = 0;
+        altoFila = 0;
+      }
+    }
+    if (columna === 1) y += altoFila;
+  }
+
   /* ---------- Pie de página ---------- */
 
   const total = doc.getNumberOfPages();

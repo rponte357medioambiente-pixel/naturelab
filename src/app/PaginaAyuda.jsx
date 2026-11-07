@@ -114,6 +114,20 @@ export function PaginaAyuda() {
         </p>
       </section>
 
+      <section className="ayuda-bloque" aria-labelledby="ayuda-dibujos">
+        <h2 id="ayuda-dibujos">Dibujos</h2>
+        <p>
+          Cada investigación tiene una pestaña «Dibujos». Al crear uno se elige la especie y cómo dibujarla:{' '}
+          <strong>unir los puntos</strong>, con su contorno en tres niveles de dificultad, o <strong>dibujo libre</strong>,
+          en una hoja en blanco. Después se puede colorear con el dedo, el ratón o un lápiz digital; con lápiz, el trazo
+          sigue la presión y la mano apoyada en la pantalla no pinta.
+        </p>
+        <p>
+          Los dibujos se guardan en la investigación, salen en el cuaderno en PDF y viajan en su copia de seguridad. Usa
+          un alias para indicar quién dibuja, nunca el nombre real.
+        </p>
+      </section>
+
       <section className="ayuda-bloque" aria-labelledby="ayuda-aspecto">
         <h2 id="ayuda-aspecto">Paletas y tamaño del texto</h2>
         <p>

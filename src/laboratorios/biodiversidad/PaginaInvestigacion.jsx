@@ -63,12 +63,15 @@ export function PaginaInvestigacion() {
     try {
       const fotos = await obtenerFotosDeObservaciones(observaciones);
       const paquete = construirPaquete(datos, catalogo.catalogo, new Set(fotos.map((f) => f.id)));
-      const zip = await construirZip(paquete, fotos);
+      const dibujos = datos.dibujos ?? [];
+      const zip = await construirZip(paquete, fotos, dibujos);
       descargarArchivo(nombreArchivo(investigacion, 'copia', 'zip'), zip, 'application/zip');
       await marcarExportada(investigacion.id);
-      anunciar(`Copia descargada${fotos.length ? ` con ${plural(fotos.length, 'foto', 'fotos')}` : ''}.`, {
-        duracion: 5000,
-      });
+      const partes = [
+        fotos.length && plural(fotos.length, 'foto', 'fotos'),
+        dibujos.length && plural(dibujos.length, 'dibujo', 'dibujos'),
+      ].filter(Boolean);
+      anunciar(`Copia descargada${partes.length ? ` con ${partes.join(' y ')}` : ''}.`, { duracion: 5000 });
     } catch (e) {
       anunciar(`No se ha podido crear la copia: ${e.message}`, { tipo: 'error', duracion: 6000 });
     } finally {
@@ -178,12 +181,14 @@ export function PaginaInvestigacion() {
           <>
             <NavLink to="transectos">Transectos</NavLink>
             <NavLink to="cobertura">Resultados</NavLink>
+            <NavLink to="dibujos">Dibujos</NavLink>
           </>
         ) : (
           <>
             <NavLink to="parcelas">Parcelas</NavLink>
             <NavLink to="observaciones">Observaciones</NavLink>
             <NavLink to="resultados">Resultados</NavLink>
+            <NavLink to="dibujos">Dibujos</NavLink>
           </>
         )}
       </nav>
