@@ -3,6 +3,7 @@ import { Link, Navigate, NavLink, Outlet, useOutletContext, useParams } from 're
 import { useAnunciar } from '../../accesibilidad/Anunciador.jsx';
 import { useTituloDocumento } from '../../accesibilidad/useTituloDocumento.js';
 import { esTransecto, necesitaCopia, TIPOS_PRACTICA } from '../../almacenamiento/modelo.js';
+import { esErrorDeModulo, importarModulo } from '../../app/recargaSegura.js';
 import {
   marcarExportada,
   obtenerDatosInvestigacion,
@@ -84,8 +85,8 @@ export function PaginaInvestigacion() {
     setPdf(null);
     try {
       const [{ generarPdfCuaderno }, { prepararFotoParaPdf }] = await Promise.all([
-        import('../../importacion-exportacion/pdfCuaderno.js'),
-        import('../../fotos/procesarFoto.js'),
+        importarModulo(() => import('../../importacion-exportacion/pdfCuaderno.js')),
+        importarModulo(() => import('../../fotos/procesarFoto.js')),
       ]);
       const blob = await generarPdfCuaderno(datos, {
         buscarEspecie: catalogo.buscarEspecie,
@@ -94,7 +95,12 @@ export function PaginaInvestigacion() {
       });
       setPdf({ blob, nombre: nombreArchivo(investigacion, 'cuaderno', 'pdf') });
     } catch (e) {
-      anunciar(`No se ha podido generar el PDF: ${e.message}`, { tipo: 'error', duracion: 6000 });
+      anunciar(
+        esErrorDeModulo(e)
+          ? 'No se ha podido generar el PDF porque la app se ha actualizado. Recarga la página e inténtalo de nuevo.'
+          : `No se ha podido generar el PDF: ${e.message}`,
+        { tipo: 'error', duracion: 8000 },
+      );
     } finally {
       setOcupado(null);
     }

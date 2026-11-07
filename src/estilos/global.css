@@ -2368,3 +2368,139 @@ html[data-paleta='rio'] .app::before {
   font: inherit;
   cursor: pointer;
 }
+
+/* Especies anotadas en cada transecto, en la lista de transectos */
+.especies-transecto {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.92rem;
+}
+
+.especies-transecto li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px dashed var(--linea);
+  padding-top: 0.2rem;
+}
+
+/* ---------- Juego «¿Qué especie es?» ---------- */
+
+.acciones-apiladas-catalogo {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.juego-investigaciones {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.25rem 0 0 2rem;
+}
+
+.juego {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.juego-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.juego-imagen {
+  display: block;
+  width: 100%;
+  max-width: 34rem;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin: 0 auto;
+  border-radius: var(--radio);
+  border: 1px solid var(--linea);
+  background: var(--neutro);
+}
+
+.juego-titulo {
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.juego-opciones {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.juego-opcion {
+  min-height: 52px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-control);
+  background: var(--papel);
+  color: var(--tinta);
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.juego-opcion:hover:not([aria-disabled='true']) {
+  border-color: var(--albardin);
+}
+
+.juego-opcion--correcta {
+  background: #e3f1e2;
+  border: 2px solid #2f6b3a;
+  color: #24552d;
+  font-weight: 700;
+}
+
+.juego-opcion--incorrecta {
+  background: var(--error-fondo);
+  border: 2px solid var(--error);
+  color: var(--error);
+  font-weight: 700;
+}
+
+.juego-opcion--apagada {
+  opacity: 0.6;
+}
+
+.juego-opcion[aria-disabled='true'] {
+  cursor: default;
+}
+
+.juego-respuesta {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.juego-marcador {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  text-align: center;
+  padding: 1.25rem;
+}
+
+.juego-marcador h1 {
+  font-size: 3.2rem;
+  margin: 0;
+  line-height: 1;
+}
+
+.juego-repaso li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--linea);
+}

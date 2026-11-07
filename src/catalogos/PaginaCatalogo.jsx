@@ -7,6 +7,14 @@ import { IconoAtras, IconoCamara } from '../componentes/Iconos.jsx';
 import { buscarEspecies, useCatalogo } from './catalogo.js';
 import { CopiaMiCatalogo } from './CopiaMiCatalogo.jsx';
 
+const IconoJuego = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7" />
+    <path d="M12 17v.01" />
+  </svg>
+);
+
 export function PaginaCatalogo() {
   useTituloDocumento('Catálogo de especies');
   const { cargando, error, especies, catalogo } = useCatalogo();
@@ -36,10 +44,16 @@ export function PaginaCatalogo() {
         <p>Las plantas de los lugares estudiados y las que añadas tú en tus salidas.</p>
       </header>
 
-      <Link to="/catalogo/nueva" className="boton boton--ancho">
-        <IconoCamara />
-        Añadir a mi catálogo
-      </Link>
+      <div className="acciones-apiladas-catalogo">
+        <Link to="/catalogo/nueva" className="boton boton--ancho">
+          <IconoCamara />
+          Añadir a mi catálogo
+        </Link>
+        <Link to="/catalogo/juego" className="boton boton--secundario boton--ancho">
+          <IconoJuego />
+          Jugar: ¿qué especie es?
+        </Link>
+      </div>
 
       <div className="campo" style={{ marginTop: '1.25rem' }}>
         <label htmlFor="buscar-catalogo">Buscar por nombre común, científico o familia</label>

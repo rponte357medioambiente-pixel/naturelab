@@ -4,6 +4,21 @@ Cuaderno de campo digital para talleres de exploración ambiental. Aplicación w
 
 ---
 
+## 7 de noviembre de 2026 · Juego «¿Qué especie es?» (fase 5)
+
+- Nuevo botón en el Catálogo: **Jugar: ¿qué especie es?**. Se ve la imagen de una especie y se elige su nombre entre cuatro.
+- Antes de empezar se elige con qué especies jugar (todo el catálogo o las de una o varias investigaciones), si responder con el **nombre común** o el **científico**, y el número de preguntas: 5, 10 o 20.
+- Solo se preguntan las especies con foto o ilustración, incluidas las fotos de campo y las especies de Mi catálogo con foto. Cada especie sale una vez por partida; las opciones incorrectas salen primero de las especies elegidas y, si no bastan, del resto del catálogo.
+- Al responder, la correcta se marca en verde con ✓ y la equivocada en rojo con ✕, junto a un rasgo de la especie. Al final se muestran los aciertos y las especies falladas, con enlace a sus fichas.
+- No se guarda ningún resultado.
+
+### Correcciones
+
+- Cada transecto muestra la lista de sus especies con sus centímetros, y el botón para anotarlas se llama «Anotar especies».
+- Si la app se actualiza con la página abierta y una parte no carga (por ejemplo, el generador del PDF), la página se recarga sola una vez.
+
+---
+
 ## 7 de noviembre de 2026 · Dibujos (fase 4)
 
 ### Pestaña «Dibujos»

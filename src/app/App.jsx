@@ -24,6 +24,7 @@ import { SeccionTransectos } from '../laboratorios/biodiversidad/SeccionTransect
 import { PaginaModelos } from '../modelos/PaginaModelos.jsx';
 import { PaginaNuevoDibujo } from '../dibujos/PaginaNuevoDibujo.jsx';
 import { SeccionDibujos } from '../dibujos/SeccionDibujos.jsx';
+import { PaginaJuego } from '../juego/PaginaJuego.jsx';
 import { PaginaMicroplasticos } from '../laboratorios/microplasticos/PaginaMicroplasticos.jsx';
 import { Layout } from './Layout.jsx';
 import { PaginaAyuda } from './PaginaAyuda.jsx';
@@ -49,6 +50,7 @@ export default function App() {
               <Route path="catalogo" element={<PaginaCatalogo />} />
               <Route path="catalogo/fotos" element={<PaginaPrepararFotos />} />
               <Route path="catalogo/nueva" element={<PaginaEspeciePropia />} />
+              <Route path="catalogo/juego" element={<PaginaJuego />} />
               <Route path="catalogo/:especieId/editar" element={<PaginaEspeciePropia />} />
               <Route path="catalogo/:especieId" element={<PaginaFichaEspecie />} />
               <Route path="investigaciones" element={<PaginaInvestigaciones />} />

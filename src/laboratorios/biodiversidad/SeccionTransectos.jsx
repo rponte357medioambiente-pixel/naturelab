@@ -9,7 +9,7 @@ import { IconoEditar, IconoMas, IconoPapelera } from '../../componentes/Iconos.j
 import { Campo, CamposTransecto } from './PaginasFormularioInvestigacion.jsx';
 
 export function SeccionTransectos() {
-  const { investigacion, parcelas: transectos, observaciones } = useOutletContext();
+  const { investigacion, parcelas: transectos, observaciones, catalogo } = useOutletContext();
   const anunciar = useAnunciar();
   const [editando, setEditando] = useState(transectos.length === 0 ? 'nuevo' : null);
 
@@ -70,10 +70,24 @@ export function SeccionTransectos() {
                       {t.descripcion}
                     </p>
                   )}
+                  {r.taxones.some((x) => x.cm > 0) && (
+                    <ul className="especies-transecto">
+                      {r.taxones
+                        .filter((x) => x.cm > 0)
+                        .map((x) => (
+                          <li key={x.clave}>
+                            <span>{catalogo.buscarEspecie(x.especieId)?.nombreComun ?? x.nombreComun}</span>
+                            <span className="texto-suave">
+                              {formatearNumero(x.cm, x.cm % 1 ? 1 : 0)} cm · {formatearPorcentaje(x.proporcion)}
+                            </span>
+                          </li>
+                        ))}
+                    </ul>
+                  )}
                 </div>
                 <div className="herramientas no-imprimir">
                   <Link className="boton" to={`/investigaciones/${investigacion.id}/transectos/${t.id}`}>
-                    Anotar
+                    {r.taxones.length ? 'Anotar especies' : 'Añadir especies'}
                   </Link>
                   <button type="button" className="boton boton--sencillo" onClick={() => setEditando(t.id)}>
                     <IconoEditar />
@@ -183,6 +197,11 @@ function FormularioTransecto({ inicial, investigacionId, transectos, tieneMancha
         modoBloqueado={tieneManchas}
         alCambiar={(campo, valor) => setCampos((c) => ({ ...c, [campo]: valor }))}
       />
+      {inicial && (
+        <p className="texto-suave texto-pequeno" style={{ margin: 0 }}>
+          Aquí se cambian los datos de la línea. Las especies y sus manchas se anotan con «Anotar especies».
+        </p>
+      )}
       <Campo id={`${prefijo}descripcion`} etiqueta="Descripción (opcional)">
         <input
           id={`campo-${prefijo}descripcion`}

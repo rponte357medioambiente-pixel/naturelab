@@ -128,6 +128,16 @@ export function PaginaAyuda() {
         </p>
       </section>
 
+      <section className="ayuda-bloque" aria-labelledby="ayuda-juego">
+        <h2 id="ayuda-juego">Juego «¿Qué especie es?»</h2>
+        <p>
+          En Catálogo, «Jugar: ¿qué especie es?» muestra la imagen de una especie y cuatro nombres para elegir. Se juega con
+          todo el catálogo o solo con las especies de las investigaciones que marques, con el nombre común o el científico,
+          en partidas de 5, 10 o 20 preguntas. Solo salen las especies que tienen foto o ilustración, incluidas tus fotos de
+          campo. Al final aparecen los aciertos y las especies para repasar. No se guarda ningún resultado.
+        </p>
+      </section>
+
       <section className="ayuda-bloque" aria-labelledby="ayuda-aspecto">
         <h2 id="ayuda-aspecto">Paletas y tamaño del texto</h2>
         <p>

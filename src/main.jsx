@@ -9,6 +9,9 @@ import '@fontsource/alegreya/latin-700.css';
 import './estilos/global.css';
 
 import App from './app/App.jsx';
+import { vigilarPrecargas } from './app/recargaSegura.js';
+
+vigilarPrecargas();
 
 createRoot(document.getElementById('raiz')).render(
   <StrictMode>
