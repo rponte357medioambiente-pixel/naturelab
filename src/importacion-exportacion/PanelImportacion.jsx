@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { planificarImportacionPropias } from '../catalogos/especiesPropias.js';
 import { useAnunciar } from '../accesibilidad/Anunciador.jsx';
 import { generarId } from '../almacenamiento/ids.js';
-import { guardarEspeciesPropias, guardarLote, listarEspeciesPropias, obtenerDatosInvestigacion } from '../almacenamiento/repositorio.js';
+import { guardarEspeciesPropias, guardarFotosCatalogo, guardarLote, listarEspeciesPropias, listarFotosCatalogo, obtenerDatosInvestigacion } from '../almacenamiento/repositorio.js';
 import { plural } from '../calculos/formato.js';
 import { IconoSubir } from '../componentes/Iconos.jsx';
 import { leerArchivoCopia } from './esquema.js';
@@ -72,6 +72,16 @@ export function PanelImportacion() {
           }.`;
         }
       }
+      // Fotos de campo de especies publicadas: también se queda la versión más reciente.
+      const fotosCampo = paquete.fotosCatalogo ?? [];
+      if (fotosCampo.length) {
+        const planFotos = planificarImportacionPropias(fotosCampo, await listarFotosCatalogo(), 'especieId');
+        const cambios = [...planFotos.nuevas, ...planFotos.actualizadas];
+        if (cambios.length) {
+          await guardarFotosCatalogo(cambios);
+          mensaje += ` Fotos de campo de ${plural(cambios.length, 'especie', 'especies')} actualizadas.`;
+        }
+      }
       anunciar(mensaje, { duracion: 6000 });
       setEstado({ fase: 'inicio' });
       navegar(`/investigaciones/${lote.investigacion.id}`);
@@ -134,7 +144,9 @@ export function PanelImportacion() {
             {estado.paquete.fotos.length > 0 && `, ${plural(estado.paquete.fotos.length, 'foto', 'fotos')}`}
             {(estado.paquete.dibujos ?? []).length > 0 && `, ${plural(estado.paquete.dibujos.length, 'dibujo', 'dibujos')}`}
             {(estado.paquete.especiesPropias ?? []).length > 0 &&
-              `, ${plural(estado.paquete.especiesPropias.length, 'especie de Mi catálogo', 'especies de Mi catálogo')}`}.
+              `, ${plural(estado.paquete.especiesPropias.length, 'especie de Mi catálogo', 'especies de Mi catálogo')}`}
+            {(estado.paquete.fotosCatalogo ?? []).length > 0 &&
+              `, fotos de campo de ${plural(estado.paquete.fotosCatalogo.length, 'especie', 'especies')}`}.
           </p>
           {estado.avisos.map((a) => (
             <p key={a} className="aviso aviso--ocre">

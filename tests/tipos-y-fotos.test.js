@@ -202,3 +202,54 @@ describe('las especies de Mi catálogo viajan con la investigación', () => {
     expect(sinFotos.avisos.join(' ')).toMatch(/sin sus fotos/);
   });
 });
+
+describe('las fotos de campo viajan con la investigación', () => {
+  it('llegan al otro dispositivo y siempre se queda la versión más reciente', async () => {
+    const { serializarFotosCatalogo, planificarImportacionPropias } = await import('../src/catalogos/especiesPropias.js');
+    const { construirZip } = await import('../src/importacion-exportacion/copiaZip.js');
+    const { leerArchivoCopia } = await import('../src/importacion-exportacion/esquema.js');
+    const { construirPaquete } = await import('../src/importacion-exportacion/exportar.js');
+    const { guardarFotosCatalogo } = await import('../src/almacenamiento/repositorio.js');
+    const flamenco = { id: 'phoenicopterus-roseus', propia: false };
+    const nueva = (n, parte) => ({ foto: foto(n), parte, imagenAutor: 'Raquel', imagenFuente: 'Fotografía propia', imagenLicencia: 'Todos los derechos reservados', imagenModificaciones: '' });
+
+    // Móvil: un recuento de flamencos y dos fotos de campo del flamenco
+    await guardarLote(crearEjemploSalar());
+    const datos = await obtenerDatosInvestigacion(ID_EJEMPLO);
+    await guardarObservacion({ ...crearObservacion(ID_EJEMPLO, datos.parcelas[0].id), especieId: flamenco.id, nombreComun: 'Flamenco común', abundancia: 40 });
+    await modificarFotosEspecie(flamenco, (r) => agregarFoto(r, nueva(1, 'Cuerpo entero'), { principal: true, generarId }));
+    await modificarFotosEspecie(flamenco, (r) => agregarFoto(r, nueva(2, 'Detalle'), { generarId }));
+    const conFlamenco = await obtenerDatosInvestigacion(ID_EJEMPLO);
+    const fotosMovil = await listarFotosCatalogo();
+    const deFotos = await serializarFotosCatalogo(fotosMovil);
+    const zip = await construirZip(construirPaquete(conFlamenco, null), [], [], { fotosCatalogo: deFotos.entradas, archivos: deFotos.archivos });
+    const archivoZip = new File([await zip.arrayBuffer()], 'copia.zip', { type: 'application/zip' });
+
+    const importar = async () => {
+      const leida = await leerArchivoCopia(archivoZip);
+      expect(leida.ok).toBe(true);
+      const plan = planificarImportacionPropias(leida.paquete.fotosCatalogo, await listarFotosCatalogo(), 'especieId');
+      await guardarFotosCatalogo([...plan.nuevas, ...plan.actualizadas]);
+      return plan;
+    };
+
+    // iMac sin nada: llegan las dos fotos
+    await cerrarBD();
+    await new Promise((resolve) => {
+      const r = indexedDB.deleteDatabase(NOMBRE_BD);
+      r.onsuccess = r.onerror = r.onblocked = resolve;
+    });
+    await importar();
+    let [enImac] = await listarFotosCatalogo();
+    expect(enImac.partePrincipal).toBe('Cuerpo entero');
+    expect(enImac.fotosExtra.map((x) => x.parte)).toEqual(['Detalle']);
+
+    // Si en el iMac se cambian después, la copia antigua no las pisa
+    await new Promise((r) => setTimeout(r, 5));
+    await modificarFotosEspecie(flamenco, (r) => quitarFoto(r, enImac.fotosExtra[0].id, { publicada: true }));
+    const plan = await importar();
+    expect(plan.sinCambios).toHaveLength(1);
+    [enImac] = await listarFotosCatalogo();
+    expect(enImac.fotosExtra).toHaveLength(0);
+  });
+});

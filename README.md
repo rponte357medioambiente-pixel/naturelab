@@ -45,7 +45,7 @@ El historial detallado de cambios está en [CAMBIOS.md](CAMBIOS.md).
 ## Datos y privacidad
 
 - **Sin servidor ni cuentas.** Todo se guarda en el navegador del dispositivo (IndexedDB) y nada se sube automáticamente.
-- **Copias de seguridad** en ZIP: una por investigación (con sus fotos, dibujos y las especies de Mi catálogo que usa) y otra de Mi catálogo completo (con sus fotos). Sirven para no perder datos y para pasarlos a otro dispositivo, donde se pueden importar como nuevos o fusionar.
+- **Copias de seguridad** en ZIP: una por investigación (con sus fotos, sus dibujos, las especies de Mi catálogo que usa y las fotos de campo de sus especies) y otra de Mi catálogo completo (con sus fotos). Al importar, si algo ya existe, se queda la versión más reciente. Sirven para no perder datos y para pasarlos a otro dispositivo, donde se pueden importar como nuevos o fusionar.
 - **Fotos sin ubicación:** se guardan sin datos EXIF y se revisan antes por si aparecen personas, matrículas o direcciones.
 - **Coordenadas solo si se piden.** El GPS actúa únicamente al pulsar «Usar mi ubicación». Si la ubicación de una especie protegida no debe difundirse, basta con dejarlas vacías.
 - **Sin analítica** ni servicios de terceros. El detector de personas (MediaPipe) se descarga la primera vez y queda guardado para usarse sin conexión.

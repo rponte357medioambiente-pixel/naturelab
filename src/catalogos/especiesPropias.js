@@ -193,6 +193,60 @@ export async function serializarEspeciesPropias(registros) {
 }
 
 /**
+ * Prepara para un ZIP las fotos de campo de especies del catálogo publicado
+ * (principal y adicionales). Lo usan la copia de «Mi catálogo» y la de cada
+ * investigación (con las especies que usa).
+ * @returns {Promise<{entradas: object[], archivos: object}>}
+ */
+export async function serializarFotosCatalogo(registros) {
+  const archivos = {};
+  async function vincular(foto, nombre) {
+    if (!foto?.blob) return null;
+    const tipo = foto.tipoMime ?? foto.blob.type;
+    const ruta = `fotos/${nombre}.${extensionDeTipo(tipo)}`;
+    archivos[ruta] = [new Uint8Array(await foto.blob.arrayBuffer()), { level: 0 }];
+    return { archivo: ruta, tipoMime: tipo, ancho: foto.ancho ?? null, alto: foto.alto ?? null };
+  }
+  const entradas = [];
+  for (const registro of registros) {
+    const { foto, fotosExtra, ...datos } = registro;
+    const prefijo = `catalogo-${registro.especieId}`;
+    const extras = [];
+    for (const x of fotosExtra ?? []) {
+      const vinculo = await vincular(x.foto, `${prefijo}-${x.id}`);
+      if (vinculo) extras.push({ ...x, foto: vinculo });
+    }
+    const vinculo = await vincular(foto, prefijo);
+    if (vinculo || extras.length) entradas.push({ ...datos, foto: vinculo, fotosExtra: extras });
+  }
+  return { entradas, archivos };
+}
+
+/**
+ * Lee las fotos de campo de especies publicadas que trae una copia. Sin el ZIP
+ * (copia en JSON) no hay fotos que leer. Las que no son válidas se omiten.
+ * @returns {{fotosCatalogo: object[], avisos: string[]}}
+ */
+export function leerFotosCatalogoDeCopia(lista, archivos = null) {
+  if (!Array.isArray(lista) || lista.length === 0) return { fotosCatalogo: [], avisos: [] };
+  if (!archivos) return { fotosCatalogo: [], avisos: ['Las fotos de campo solo se recuperan desde la copia en formato ZIP.'] };
+  const fotosCatalogo = [];
+  const avisos = [];
+  const vistas = new Set();
+  lista.slice(0, LIMITES_CATALOGO_PROPIO.especies).forEach((entrada, i) => {
+    const errores = [];
+    const foto = limpiarFotoCatalogo(entrada, archivos, errores, i + 1);
+    if (foto && errores.length === 0 && !vistas.has(foto.especieId)) {
+      vistas.add(foto.especieId);
+      fotosCatalogo.push(foto);
+    } else if (errores.length) {
+      avisos.push(`Unas fotos de campo no se han podido leer y se omiten (${errores[0]}).`);
+    }
+  });
+  return { fotosCatalogo, avisos };
+}
+
+/**
  * Lee las especies de «Mi catálogo» que trae una copia de investigación. Sin las
  * fotos (copia en JSON) se importan sin ellas. Las que no son válidas se omiten.
  * @returns {{especies: object[], avisos: string[]}}
@@ -222,40 +276,12 @@ export function leerEspeciesDeCopia(lista, archivos = null) {
  * @param {object[]} fotosCatalogo  fotos de campo de especies publicadas (con foto.blob)
  */
 export async function construirZipCatalogoPropio(registros, fotosCatalogo = []) {
-  const archivos = {};
-  const especies = [];
-  const fotos = [];
-  // Guarda una foto en el ZIP y devuelve su vínculo. Las imágenes ya están
-  // comprimidas: se guardan sin volver a comprimir.
-  async function vincular(foto, nombre) {
-    if (!foto?.blob) return null;
-    const tipo = foto.tipoMime ?? foto.blob.type;
-    const ruta = `fotos/${nombre}.${extensionDeTipo(tipo)}`;
-    archivos[ruta] = [new Uint8Array(await foto.blob.arrayBuffer()), { level: 0 }];
-    return { archivo: ruta, tipoMime: tipo, ancho: foto.ancho ?? null, alto: foto.alto ?? null };
-  }
-  async function vincularExtras(extras = [], prefijo) {
-    const salida = [];
-    for (const x of extras) {
-      const vinculo = await vincular(x.foto, `${prefijo}-${x.id}`);
-      if (vinculo) salida.push({ ...x, foto: vinculo });
-    }
-    return salida;
-  }
-  for (const registro of fotosCatalogo) {
-    const { foto, fotosExtra, ...datos } = registro;
-    const extras = await vincularExtras(fotosExtra, `catalogo-${registro.especieId}`);
-    const vinculo = await vincular(foto, `catalogo-${registro.especieId}`);
-    if (vinculo || extras.length) fotos.push({ ...datos, foto: vinculo, fotosExtra: extras });
-  }
-  for (const registro of registros) {
-    const { foto, fotosExtra, ...datos } = registro;
-    especies.push({
-      ...datos,
-      foto: await vincular(foto, registro.id),
-      fotosExtra: await vincularExtras(fotosExtra, registro.id),
-    });
-  }
+  // Las imágenes ya están comprimidas: se guardan en el ZIP sin volver a comprimir.
+  const deEspecies = await serializarEspeciesPropias(registros);
+  const deFotos = await serializarFotosCatalogo(fotosCatalogo);
+  const archivos = { ...deEspecies.archivos, ...deFotos.archivos };
+  const especies = deEspecies.entradas;
+  const fotos = deFotos.entradas;
   const paquete = {
     formato: FORMATO_CATALOGO_PROPIO,
     versionEsquema: VERSION_ESQUEMA,

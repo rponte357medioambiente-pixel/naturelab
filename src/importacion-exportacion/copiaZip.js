@@ -30,8 +30,10 @@ Este archivo contiene:
 - proyecto.json: la investigación, sus parcelas y sus observaciones.
 - fotos/: las fotografías de las observaciones, si las hay.
 - dibujos/: los dibujos de la investigación, si los hay.
-- Las especies de «Mi catálogo» que usa la investigación van en proyecto.json,
-  con sus fotos en fotos/: al importar la copia se añaden a «Mi catálogo».
+- Las especies de «Mi catálogo» que usa la investigación y las fotos de campo de
+  las especies del catálogo que aparecen en ella van en proyecto.json, con las
+  imágenes en fotos/. Al importar la copia se añaden o, si ya existen, se queda
+  la versión más reciente.
 
 Para recuperarla, abre NatureLab, ve a Investigaciones y pulsa «Importar copia».
 No hace falta descomprimir el archivo.
@@ -64,11 +66,14 @@ export function esZip(bytes) {
  * @returns {Promise<Blob>}
  */
 /**
- * @param {{entradas: object[], archivos: object}} especies  especies de «Mi catálogo» que usa la
- *   investigación, preparadas con serializarEspeciesPropias()
+ * @param {{especiesPropias?: object[], fotosCatalogo?: object[], archivos?: object}} catalogo
+ *   especies de «Mi catálogo» y fotos de campo de especies publicadas que usa la investigación,
+ *   preparadas con serializarEspeciesPropias() y serializarFotosCatalogo()
  */
-export async function construirZip(paquete, fotos = [], dibujos = [], especies = { entradas: [], archivos: {} }) {
-  const archivos = { ...especies.archivos };
+export async function construirZip(paquete, fotos = [], dibujos = [], catalogo = {}) {
+  const especiesPropias = catalogo.especiesPropias ?? catalogo.entradas ?? [];
+  const fotosCatalogo = catalogo.fotosCatalogo ?? [];
+  const archivos = { ...(catalogo.archivos ?? {}) };
   const vinculos = [];
   const vinculosDibujos = [];
   for (const dibujo of dibujos) {
@@ -94,7 +99,7 @@ export async function construirZip(paquete, fotos = [], dibujos = [], especies =
     });
   }
   archivos[NOMBRE_DATOS] = strToU8(
-    `${JSON.stringify({ ...paquete, fotos: vinculos, dibujos: vinculosDibujos, especiesPropias: especies.entradas }, null, 2)}\n`,
+    `${JSON.stringify({ ...paquete, fotos: vinculos, dibujos: vinculosDibujos, especiesPropias, fotosCatalogo }, null, 2)}\n`,
   );
   archivos['LEEME.txt'] = strToU8(LEEME);
   return new Blob([zipSync(archivos, { level: 6 })], { type: 'application/zip' });

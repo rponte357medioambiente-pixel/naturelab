@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Link, Navigate, NavLink, Outlet, useOutletContext, useParams } from 'react-router-dom';
 import { useAnunciar } from '../../accesibilidad/Anunciador.jsx';
 import { useTituloDocumento } from '../../accesibilidad/useTituloDocumento.js';
-import { esTransecto, necesitaCopia, PREFIJO_ESPECIE_PROPIA, TIPOS_PRACTICA } from '../../almacenamiento/modelo.js';
-import { serializarEspeciesPropias } from '../../catalogos/especiesPropias.js';
+import { esTransecto, necesitaCopia, TIPOS_PRACTICA } from '../../almacenamiento/modelo.js';
+import { serializarEspeciesPropias, serializarFotosCatalogo } from '../../catalogos/especiesPropias.js';
 import { esErrorDeModulo, importarModulo } from '../../app/recargaSegura.js';
-import { listarEspeciesPropias, marcarExportada, obtenerDatosInvestigacion, obtenerFotosDeObservaciones } from '../../almacenamiento/repositorio.js';
+import { listarEspeciesPropias, listarFotosCatalogo, marcarExportada, obtenerDatosInvestigacion, obtenerFotosDeObservaciones } from '../../almacenamiento/repositorio.js';
 import { useConsulta } from '../../almacenamiento/useConsulta.js';
 import { formatearFecha, formatearNumero, plural } from '../../calculos/formato.js';
 import { useCatalogo } from '../../catalogos/catalogo.js';
@@ -62,18 +62,26 @@ export function PaginaInvestigacion() {
       const fotos = await obtenerFotosDeObservaciones(observaciones);
       const paquete = construirPaquete(datos, catalogo.catalogo, new Set(fotos.map((f) => f.id)));
       const dibujos = datos.dibujos ?? [];
-      // Especies de «Mi catálogo» que usa la investigación: viajan con ella.
-      const usadas = new Set(
-        [...datos.observaciones, ...dibujos].map((o) => o.especieId).filter((id) => id?.startsWith(PREFIJO_ESPECIE_PROPIA)),
-      );
+      // Las especies de «Mi catálogo» que usa la investigación y las fotos de campo de las
+      // especies publicadas que aparecen en ella viajan con la copia.
+      const usadas = new Set([...datos.observaciones, ...dibujos].map((o) => o.especieId).filter(Boolean));
       const propias = (await listarEspeciesPropias()).filter((e) => usadas.has(e.id));
-      const zip = await construirZip(paquete, fotos, dibujos, await serializarEspeciesPropias(propias));
+      const fotosCampo = (await listarFotosCatalogo()).filter((r) => usadas.has(r.especieId));
+      const deEspecies = await serializarEspeciesPropias(propias);
+      const deFotos = await serializarFotosCatalogo(fotosCampo);
+      const zip = await construirZip(paquete, fotos, dibujos, {
+        especiesPropias: deEspecies.entradas,
+        fotosCatalogo: deFotos.entradas,
+        archivos: { ...deEspecies.archivos, ...deFotos.archivos },
+      });
       descargarArchivo(nombreArchivo(investigacion, 'copia', 'zip'), zip, 'application/zip');
       await marcarExportada(investigacion.id);
       const partes = [
         fotos.length && plural(fotos.length, 'foto', 'fotos'),
         dibujos.length && plural(dibujos.length, 'dibujo', 'dibujos'),
         propias.length && plural(propias.length, 'especie de Mi catálogo', 'especies de Mi catálogo'),
+        deFotos.entradas.length &&
+          `fotos de campo de ${plural(deFotos.entradas.length, 'especie del catálogo', 'especies del catálogo')}`,
       ].filter(Boolean);
       anunciar(`Copia descargada${partes.length ? ` con ${partes.join(' y ')}` : ''}.`, { duracion: 5000 });
     } catch (e) {

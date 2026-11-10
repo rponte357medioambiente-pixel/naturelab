@@ -8,8 +8,9 @@ Cuaderno de campo digital para talleres de exploración ambiental. Aplicación w
 
 ### Las especies viajan con la investigación
 
-- La copia de seguridad de cada investigación incluye ahora las especies de **Mi catálogo** que usa (por ejemplo, las creadas en el campo con «Añadir especie nueva»), con sus fotos.
-- Al importarla en otro dispositivo, esas especies se añaden solas a Mi catálogo, o se actualizan si la copia trae una versión más reciente. Ya no hace falta exportar e importar Mi catálogo por separado.
+- La copia de seguridad de cada investigación incluye ahora las especies de **Mi catálogo** que usa (por ejemplo, las creadas en el campo con «Añadir especie nueva»), con sus fotos, y las **fotos de campo** de las especies del catálogo publicado que aparecen en ella (por ejemplo, las fotos del flamenco).
+- Al importarla en otro dispositivo, todo se añade solo. Si una especie o sus fotos ya existen, se queda la **versión más reciente** según su fecha de última modificación: una copia antigua no pisa cambios posteriores. La comparación es por especie, no foto a foto.
+- Ya no hace falta exportar e importar Mi catálogo por separado para pasar el trabajo de campo de un dispositivo a otro.
 - Las copias hechas antes de este cambio no traen las especies: para recuperarlas, exporta Mi catálogo en el dispositivo de origen e impórtalo en el otro, o vuelve a exportar la investigación con la app actualizada.
 
 ### Fauna del Salar de los Canos
