@@ -1,8 +1,8 @@
 {
   "versionCatalogo": 2,
-  "fechaRevision": null,
+  "fechaRevision": "2026-11-10",
   "estado": "provisional",
-  "nota": "Catálogo de partida del Salar de los Canos y de la duna del río Antas (Vera, Almería). Nombres y descripciones pendientes de revisión botánica. Las imágenes son fotografías con licencia verificada o ilustraciones esquemáticas propias.",
+  "nota": "Catálogo de partida del Salar de los Canos y de la duna del río Antas (Vera, Almería): plantas, aves, un reptil y libélulas. Nombres y descripciones pendientes de revisión. Las imágenes son fotografías con licencia verificada o ilustraciones esquemáticas propias; las especies sin imagen pueden recibir fotos de campo desde su ficha.",
   "especies": [
     {
       "id": "tamarix-canariensis",
@@ -335,6 +335,596 @@
       ],
       "tipo": "planta",
       "grupo": "hierbas"
+    },
+    {
+      "id": "phoenicopterus-roseus",
+      "nombreComun": "Flamenco común",
+      "nombreCientifico": "Phoenicopterus roseus",
+      "rango": "especie",
+      "familia": "Phoenicopteridae",
+      "descripcion": "Ave grande, de patas y cuello muy largos, blanca rosada.",
+      "rasgos": [
+        "Pico grueso y curvado hacia abajo, rosa con la punta negra",
+        "En vuelo se ven las alas rojas y negras",
+        "Se alimenta filtrando el agua con la cabeza hacia abajo"
+      ],
+      "habitat": "Lagunas salinas y saladares de poca profundidad.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025). Presente todo el año.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera",
+        "dunas-costa"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "acuaticas"
+    },
+    {
+      "id": "oxyura-leucocephala",
+      "nombreComun": "Malvasía cabeciblanca",
+      "nombreCientifico": "Oxyura leucocephala",
+      "rango": "especie",
+      "familia": "Anatidae",
+      "descripcion": "Pato buceador pequeño y rechoncho, de cola rígida que a menudo levanta.",
+      "rasgos": [
+        "El macho tiene la cabeza blanca con píleo negro y el pico azul celeste, abultado en la base",
+        "La hembra es parda, con una franja oscura en la mejilla clara",
+        "Bucea con frecuencia"
+      ],
+      "habitat": "Lagunas con aguas abiertas y orillas con vegetación.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025). Especie en peligro de extinción: observadla sin molestarla.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "acuaticas"
+    },
+    {
+      "id": "netta-rufina",
+      "nombreComun": "Pato colorado",
+      "nombreCientifico": "Netta rufina",
+      "rango": "especie",
+      "familia": "Anatidae",
+      "descripcion": "Pato buceador de tamaño medio.",
+      "rasgos": [
+        "El macho tiene la cabeza redondeada de color anaranjado y el pico rojo",
+        "Pecho negro y flancos blancos en el macho",
+        "La hembra es parda, con las mejillas claras"
+      ],
+      "habitat": "Lagunas con vegetación sumergida.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025).",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "acuaticas"
+    },
+    {
+      "id": "spatula-clypeata",
+      "nombreComun": "Cuchara común",
+      "nombreCientifico": "Spatula clypeata",
+      "rango": "especie",
+      "familia": "Anatidae",
+      "descripcion": "Pato de superficie con un pico enorme en forma de cuchara.",
+      "rasgos": [
+        "El macho tiene la cabeza verde, el pecho blanco y los flancos castaños",
+        "Nada con el pico rozando el agua para filtrar alimento"
+      ],
+      "habitat": "Aguas someras, sobre todo en invierno.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025).",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "acuaticas"
+    },
+    {
+      "id": "tachybaptus-ruficollis",
+      "nombreComun": "Zampullín común",
+      "nombreCientifico": "Tachybaptus ruficollis",
+      "rango": "especie",
+      "familia": "Podicipedidae",
+      "descripcion": "Ave acuática muy pequeña y rechoncha, de cola corta.",
+      "rasgos": [
+        "En primavera, mejillas y cuello castaños y una mancha amarilla en la base del pico",
+        "Desaparece buceando y sale lejos"
+      ],
+      "habitat": "Aguas tranquilas con vegetación en las orillas.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025).",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "acuaticas"
+    },
+    {
+      "id": "podiceps-nigricollis",
+      "nombreComun": "Zampullín cuellinegro",
+      "nombreCientifico": "Podiceps nigricollis",
+      "rango": "especie",
+      "familia": "Podicipedidae",
+      "descripcion": "Ave acuática pequeña, de ojos rojos y pico fino algo vuelto hacia arriba.",
+      "rasgos": [
+        "En verano, cabeza y cuello negros con penachos dorados detrás del ojo",
+        "En invierno, gris por encima y blanquecino por debajo"
+      ],
+      "habitat": "Lagunas salinas y aguas abiertas.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025).",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "acuaticas"
+    },
+    {
+      "id": "porphyrio-porphyrio",
+      "nombreComun": "Calamón común",
+      "nombreCientifico": "Porphyrio porphyrio",
+      "rango": "especie",
+      "familia": "Rallidae",
+      "descripcion": "Ave grande, de color azul morado brillante.",
+      "rasgos": [
+        "Pico y escudete frontal rojos y muy gruesos",
+        "Patas rojas y largas, con dedos largos",
+        "Camina entre la vegetación de la orilla"
+      ],
+      "habitat": "Carrizales y orillas con vegetación densa.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025).",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "acuaticas"
+    },
+    {
+      "id": "himantopus-himantopus",
+      "nombreComun": "Cigüeñuela común",
+      "nombreCientifico": "Himantopus himantopus",
+      "rango": "especie",
+      "familia": "Recurvirostridae",
+      "descripcion": "Limícola esbelta, blanca y negra, con patas larguísimas.",
+      "rasgos": [
+        "Patas rosas muy largas",
+        "Alas negras y cuerpo blanco",
+        "Pico negro, fino y recto"
+      ],
+      "habitat": "Aguas someras de lagunas salinas y saladares.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025).",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera",
+        "dunas-costa"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "limicolas"
+    },
+    {
+      "id": "charadrius-alexandrinus",
+      "nombreComun": "Chorlitejo patinegro",
+      "nombreCientifico": "Charadrius alexandrinus",
+      "rango": "especie",
+      "familia": "Charadriidae",
+      "descripcion": "Limícola pequeña, de color pardo arena por encima y blanca por debajo.",
+      "rasgos": [
+        "Patas oscuras",
+        "Manchas oscuras a los lados del pecho, sin formar un collar completo",
+        "Corre a ratos y se para de golpe"
+      ],
+      "habitat": "Orillas de arena y barro, playas y saladares.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025).",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "dunas-costa",
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "limicolas"
+    },
+    {
+      "id": "calidris-alpina",
+      "nombreComun": "Correlimos común",
+      "nombreCientifico": "Calidris alpina",
+      "rango": "especie",
+      "familia": "Scolopacidae",
+      "descripcion": "Limícola pequeña, de pico negro algo curvado en la punta.",
+      "rasgos": [
+        "En invierno, gris por encima y blanca por debajo",
+        "En verano, una mancha negra en el vientre",
+        "Suele ir en grupos que vuelan juntos"
+      ],
+      "habitat": "Orillas de barro de lagunas y marismas.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025).",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera",
+        "dunas-costa"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "limicolas"
+    },
+    {
+      "id": "ardeola-ralloides",
+      "nombreComun": "Garcilla cangrejera",
+      "nombreCientifico": "Ardeola ralloides",
+      "rango": "especie",
+      "familia": "Ardeidae",
+      "descripcion": "Garza pequeña, de color ocre cuando está posada.",
+      "rasgos": [
+        "Al volar se ven de golpe las alas blancas",
+        "En época de cría, plumas largas en la nuca",
+        "Pico verdoso o azulado con la punta oscura"
+      ],
+      "habitat": "Orillas con vegetación de lagunas y canales.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025). Especie amenazada.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "garzas"
+    },
+    {
+      "id": "plegadis-falcinellus",
+      "nombreComun": "Morito común",
+      "nombreCientifico": "Plegadis falcinellus",
+      "rango": "especie",
+      "familia": "Threskiornithidae",
+      "descripcion": "Ave oscura, de cuello largo y pico largo y curvado hacia abajo.",
+      "rasgos": [
+        "De lejos parece negra; de cerca, castaña con reflejos verdes y bronce",
+        "Vuela en grupos con el cuello estirado"
+      ],
+      "habitat": "Aguas someras y orillas con vegetación.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025).",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "garzas"
+    },
+    {
+      "id": "chlidonias-hybrida",
+      "nombreComun": "Fumarel cariblanco",
+      "nombreCientifico": "Chlidonias hybrida",
+      "rango": "especie",
+      "familia": "Laridae",
+      "descripcion": "Charrán pequeño que vuela sobre el agua capturando insectos.",
+      "rasgos": [
+        "En verano, capirote negro, mejillas blancas y cuerpo gris oscuro",
+        "Cola poco ahorquillada",
+        "Vuelo ligero, con picados cortos sobre el agua"
+      ],
+      "habitat": "Lagunas con vegetación flotante.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025).",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "gaviotas"
+    },
+    {
+      "id": "curruca-melanocephala",
+      "nombreComun": "Curruca cabecinegra",
+      "nombreCientifico": "Curruca melanocephala",
+      "rango": "especie",
+      "familia": "Sylviidae",
+      "descripcion": "Pájaro pequeño y activo de los matorrales.",
+      "rasgos": [
+        "El macho tiene el capirote negro, la garganta blanca y un anillo rojo alrededor del ojo",
+        "Canto rápido y rasposo",
+        "Se mueve sin parar entre las ramas"
+      ],
+      "habitat": "Matorrales, setos y vegetación de las orillas.",
+      "notas": "Citada en el Salar de los Canos (birdingplaces.eu, actualizado en 2025). Antes se llamaba Sylvia melanocephala.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "pradera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "pajaros"
+    },
+    {
+      "id": "anas-platyrhynchos",
+      "nombreComun": "Ánade azulón",
+      "nombreCientifico": "Anas platyrhynchos",
+      "rango": "especie",
+      "familia": "Anatidae",
+      "descripcion": "El pato más común.",
+      "rasgos": [
+        "El macho tiene la cabeza verde brillante, un collar blanco y el pico amarillo",
+        "La hembra es parda, con el pico anaranjado y oscuro",
+        "Una franja azul en el ala, bordeada de blanco"
+      ],
+      "habitat": "Todo tipo de aguas, también en parques.",
+      "notas": "Habitual en los humedales costeros de la zona; confirmad su presencia en el Salar.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "acuaticas"
+    },
+    {
+      "id": "fulica-atra",
+      "nombreComun": "Focha común",
+      "nombreCientifico": "Fulica atra",
+      "rango": "especie",
+      "familia": "Rallidae",
+      "descripcion": "Ave acuática negra y redondeada.",
+      "rasgos": [
+        "Pico y escudete frontal blancos",
+        "Nada moviendo la cabeza adelante y atrás",
+        "En invierno forma grupos numerosos"
+      ],
+      "habitat": "Lagunas y embalses con vegetación.",
+      "notas": "Habitual en los humedales costeros de la zona; confirmad su presencia en el Salar.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "acuaticas"
+    },
+    {
+      "id": "egretta-garzetta",
+      "nombreComun": "Garceta común",
+      "nombreCientifico": "Egretta garzetta",
+      "rango": "especie",
+      "familia": "Ardeidae",
+      "descripcion": "Garza mediana, completamente blanca.",
+      "rasgos": [
+        "Pico negro y fino",
+        "Patas negras con los dedos amarillos",
+        "Caza caminando despacio en aguas someras"
+      ],
+      "habitat": "Orillas de lagunas, marismas y costas.",
+      "notas": "Habitual en los humedales costeros de la zona; confirmad su presencia en el Salar.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera",
+        "dunas-costa"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "garzas"
+    },
+    {
+      "id": "larus-michahellis",
+      "nombreComun": "Gaviota patiamarilla",
+      "nombreCientifico": "Larus michahellis",
+      "rango": "especie",
+      "familia": "Laridae",
+      "descripcion": "Gaviota grande de dorso gris.",
+      "rasgos": [
+        "Patas amarillas",
+        "Pico amarillo con una mancha roja",
+        "Los jóvenes son pardos moteados"
+      ],
+      "habitat": "Costa, playas y lagunas cercanas al mar.",
+      "notas": "Habitual en los humedales costeros de la zona; confirmad su presencia en el Salar.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "dunas-costa"
+      ],
+      "tipo": "animal",
+      "grupo": "aves",
+      "subgrupo": "gaviotas"
+    },
+    {
+      "id": "testudo-graeca",
+      "nombreComun": "Tortuga mora",
+      "nombreCientifico": "Testudo graeca",
+      "rango": "especie",
+      "familia": "Testudinidae",
+      "descripcion": "Tortuga terrestre de caparazón abombado, amarillento con manchas oscuras.",
+      "rasgos": [
+        "Un espolón córneo en la parte trasera de cada muslo",
+        "Escudos del caparazón con manchas negras"
+      ],
+      "habitat": "Matorral semiárido del sureste peninsular.",
+      "notas": "Citada en el entorno del Salar de los Canos (visit-andalucia.com, 2022). Especie protegida: no se debe coger, mover ni molestar.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "desierto"
+      ],
+      "tipo": "animal",
+      "grupo": "reptiles"
+    },
+    {
+      "id": "anax-parthenope",
+      "nombreComun": "Emperador menor",
+      "nombreCientifico": "Anax parthenope",
+      "rango": "especie",
+      "familia": "Aeshnidae",
+      "descripcion": "Libélula grande que patrulla en vuelo sobre el agua.",
+      "rasgos": [
+        "Tórax pardo verdoso",
+        "En el macho, la base del abdomen es azul",
+        "Vuela mucho rato sin posarse"
+      ],
+      "habitat": "Orillas de la laguna y vegetación cercana al agua.",
+      "notas": "Citada en el Salar de los Canos (López Colón y Bahillo de la Puebla, Arquivos Entomolóxicos 22, 2020). Nombre común pendiente de revisión.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "insecto",
+      "grupo": "libelulas"
+    },
+    {
+      "id": "trithemis-kirbyi",
+      "nombreComun": "Trithemis de Kirby",
+      "nombreCientifico": "Trithemis kirbyi",
+      "rango": "especie",
+      "familia": "Libellulidae",
+      "descripcion": "Libélula mediana de origen africano, que ha colonizado el sureste peninsular.",
+      "rasgos": [
+        "El macho es rojo anaranjado",
+        "Mancha ámbar en la base de las alas traseras",
+        "Se posa en piedras y ramitas cerca del agua"
+      ],
+      "habitat": "Orillas de la laguna y vegetación cercana al agua.",
+      "notas": "Citada en el Salar de los Canos (López Colón y Bahillo de la Puebla, Arquivos Entomolóxicos 22, 2020). Nombre común pendiente de revisión.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "insecto",
+      "grupo": "libelulas"
+    },
+    {
+      "id": "ceriagrion-tenellum",
+      "nombreComun": "Caballito rojo menor",
+      "nombreCientifico": "Ceriagrion tenellum",
+      "rango": "especie",
+      "familia": "Coenagrionidae",
+      "descripcion": "Caballito del diablo pequeño y delicado.",
+      "rasgos": [
+        "El macho tiene el abdomen rojo de punta a punta",
+        "Patas rojizas",
+        "Vuela bajo, entre la vegetación de la orilla"
+      ],
+      "habitat": "Orillas de la laguna y vegetación cercana al agua.",
+      "notas": "Citada en el Salar de los Canos (López Colón y Bahillo de la Puebla, Arquivos Entomolóxicos 22, 2020). Nombre común pendiente de revisión.",
+      "imagen": null,
+      "imagenAutor": null,
+      "imagenFuente": null,
+      "imagenLicencia": null,
+      "estadoValidacion": "pendiente",
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "insecto",
+      "grupo": "libelulas"
     }
   ]
 }

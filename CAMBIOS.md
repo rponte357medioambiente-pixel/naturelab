@@ -6,6 +6,15 @@ Cuaderno de campo digital para talleres de exploración ambiental. Aplicación w
 
 ## 10 de noviembre de 2026 · Plantas, animales e insectos, y hasta tres fotos
 
+### Fauna del Salar de los Canos
+
+- El catálogo publicado incluye **22 especies de fauna** además de las 13 plantas:
+  - 18 aves con su subgrupo. Citadas en el Salar: flamenco común, malvasía cabeciblanca, pato colorado, cuchara común, zampullín común y cuellinegro, calamón común, cigüeñuela común, chorlitejo patinegro, correlimos común, garcilla cangrejera, morito común, fumarel cariblanco y curruca cabecinegra. Habituales en humedales de la zona, para confirmar: ánade azulón, focha común, garceta común y gaviota patiamarilla.
+  - La tortuga mora (reptil).
+  - Tres libélulas citadas en un estudio de 2020 sobre el propio Salar: Anax parthenope, Trithemis kirbyi y Ceriagrion tenellum.
+- Cada ficha tiene nombre científico, familia, descripción, rasgos para reconocerla, hábitat y, en las notas, la fuente de la cita. Todas quedan pendientes de revisión.
+- No traen imagen: se les pueden añadir fotos de campo desde su ficha. Sin foto muestran un icono según su tipo (hoja, ave o insecto). Hasta tener foto no salen en el juego ni en las fichas para imprimir.
+
 ### Tipos y grupos
 
 - El catálogo admite tres tipos: **plantas**, **animales** e **insectos u otros invertebrados**, cada uno con sus grupos (árboles, arbustos y matas…; aves, mamíferos, reptiles…; mariposas, escarabajos…). Las aves tienen además subgrupos: acuáticas y patos, limícolas, garzas y afines, gaviotas y charranes, rapaces, pájaros y otras.

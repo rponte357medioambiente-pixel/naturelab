@@ -186,7 +186,7 @@ export function PaginaCatalogo() {
         <section key={zona} className="seccion-catalogo" aria-labelledby={`titulo-zona-${i}`}>
           <h2 id={`titulo-zona-${i}`}>{zona}</h2>
           {i === 0 && catalogo?.estado === 'provisional' && (
-            <p className="texto-suave texto-pequeno">Nombres y fichas pendientes de revisión botánica.</p>
+            <p className="texto-suave texto-pequeno">Nombres y fichas pendientes de revisión.</p>
           )}
           <RejillaEspecies especies={lista} />
         </section>

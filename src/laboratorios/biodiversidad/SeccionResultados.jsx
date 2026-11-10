@@ -233,7 +233,7 @@ export function SeccionResultados() {
 
       <p className="solo-impresion texto-pequeno">
         Informe generado el {formatearFecha(new Date().toISOString())} con NatureLab. Catálogo provisional, pendiente de
-        revisión botánica.
+        revisión.
       </p>
     </section>
   );

@@ -49,7 +49,7 @@ describe('tipos y grupos', () => {
     expect(partesDe('planta')).toContain('Flor');
   });
 
-  it('todas las especies del catálogo publicado son plantas con grupo', () => {
+  it('todas las especies del catálogo publicado tienen tipo y grupo', () => {
     const catalogo = JSON.parse(readFileSync(new URL('../public/data/especies.json', import.meta.url), 'utf8'));
     for (const e of catalogo.especies) expect(pendienteDeClasificar(e), e.id).toBe(false);
   });
@@ -133,5 +133,27 @@ describe('especies creadas en el campo', () => {
     const despues = await obtenerDatosInvestigacion(ID_EJEMPLO);
     expect(despues.observaciones.filter((o) => o.especieId === especie.id)).toHaveLength(2);
     expect((await listarEspeciesPropias())[0].estadoValidacion).toBe('pendiente');
+  });
+});
+
+describe('fauna del catálogo publicado', () => {
+  const catalogo = JSON.parse(readFileSync(new URL('../public/data/especies.json', import.meta.url), 'utf8'));
+  const animales = catalogo.especies.filter((e) => e.tipo !== 'planta');
+
+  it('incluye aves del Salar con su subgrupo, un reptil y libélulas', () => {
+    const aves = animales.filter((e) => e.grupo === 'aves');
+    expect(aves.length).toBeGreaterThanOrEqual(15);
+    for (const a of aves) expect(limpiarClasificacion(a).subgrupo, a.id).toBeTruthy();
+    expect(animales.some((e) => e.grupo === 'reptiles')).toBe(true);
+    expect(animales.some((e) => e.tipo === 'insecto' && e.grupo === 'libelulas')).toBe(true);
+  });
+
+  it('cada especie tiene nombre científico, familia, rasgos y la fuente en las notas', () => {
+    for (const e of animales) {
+      expect(e.nombreCientifico, e.id).toBeTruthy();
+      expect(e.familia, e.id).toBeTruthy();
+      expect(e.rasgos.length, e.id).toBeGreaterThan(0);
+      expect(e.notas, e.id).toMatch(/Citada|Habitual/);
+    }
   });
 });

@@ -72,8 +72,10 @@ describe('plantillas', () => {
   const catalogo = JSON.parse(readFileSync(new URL('../public/data/especies.json', import.meta.url), 'utf8'));
   const { plantillas } = validarPlantillas(datos);
 
-  it('hay una plantilla válida para cada especie del catálogo', () => {
-    for (const especie of catalogo.especies) expect(plantillas.has(especie.id), especie.id).toBe(true);
+  it('hay una plantilla válida para cada planta del catálogo', () => {
+    for (const especie of catalogo.especies.filter((e) => e.tipo === 'planta')) {
+      expect(plantillas.has(especie.id), especie.id).toBe(true);
+    }
   });
 
   it('cada nivel tiene más puntos que el anterior y un número por punto', () => {

@@ -214,7 +214,7 @@ export function PaginaAyuda() {
       <section className="ayuda-bloque" aria-labelledby="ayuda-identificacion">
         <h2 id="ayuda-identificacion">Identificar especies</h2>
         <p>
-          El catálogo es provisional y está pendiente de revisión botánica. Si no reconoces una especie, regístrala
+          El catálogo es provisional y está pendiente de revisión. Si no reconoces una especie, regístrala
           con «Añadir especie nueva»: basta un nombre provisional y, si lo sabes, si es planta, animal o insecto. Se
           guarda en Mi catálogo como pendiente y la clasificas después desde su ficha.
         </p>

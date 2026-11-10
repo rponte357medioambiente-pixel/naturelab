@@ -20,6 +20,12 @@ import {
 } from './fotos/EditorFoto.jsx';
 import { partesDe } from './tipos.js';
 
+const EJEMPLOS_FOTOS = {
+  planta: 'Por ejemplo, la planta entera, la flor y el fruto.',
+  animal: 'Por ejemplo, el cuerpo entero, un detalle de la cabeza o las alas, y sus huellas.',
+  insecto: 'Por ejemplo, vista de arriba, de lado y un detalle.',
+};
+
 const credito = (f) => [f.imagenAutor, f.imagenLicencia].filter(Boolean).join(' · ');
 
 /** ¿La foto principal es propia (de este dispositivo)? */
@@ -118,7 +124,7 @@ export function GaleriaFotos({ especie }) {
         Fotos ({total} de {MAX_FOTOS})
       </h2>
       <p className="texto-suave texto-pequeno">
-        Por ejemplo, la planta entera, la flor y el fruto. Se guardan solo en este dispositivo y entran en la copia de
+        {EJEMPLOS_FOTOS[especie.tipo] ?? EJEMPLOS_FOTOS.planta} Se guardan solo en este dispositivo y entran en la copia de
         seguridad de «Mi catálogo».
       </p>
       <ul className="lista lista-fotos">

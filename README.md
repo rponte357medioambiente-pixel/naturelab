@@ -19,6 +19,7 @@ El historial detallado de cambios está en [CAMBIOS.md](CAMBIOS.md).
 - **Ubicación:** coordenadas de la investigación y, si hace falta, de cada parcela o transecto, con el botón «Usar mi ubicación» (GPS) y enlace al mapa (OpenStreetMap).
 - **Dibujos:** unir los puntos sobre el contorno de una especie, en tres niveles, o dibujo libre con el dedo, el ratón o un lápiz digital, sensible a la presión.
 - **Cuaderno en PDF** con resumen, resultados, tablas, coordenadas y dibujos, y **CSV** para hojas de cálculo.
+- **Catálogo de partida** con plantas, aves, un reptil y libélulas del Salar de los Canos y de la duna del río Antas.
 - **Modelos de ejemplo** que se cargan con un botón: Biodiversidad en el Salar de los Canos y Cobertura vegetal en la duna del río Antas.
 
 ### Catálogo de especies
@@ -117,7 +118,7 @@ naturelab/
 
 ## Catálogo y plantillas
 
-- **El catálogo publicado** está en `public/data/especies.json`. Cada especie tiene identificador, nombres común y científico, familia, tipo y grupo, hábitat natural, descripción, rasgos, imagen con su autoría y licencia, y estado de validación. Los nombres están pendientes de revisión botánica.
+- **El catálogo publicado** está en `public/data/especies.json`: 13 plantas del Salar de los Canos y de la duna del río Antas, y 22 especies de fauna del Salar (18 aves, la tortuga mora y 3 libélulas). Cada especie tiene identificador, nombres común y científico, familia, tipo y grupo, hábitat natural, descripción, rasgos, imagen con su autoría y licencia (si la tiene) y estado de validación. En las notas de la fauna figura la fuente de cada cita. Todo está pendiente de revisión.
 - **Las plantillas de «unir los puntos»** se generan con Python 3 y la librería shapely:
 
   ```bash

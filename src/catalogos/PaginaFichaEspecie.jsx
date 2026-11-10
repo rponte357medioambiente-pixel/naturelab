@@ -63,7 +63,9 @@ export function PaginaFichaEspecie() {
         ) : (
           <>
             {especie.estadoValidacion !== 'validada' && (
-              <span className="estado estado--ocre">Pendiente de revisión botánica</span>
+              <span className="estado estado--ocre">
+                {especie.tipo === 'planta' ? 'Pendiente de revisión botánica' : 'Pendiente de revisión'}
+              </span>
             )}
             {especie.rango === 'genero' && <span className="estado estado--neutro">Identificado solo hasta género</span>}
           </>
