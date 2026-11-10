@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { EspecieNueva } from '../../catalogos/Clasificacion.jsx';
 import { useAnunciar } from '../../accesibilidad/Anunciador.jsx';
 import { useTituloDocumento } from '../../accesibilidad/useTituloDocumento.js';
 import { crearObservacion, esTransecto } from '../../almacenamiento/modelo.js';
-import { guardarObservacion, obtenerDatosInvestigacion } from '../../almacenamiento/repositorio.js';
+import { guardarObservacion, obtenerDatosInvestigacion, pasarAlCatalogo } from '../../almacenamiento/repositorio.js';
 import { useConsulta } from '../../almacenamiento/useConsulta.js';
 import { claveTaxon, validarAbundancia } from '../../calculos/biodiversidad.js';
 import { plural } from '../../calculos/formato.js';
@@ -124,8 +125,23 @@ function FormularioObservacion({ datos, observacion, especies }) {
     }
   }
 
+  // Especie creada en este momento: puede tardar un instante en aparecer en el catálogo.
+  const [creada, setCreada] = useState(null);
+  const [creandoEspecie, setCreandoEspecie] = useState(false);
   const resultados = useMemo(() => buscarEspecies(especies, busqueda), [especies, busqueda]);
-  const especieSeleccionada = especies.find((e) => e.id === seleccion) ?? null;
+  const especieSeleccionada = especies.find((e) => e.id === seleccion) ?? (creada?.id === seleccion ? creada : null);
+
+  async function pasarEsteNombreAlCatalogo() {
+    try {
+      const especie = await pasarAlCatalogo(nombreProvisional || observacion.nombreComun, cientificoProvisional);
+      setCreada(especie);
+      setSeleccion(especie.id);
+      setDudosa(true);
+      anunciar(`«${especie.nombreComun}» está ya en Mi catálogo, con todas sus observaciones.`);
+    } catch (e) {
+      anunciar(`No se ha podido pasar al catálogo: ${e.message}`, { tipo: 'error' });
+    }
+  }
   const hayImagenes = especies.some(tieneImagen);
 
   // Recordar la parcela elegida en la dirección, para seguir registrando en ella.
@@ -161,7 +177,7 @@ function FormularioObservacion({ datos, observacion, especies }) {
   async function enviar(evento) {
     evento.preventDefault();
     const nuevosErrores = {};
-    if (!seleccion) nuevosErrores.especie = 'Elige una especie del catálogo o «Otra especie o sin identificar».';
+    if (!seleccion) nuevosErrores.especie = 'Elige una especie del catálogo o añade una especie nueva.';
     if (seleccion === OTRA && !nombreProvisional.trim()) {
       nuevosErrores.provisional = 'Escribe un nombre o una descripción breve, por ejemplo «Gramínea A».';
     }
@@ -297,14 +313,34 @@ function FormularioObservacion({ datos, observacion, especies }) {
               Ninguna especie del catálogo coincide con «{busqueda}».
             </p>
           )}
-          <label className="opcion-especie">
-            <input type="radio" name="especie" value={OTRA} checked={seleccion === OTRA} onChange={elegirOtra} />
-            <span className="nombres">
-              <strong>Otra especie o sin identificar</strong>
-              <span className="texto-suave texto-pequeno">Quedará pendiente de revisar</span>
-            </span>
-          </label>
+          {/* Solo para observaciones antiguas registradas con un nombre libre */}
+          {fueraDelCatalogo && (
+            <label className="opcion-especie">
+              <input type="radio" name="especie" value={OTRA} checked={seleccion === OTRA} onChange={elegirOtra} />
+              <span className="nombres">
+                <strong>{observacion.nombreComun}</strong>
+                <span className="texto-suave texto-pequeno">Nombre libre, fuera del catálogo</span>
+              </span>
+            </label>
+          )}
         </div>
+        {creandoEspecie ? (
+          <EspecieNueva
+            nombreInicial={busqueda.trim()}
+            alCancelar={() => setCreandoEspecie(false)}
+            alCrear={(especie) => {
+              setCreada(especie);
+              setSeleccion(especie.id);
+              setBusqueda('');
+              setCreandoEspecie(false);
+            }}
+          />
+        ) : (
+          <button type="button" className="boton boton--secundario boton-agregar-especie" onClick={() => setCreandoEspecie(true)}>
+            <IconoMas />
+            Añadir especie nueva
+          </button>
+        )}
         {errores.especie && (
           <p className="error-campo" id="error-especie">
             {errores.especie}
@@ -338,8 +374,12 @@ function FormularioObservacion({ datos, observacion, especies }) {
               aria-describedby={`ayuda-provisional${errores.provisional ? ' error-provisional' : ''}`}
             />
             <p className="ayuda" id="ayuda-provisional">
-              Usa el mismo nombre si vuelves a encontrar esa planta: así se cuentan juntas.
+              Esta observación se registró con un nombre libre. Pásala al catálogo para poder clasificarla, añadir fotos
+              y contarla junto a las demás con el mismo nombre.
             </p>
+            <button type="button" className="boton boton--secundario" onClick={pasarEsteNombreAlCatalogo} style={{ marginTop: '0.4rem' }}>
+              Pasar al catálogo
+            </button>
             {errores.provisional && (
               <p className="error-campo" id="error-provisional">
                 {errores.provisional}

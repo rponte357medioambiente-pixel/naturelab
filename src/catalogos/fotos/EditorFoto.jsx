@@ -370,16 +370,28 @@ function EstadoAnalisis({ analisis, visibles, textoSinDetector = TEXTO_SIN_DETEC
 /* ---------- Autoría y licencia ---------- */
 
 /** Valores iniciales del formulario a partir de los datos guardados de una imagen. */
-export function valoresLicencia({ autor = '', fuente = 'Fotografía propia', licencia = '', derechos = false } = {}) {
+export const FUENTE_PROPIA = 'Fotografía propia';
+
+/**
+ * Valores iniciales de autoría. «quien» es 'yo' si la foto es propia: entonces
+ * la procedencia es «Fotografía propia» y no hace falta confirmar derechos,
+ * porque son de quien la hizo.
+ */
+export function valoresLicencia({ autor = '', fuente = FUENTE_PROPIA, licencia = '', derechos = false } = {}) {
   const conocida = licencia ? LICENCIAS.find((l) => l.texto && l.texto === licencia) : LICENCIAS[0];
+  const propia = !fuente || fuente === FUENTE_PROPIA;
   return {
+    quien: propia ? 'yo' : 'otra',
     autor,
-    fuente,
+    fuente: propia ? '' : fuente,
     licencia: conocida ? conocida.id : 'otra',
     licenciaOtra: conocida ? '' : licencia,
     derechos,
   };
 }
+
+/** Procedencia que se guarda. */
+export const textoFuente = (valores) => (valores.quien === 'yo' ? FUENTE_PROPIA : valores.fuente.trim());
 
 export function textoLicencia(valores) {
   return valores.licencia === 'otra'
@@ -390,10 +402,11 @@ export function textoLicencia(valores) {
 /** Errores de los campos de autoría y licencia (objeto vacío si todo está bien). */
 export function validarLicencia(valores) {
   const errores = {};
-  if (!valores.autor.trim()) errores.autor = 'Indica quién hizo la foto.';
-  if (!valores.fuente.trim()) errores.fuente = 'Indica de dónde procede la foto.';
+  const propia = valores.quien === 'yo';
+  if (!valores.autor.trim()) errores.autor = propia ? 'Escribe tu nombre.' : 'Indica quién hizo la foto.';
+  if (!propia && !valores.fuente.trim()) errores.fuente = 'Indica de dónde procede la foto.';
   if (!textoLicencia(valores)) errores.licencia = 'Escribe la licencia.';
-  if (!valores.derechos) errores.derechos = 'Confirma que puedes usar la foto con esta licencia.';
+  if (!propia && !valores.derechos) errores.derechos = 'Confirma que puedes usar la foto con esta licencia.';
   return errores;
 }
 
@@ -402,8 +415,24 @@ export function CamposLicencia({ valores, alCambiar, errores = {}, ayudaFuente }
     alCambiar({ ...valores, [campo]: evento.target.type === 'checkbox' ? evento.target.checked : evento.target.value });
   return (
     <>
+      <fieldset className="selector-autoria">
+        <legend>¿Quién hizo la foto?</legend>
+        <label className="casilla">
+          <input type="radio" name="foto-quien" checked={valores.quien === 'yo'} onChange={() => alCambiar({ ...valores, quien: 'yo' })} />
+          <span>
+            Yo
+            <span className="texto-suave texto-pequeno" style={{ display: 'block' }}>
+              Es tuya: los derechos son tuyos y no hace falta confirmarlos.
+            </span>
+          </span>
+        </label>
+        <label className="casilla">
+          <input type="radio" name="foto-quien" checked={valores.quien === 'otra'} onChange={() => alCambiar({ ...valores, quien: 'otra' })} />
+          <span>Otra persona</span>
+        </label>
+      </fieldset>
       <div className="campo">
-        <label htmlFor="foto-autor">Autor o autora</label>
+        <label htmlFor="foto-autor">{valores.quien === 'yo' ? 'Tu nombre' : 'Autor o autora'}</label>
         <input
           id="foto-autor"
           value={valores.autor}
@@ -437,6 +466,8 @@ export function CamposLicencia({ valores, alCambiar, errores = {}, ayudaFuente }
           {errores.licencia && <p className="error-campo">{errores.licencia}</p>}
         </div>
       )}
+      {valores.quien === 'otra' && (
+        <>
       <div className="campo">
         <label htmlFor="foto-fuente">Procedencia</label>
         <input
@@ -459,6 +490,8 @@ export function CamposLicencia({ valores, alCambiar, errores = {}, ayudaFuente }
         <span>Tengo derecho a usar esta foto con la licencia indicada.</span>
       </label>
       {errores.derechos && <p className="error-campo">{errores.derechos}</p>}
+        </>
+      )}
     </>
   );
 }

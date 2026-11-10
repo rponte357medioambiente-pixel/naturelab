@@ -2504,3 +2504,410 @@ html[data-paleta='rio'] .app::before {
   padding: 0.5rem 0;
   border-top: 1px solid var(--linea);
 }
+
+/* ---------- Ubicación ---------- */
+
+.ubicacion-unidad {
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--papel);
+  padding: 0.9rem;
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.ubicacion-unidad > legend {
+  font-weight: 700;
+  padding: 0 0.3rem;
+}
+
+.campos-coordenadas {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.campos-coordenadas__acciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.enlace-mapa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+}
+
+.donde-observada {
+  margin-top: 1.25rem;
+}
+
+.donde-observada h2 {
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+.donde-observada p {
+  margin: 0.15rem 0 0.4rem;
+}
+
+.donde-observada li {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--linea);
+}
+
+.donde-observada__titulo {
+  font-weight: 700;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.donde-observada__coordenadas {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Hábitat natural ---------- */
+
+.etiquetas-habitat {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.etiqueta-habitat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: var(--albardin-claro);
+  color: var(--albardin-oscuro);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.selector-habitats {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.selector-habitats > legend {
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 0.25rem;
+}
+
+.selector-habitats__opciones {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.opcion-habitat {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: start;
+  gap: 0.6rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-control);
+  background: var(--papel);
+  cursor: pointer;
+}
+
+.opcion-habitat:has(input:checked) {
+  border: 2px solid var(--albardin);
+  padding: calc(0.7rem - 1px) calc(0.8rem - 1px);
+}
+
+.opcion-habitat input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0.15rem 0 0;
+  accent-color: var(--albardin);
+}
+
+.opcion-habitat__icono {
+  color: var(--albardin);
+  display: grid;
+  place-items: center;
+}
+
+.opcion-habitat__texto {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.filtro-habitat button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.selector-autoria {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.selector-autoria > legend {
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 0.4rem;
+}
+
+/* ---------- Tipos y clasificación ---------- */
+
+.selector-tipo {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.selector-tipo > legend {
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+.selector-tipo__opciones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.opcion-tipo {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0.2rem;
+  min-height: 6rem;
+  padding: 0.6rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--papel);
+  color: var(--albardin-oscuro);
+  text-align: center;
+  cursor: pointer;
+}
+
+.opcion-tipo strong {
+  color: var(--tinta);
+}
+
+.opcion-tipo input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.opcion-tipo:has(input:checked) {
+  border: 2px solid var(--albardin);
+  padding: calc(0.6rem - 1px);
+}
+
+.opcion-tipo:has(input:focus-visible) {
+  outline: 3px solid var(--limonium);
+  outline-offset: 2px;
+}
+
+.selector-clasificacion {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.selector-subgrupo {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.selector-subgrupo > legend {
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 0.4rem;
+}
+
+.etiqueta-habitat--pendiente {
+  background: var(--ocre-fondo, #fbf0d6);
+  color: var(--ocre, #7f5508);
+}
+
+.panel-clasificacion,
+.especie-nueva {
+  margin: 0.75rem 0 1rem;
+}
+
+.panel-clasificacion h2,
+.especie-nueva h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.boton-agregar-especie {
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+}
+
+.boton-enlace.enlace {
+  color: var(--albardin);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.pestanas-tipo {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--linea);
+  margin: 0.75rem 0 0.5rem;
+}
+
+.pestanas-tipo button {
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  padding: 0.6rem 0.2rem;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--tinta-suave);
+  cursor: pointer;
+}
+
+.pestanas-tipo button[aria-pressed='true'] {
+  color: var(--albardin-oscuro);
+  border-bottom-color: var(--albardin);
+}
+
+.pastilla-pendientes {
+  background: var(--ocre-fondo, #fbf0d6) !important;
+  color: var(--ocre, #7f5508) !important;
+}
+
+.pastilla-pendientes[aria-pressed='true'] {
+  outline: 2px solid var(--ocre, #7f5508);
+}
+
+/* ---------- Hasta tres fotos por especie ---------- */
+
+.miniaturas-fotos {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.miniaturas-fotos li {
+  display: grid;
+  gap: 0.2rem;
+  justify-items: center;
+}
+
+.miniaturas-fotos button {
+  padding: 0;
+  border: 1px solid var(--linea);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--neutro);
+  cursor: zoom-in;
+  width: 100%;
+}
+
+.miniaturas-fotos img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.pie-foto {
+  margin: 0.3rem 0 0.75rem;
+  text-align: center;
+}
+
+.visor-foto {
+  max-width: min(46rem, 94vw);
+  border: 0;
+  border-radius: var(--radio);
+  padding: 0.75rem;
+  background: var(--papel-solido);
+}
+
+.visor-foto::backdrop {
+  background: color-mix(in srgb, var(--tinta) 70%, transparent);
+}
+
+.visor-foto img {
+  display: block;
+  max-width: 100%;
+  max-height: 70vh;
+  margin: 0 auto;
+  border-radius: 10px;
+}
+
+.visor-foto p {
+  margin: 0.6rem 0;
+}
+
+.lista-fotos li {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--linea);
+}
+
+.lista-fotos img {
+  width: 4.5rem;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--linea);
+}
+
+.lista-fotos li > span:nth-child(2) {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.lista-fotos__acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}
+
+.selector-parte {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.selector-parte > legend {
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 0.4rem;
+}

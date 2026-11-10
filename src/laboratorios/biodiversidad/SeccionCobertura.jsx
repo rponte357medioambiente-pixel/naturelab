@@ -39,7 +39,7 @@ export function SeccionCobertura() {
   function descargarAnotaciones() {
     descargarArchivo(
       nombreArchivo(investigacion, 'anotaciones', 'csv'),
-      csvAnotaciones({ parcelas: transectos, observaciones }, catalogo.buscarEspecie),
+      csvAnotaciones({ investigacion, parcelas: transectos, observaciones }, catalogo.buscarEspecie),
       'text/csv;charset=utf-8',
     );
   }

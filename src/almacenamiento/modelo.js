@@ -50,6 +50,7 @@ export function crearInvestigacion(campos = {}) {
     equipoAlias: '',
     laboratorio: 'biodiversidad',
     tipoPractica: 'parcela',
+    coordenadas: null, // { lat, lon, precision } en grados decimales, opcional
     paleta: null, // null: la paleta general de la app
     versionEsquema: VERSION_ESQUEMA,
     fechaCreacion: marca,
@@ -66,6 +67,7 @@ export function crearParcela(investigacionId, campos = {}) {
     codigo: '',
     superficie: null,
     unidadSuperficie: 'm2',
+    coordenadas: null, // null: las de la investigación
     descripcion: '',
     notas: '',
     fechaModificacion: ahora(),
@@ -131,7 +133,13 @@ export function crearEspeciePropia(campos = {}) {
     lugarTexto: '',
     notas: '',
     estadoValidacion: 'pendiente',
+    tipo: null, // 'planta' | 'animal' | 'insecto' (null: sin decidir)
+    grupo: null,
+    subgrupo: null,
+    habitatsNaturales: [],
     foto: null,
+    partePrincipal: null, // qué se ve en la foto principal: «Flor», «Cuerpo entero»…
+    fotosExtra: [], // hasta dos fotos más, cada una con su parte y su autoría
     imagenAutor: '',
     imagenFuente: '',
     imagenLicencia: '',

@@ -3,6 +3,7 @@ import { claveTaxon, resumirBiodiversidad, UNIDADES_SUPERFICIE } from '../calcul
 import { resumirCobertura, resumirTransecto, unirTramos } from '../calculos/cobertura.js';
 import { formatearFecha, formatearNumero, formatearPorcentaje, plural } from '../calculos/formato.js';
 import { PALETA } from '../componentes/FranjaAbundancia.jsx';
+import { formatearCoordenadas, textoPrecision } from '../ubicacion/coordenadas.js';
 
 /**
  * Cuaderno de campo en PDF, generado en el propio dispositivo (sin conexión).
@@ -124,6 +125,8 @@ export async function generarPdfCuaderno(datos, { buscarEspecie = () => null, ob
   const meta = [
     investigacion.fechaObservacion && `Fecha: ${formatearFecha(investigacion.fechaObservacion)}`,
     investigacion.lugarTexto && `Lugar: ${investigacion.lugarTexto}`,
+    investigacion.coordenadas &&
+      `Coordenadas: ${formatearCoordenadas(investigacion.coordenadas)}${investigacion.coordenadas.precision != null ? ` (precisión ${textoPrecision(investigacion.coordenadas)})` : ''}`,
     investigacion.equipoAlias && `Equipo: ${investigacion.equipoAlias}`,
   ].filter(Boolean);
   meta.forEach((m) => parrafo(m, { tamano: 10.5, color: COLOR.suave }, { espacioDespues: 0.5 }));
@@ -230,6 +233,7 @@ export async function generarPdfCuaderno(datos, { buscarEspecie = () => null, ob
         ? `, ${formatearNumero(parcela.superficie, parcela.superficie % 1 ? 1 : 0)} ${UNIDADES_SUPERFICIE[parcela.unidadSuperficie]?.etiqueta ?? ''}`
         : '';
       titulo(`Parcela ${parcela.codigo}${superficie}`, 16);
+      if (parcela.coordenadas) parrafo(`Coordenadas: ${formatearCoordenadas(parcela.coordenadas)}`, { tamano: 10, color: COLOR.suave }, { espacioDespues: 1 });
       parrafo(parcela.descripcion, { tamano: 10, color: COLOR.suave }, { espacioDespues: 3 });
       if (lista.length === 0) {
         parrafo('Sin observaciones.', { tamano: 10, color: COLOR.suave });
@@ -379,6 +383,7 @@ export async function generarPdfCuaderno(datos, { buscarEspecie = () => null, ob
     for (const t of parcelas) {
       nuevaPagina();
       titulo(`Transecto ${t.codigo}: ${cmTexto(t.longitudCm)}, ${t.orientacion}`, 16);
+      if (t.coordenadas) parrafo(`Coordenadas: ${formatearCoordenadas(t.coordenadas)}`, { tamano: 10, color: COLOR.suave }, { espacioDespues: 1 });
       parrafo(t.descripcion, { tamano: 10, color: COLOR.suave }, { espacioDespues: 3 });
       const r = resumirTransecto(t, observaciones);
       const taxones = conNombres(r);

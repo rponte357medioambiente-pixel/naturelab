@@ -23,7 +23,12 @@
       "imagenLicencia": "Todos los derechos reservados",
       "estadoValidacion": "pendiente",
       "imagenModificaciones": "Recortada a 4:3 y comprimida",
-      "zona": "Salar de los Canos"
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "ribera"
+      ],
+      "tipo": "planta",
+      "grupo": "arbustos"
     },
     {
       "id": "anthyllis-cytisoides",
@@ -44,7 +49,12 @@
       "imagenLicencia": "Todos los derechos reservados",
       "estadoValidacion": "pendiente",
       "imagenModificaciones": "Recortada a 4:3 y comprimida",
-      "zona": "Salar de los Canos"
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "pradera"
+      ],
+      "tipo": "planta",
+      "grupo": "arbustos"
     },
     {
       "id": "launaea-arborescens",
@@ -64,7 +74,12 @@
       "imagenFuente": null,
       "imagenLicencia": null,
       "estadoValidacion": "pendiente",
-      "zona": "Salar de los Canos"
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "desierto"
+      ],
+      "tipo": "planta",
+      "grupo": "arbustos"
     },
     {
       "id": "artemisia-glutinosa",
@@ -84,7 +99,12 @@
       "imagenFuente": null,
       "imagenLicencia": null,
       "estadoValidacion": "pendiente",
-      "zona": "Salar de los Canos"
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "desierto"
+      ],
+      "tipo": "planta",
+      "grupo": "arbustos"
     },
     {
       "id": "lygeum-spartum",
@@ -104,7 +124,12 @@
       "imagenFuente": null,
       "imagenLicencia": null,
       "estadoValidacion": "pendiente",
-      "zona": "Salar de los Canos"
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "dunas-costa"
+      ],
+      "tipo": "planta",
+      "grupo": "gramineas"
     },
     {
       "id": "limonium-sp",
@@ -124,7 +149,12 @@
       "imagenFuente": null,
       "imagenLicencia": null,
       "estadoValidacion": "pendiente",
-      "zona": "Salar de los Canos"
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "dunas-costa"
+      ],
+      "tipo": "planta",
+      "grupo": "hierbas"
     },
     {
       "id": "salicornia-sp",
@@ -144,7 +174,12 @@
       "imagenFuente": null,
       "imagenLicencia": null,
       "estadoValidacion": "pendiente",
-      "zona": "Salar de los Canos"
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "dunas-costa"
+      ],
+      "tipo": "planta",
+      "grupo": "hierbas"
     },
     {
       "id": "moricandia-arvensis",
@@ -164,7 +199,12 @@
       "imagenFuente": null,
       "imagenLicencia": null,
       "estadoValidacion": "pendiente",
-      "zona": "Salar de los Canos"
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "pradera"
+      ],
+      "tipo": "planta",
+      "grupo": "hierbas"
     },
     {
       "id": "portulaca-oleracea",
@@ -184,7 +224,12 @@
       "imagenFuente": null,
       "imagenLicencia": null,
       "estadoValidacion": "pendiente",
-      "zona": "Salar de los Canos"
+      "zona": "Salar de los Canos",
+      "habitatsNaturales": [
+        "pradera"
+      ],
+      "tipo": "planta",
+      "grupo": "hierbas"
     },
     {
       "id": "elymus-farctus",
@@ -205,7 +250,12 @@
       "imagenTipo": "ilustracion",
       "imagenAutor": "NatureLab",
       "imagenFuente": "Ilustración esquemática",
-      "imagenLicencia": "CC0 1.0"
+      "imagenLicencia": "CC0 1.0",
+      "habitatsNaturales": [
+        "dunas-costa"
+      ],
+      "tipo": "planta",
+      "grupo": "gramineas"
     },
     {
       "id": "lotus-creticus",
@@ -227,7 +277,12 @@
       "imagenTipo": "ilustracion",
       "imagenAutor": "NatureLab",
       "imagenFuente": "Ilustración esquemática",
-      "imagenLicencia": "CC0 1.0"
+      "imagenLicencia": "CC0 1.0",
+      "habitatsNaturales": [
+        "dunas-costa"
+      ],
+      "tipo": "planta",
+      "grupo": "arbustos"
     },
     {
       "id": "paronychia-argentea",
@@ -248,7 +303,12 @@
       "imagenTipo": "ilustracion",
       "imagenAutor": "NatureLab",
       "imagenFuente": "Ilustración esquemática",
-      "imagenLicencia": "CC0 1.0"
+      "imagenLicencia": "CC0 1.0",
+      "habitatsNaturales": [
+        "dunas-costa"
+      ],
+      "tipo": "planta",
+      "grupo": "hierbas"
     },
     {
       "id": "salsola-kali",
@@ -269,7 +329,12 @@
       "imagenTipo": "ilustracion",
       "imagenAutor": "NatureLab",
       "imagenFuente": "Ilustración esquemática",
-      "imagenLicencia": "CC0 1.0"
+      "imagenLicencia": "CC0 1.0",
+      "habitatsNaturales": [
+        "dunas-costa"
+      ],
+      "tipo": "planta",
+      "grupo": "hierbas"
     }
   ]
 }

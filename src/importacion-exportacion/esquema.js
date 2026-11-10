@@ -8,6 +8,7 @@ import {
 import { UNIDADES_SUPERFICIE, validarAbundancia, validarSuperficie } from '../calculos/biodiversidad.js';
 import { LIMITES_TRANSECTO, validarLongitudTransecto } from '../calculos/cobertura.js';
 import { esPaletaValida } from '../apariencia/paletas.js';
+import { limpiarCoordenadas } from '../ubicacion/coordenadas.js';
 import { LIMITES_ZIP, RUTA_DIBUJO, RUTA_FOTO, esZip, leerZip, tipoDeBytes } from './copiaZip.js';
 
 /**
@@ -73,6 +74,12 @@ function crearLector(errores, prefijo) {
       }
       return valor;
     },
+    /** Coordenadas en grados decimales, o null. */
+    coordenadas(valor) {
+      const r = limpiarCoordenadas(valor);
+      if (!r.valida) error('sus coordenadas no son válidas.');
+      return r.valor;
+    },
     /** Lista de medidas en cm, todas mayores que 0. */
     medidas(valor, campo) {
       if (valor === undefined || valor === null) return [];
@@ -130,6 +137,7 @@ export function limpiarInvestigacion(entrada, errores) {
     descripcion: lector.texto(entrada.descripcion, 'descripción', LIMITES.textoLargo),
     fechaObservacion: lector.fecha(entrada.fechaObservacion, 'fecha de observación', { soloDia: true }),
     lugarTexto: lector.texto(entrada.lugarTexto, 'lugar', LIMITES.textoCorto),
+    coordenadas: lector.coordenadas(entrada.coordenadas),
     equipoAlias: lector.texto(entrada.equipoAlias, 'equipo', LIMITES.textoCorto),
     laboratorio,
     tipoPractica: Object.hasOwn(TIPOS_PRACTICA, tipoPractica) ? tipoPractica : 'parcela',
@@ -160,6 +168,7 @@ export function limpiarParcela(entrada, investigacionId, errores, numero, tipoPr
     codigo: lector.texto(entrada.codigo, 'código', 40, { obligatorio: true }),
     superficie: superficie.valida ? superficie.valor : null,
     unidadSuperficie: Object.hasOwn(UNIDADES_SUPERFICIE, unidad) ? unidad : 'm2',
+    coordenadas: lector.coordenadas(entrada.coordenadas),
     descripcion: lector.texto(entrada.descripcion, 'descripción', LIMITES.textoLargo),
     notas: lector.texto(entrada.notas, 'notas', LIMITES.textoLargo),
     fechaModificacion: lector.fecha(entrada.fechaModificacion, 'fecha de modificación') ?? new Date().toISOString(),
@@ -187,6 +196,7 @@ function limpiarTransecto(entrada, investigacionId, errores, numero) {
     orientacion: lector.texto(entrada.orientacion, 'orientación', 40),
     modoAnotacion: Object.hasOwn(MODOS_ANOTACION, modo) ? modo : 'longitudes',
     sueloDesnudo: lector.medidas(entrada.sueloDesnudo, 'suelo desnudo'),
+    coordenadas: lector.coordenadas(entrada.coordenadas),
     descripcion: lector.texto(entrada.descripcion, 'descripción', LIMITES.textoLargo),
     notas: lector.texto(entrada.notas, 'notas', LIMITES.textoLargo),
     fechaModificacion: lector.fecha(entrada.fechaModificacion, 'fecha de modificación') ?? new Date().toISOString(),

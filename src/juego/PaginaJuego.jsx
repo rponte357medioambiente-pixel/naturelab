@@ -30,7 +30,11 @@ export function PaginaJuego() {
   function empezar(cfg = config) {
     const ids = idsSeleccionados(cfg.origen, cfg.ids, investigaciones.datos ?? []);
     const jugables = especiesJugables(catalogo.especies, tieneImagen, { ids, nombre: cfg.nombre });
-    const preguntas = crearPartida(jugables, catalogo.especies, { preguntas: cfg.preguntas, nombre: cfg.nombre });
+    // Cada pregunta usa al azar una de las fotos de la especie (principal o adicionales).
+    const preguntas = crearPartida(jugables, catalogo.especies, { preguntas: cfg.preguntas, nombre: cfg.nombre }).map((p) => {
+      const urls = [urlImagenEspecie(p.especie), ...(p.especie.imagenesExtra ?? []).map((x) => x.url)].filter(Boolean);
+      return { ...p, url: urls[Math.floor(Math.random() * urls.length)] };
+    });
     setPartida({ preguntas, respuestas: [], actual: 0, config: cfg });
     window.scrollTo(0, 0);
   }
@@ -163,7 +167,7 @@ function Pregunta({ partida, setPartida, alSalir }) {
   const siguiente = useRef(null);
   const aciertos = respuestas.filter((r, i) => r === preguntas[i].especie.id).length;
   const correcta = pregunta.especie;
-  const url = urlImagenEspecie(correcta);
+  const url = pregunta.url ?? urlImagenEspecie(correcta);
 
   useEffect(() => {
     if (respondida !== undefined) siguiente.current?.focus();

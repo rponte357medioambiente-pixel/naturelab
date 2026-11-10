@@ -1,92 +1,144 @@
-# NaturaLab
+# NatureLab
 
-Cuaderno de campo para talleres de exploración ambiental. Es una aplicación web progresiva (PWA) sin servidor: los datos se guardan en el propio dispositivo (IndexedDB) y se intercambian mediante copias exportadas. Laboratorio disponible: **Biodiversidad**. Siguiente laboratorio previsto: **Microplásticos**.
+Cuaderno de campo digital para talleres de exploración ambiental. Permite registrar plantas, animales e insectos en salidas de campo, calcular al momento indicadores ecológicos y guardar todo en el propio dispositivo, sin cuentas ni servidor.
 
-La especificación completa está en [`docs/especificaciones.md`](docs/especificaciones.md).
+Es una aplicación web progresiva (PWA): se abre en el navegador del móvil, la tableta o el ordenador, se puede instalar como una app y funciona sin conexión después de la primera visita.
 
-Proyecto educativo independiente. No atribuir a ningún programa o entidad sin autorización expresa.
+> Proyecto educativo personal e independiente. No está vinculado a ningún programa ni entidad.
 
-## Requisitos
+El historial detallado de cambios está en [CAMBIOS.md](CAMBIOS.md).
 
-Node.js 20.19 o superior (probado con Node 22).
+---
 
-## Comandos
+## Qué permite hacer
 
-| Comando | Uso |
-|---|---|
-| `npm install` | Instala las dependencias con las versiones fijadas en `package-lock.json` |
-| `npm run dev` | Servidor de desarrollo en http://localhost:5173 |
-| `npm test` | Pruebas automatizadas (Vitest) |
-| `npm run build` | Compila en `dist/` |
-| `npm run preview` | Sirve la compilación; aquí sí actúa el service worker |
-| `npm run preparar-detector` | Copia el motor de MediaPipe y descarga los modelos del detector de personas (se ejecuta solo antes de `dev` y `build`) |
+### Investigaciones de campo
 
-Para probar desde el móvil en la misma red: `npm run dev -- --host` y abrir la dirección que aparezca. Por HTTP en red local se pueden registrar datos, pero el service worker (uso sin conexión) solo funciona con HTTPS o en `localhost`. Para comprobar el uso sin conexión, usa la versión publicada.
+- **Recuento en parcela:** número de individuos de cada especie en una o varias parcelas. Calcula riqueza, abundancia, índice de Shannon (H′), equitatividad de Pielou (J′), dominancia y densidad.
+- **Transecto lineal:** cobertura de cada especie a lo largo de una línea, anotando la longitud de cada mancha o su inicio y fin. Calcula cobertura por especie, cobertura total, suelo desnudo y solapes, también con varios transectos.
+- **Ubicación:** coordenadas de la investigación y, si hace falta, de cada parcela o transecto, con el botón «Usar mi ubicación» (GPS) y enlace al mapa (OpenStreetMap).
+- **Dibujos:** unir los puntos sobre el contorno de una especie, en tres niveles, o dibujo libre con el dedo, el ratón o un lápiz digital, sensible a la presión.
+- **Cuaderno en PDF** con resumen, resultados, tablas, coordenadas y dibujos, y **CSV** para hojas de cálculo.
+- **Modelos de ejemplo** que se cargan con un botón: Biodiversidad en el Salar de los Canos y Cobertura vegetal en la duna del río Antas.
+
+### Catálogo de especies
+
+- **Tres tipos**, con sus grupos:
+  - Plantas: árboles, arbustos y matas, hierbas y flores, gramíneas y juncos, helechos, musgos y líquenes.
+  - Animales: aves (con subgrupos), mamíferos, reptiles, anfibios y peces.
+  - Insectos y otros invertebrados.
+- **Hábitat natural:** dunares y de costa, crasas de desierto, alta montaña, bosque, acuáticas y de ribera, praderas y campo abierto.
+- **Mi catálogo:** especies propias añadidas por cada persona. En el campo basta un nombre provisional («Añadir especie nueva»); la clasificación se completa después desde la ficha.
+- **Hasta tres fotos por especie**, cada una con la parte que muestra (planta entera, flor, fruto…). Antes de guardarlas pasan por encuadre, detección de personas con pixelado opcional y registro de autoría y licencia.
+- **Dónde se ha observado:** cada ficha lista sola las investigaciones en las que aparece la especie, con sus coordenadas.
+- **Juego «¿Qué especie es?»:** adivinar la especie a partir de su foto, con el nombre común o el científico.
+- **Fichas para imprimir:** PDF con la imagen y las características de cada especie, para estudiar o para recortar y emparejar.
+
+### Aspecto
+
+- Siete paletas ilustradas (Atardecer, la general, Rosa, Lavanda, Ámbar, Terracota, Mar y Río). Cada investigación puede tener la suya.
+- Tamaño de texto normal o grande, menú de configuración y diseño pensado para leerse a pleno sol.
+
+---
+
+## Datos y privacidad
+
+- **Sin servidor ni cuentas.** Todo se guarda en el navegador del dispositivo (IndexedDB) y nada se sube automáticamente.
+- **Copias de seguridad** en ZIP: una por investigación (con fotos y dibujos) y otra de Mi catálogo (con sus fotos). Sirven para no perder datos y para pasarlos a otro dispositivo, donde se pueden importar como nuevos o fusionar.
+- **Fotos sin ubicación:** se guardan sin datos EXIF y se revisan antes por si aparecen personas, matrículas o direcciones.
+- **Coordenadas solo si se piden.** El GPS actúa únicamente al pulsar «Usar mi ubicación». Si la ubicación de una especie protegida no debe difundirse, basta con dejarlas vacías.
+- **Sin analítica** ni servicios de terceros. El detector de personas (MediaPipe) se descarga la primera vez y queda guardado para usarse sin conexión.
+
+Si se borran los datos del navegador o se cambia de dispositivo sin haber exportado una copia, los datos se pierden. La app recuerda qué investigaciones tienen cambios sin copia.
+
+---
+
+## Puesta en marcha
+
+Requisitos: Node.js 20.19 o posterior (se recomienda la versión 22) y npm.
+
+```bash
+npm install
+npm run dev        # servidor de desarrollo en http://localhost:5173
+npm test           # pruebas automáticas
+npm run build      # versión de producción en dist/
+npm run preview    # sirve la versión de producción en local
+```
+
+Antes de `dev` y `build` se ejecuta `scripts/preparar-detector.mjs`, que deja listo el modelo del detector de personas.
+
+El GPS y la instalación como app solo funcionan con conexión segura: `localhost` o una dirección `https`. Al abrir el servidor de desarrollo desde el móvil por la red local, las coordenadas se escriben a mano.
+
+---
 
 ## Despliegue
 
-**GitHub Pages.** El flujo `.github/workflows/desplegar.yml` ejecuta las pruebas, compila con la ruta base `/<nombre-del-repositorio>/` y publica en cada `push` a `main`.
+- **GitHub Pages:** el flujo `.github/workflows/desplegar.yml` publica la app automáticamente con cada `git push` a la rama `main`.
+- **Vercel** (opcional): `npx vercel --prod` desde la carpeta del proyecto.
 
-1. Sube el proyecto a un repositorio de GitHub.
-2. En *Settings → Pages*, elige *Source: GitHub Actions*.
-3. Si el repositorio es el sitio de usuario (`usuario.github.io`), cambia `VITE_BASE` a `/` en el flujo.
+Al publicar una versión nueva, la app avisa de que hay una actualización. Si una página abierta desde antes no consigue cargar alguna parte, se recarga sola una vez.
 
-**Vercel.** Preset Vite, sin variables de entorno (la base por defecto es `/`).
+---
 
 ## Estructura
 
 ```text
-public/
-  data/especies.json                 Catálogo (provisional, versionado)
-  data/categorias-microplasticos.json  Borrador para la fase 4
-  imagenes/especies/                 Imágenes de referencia con licencia verificada
-  manifest.webmanifest, icono*.png, icono.svg
-src/
-  app/                    Rutas, estructura y páginas generales
-  componentes/            Piezas compartidas (franja de abundancia, navegación…)
-  laboratorios/
-    registro.js           Lista de laboratorios
-    biodiversidad/        Investigación, parcelas, observaciones, resultados
-    microplasticos/       En preparación
-  catalogos/              Carga, búsqueda y fichas del catálogo
-  almacenamiento/         IndexedDB, modelo de datos y consultas
-  calculos/               Índices de biodiversidad y formatos
-  importacion-exportacion/  Copias JSON, validación, fusión y CSV
-  accesibilidad/          Anuncios para lectores de pantalla, títulos
-  estilos/                Hoja de estilos global
-tests/                    Pruebas de cálculos, importación, CSV y almacenamiento
+naturelab/
+├── public/
+│   ├── data/
+│   │   ├── especies.json        catálogo publicado (versión 2)
+│   │   └── plantillas.json      plantillas de «unir los puntos»
+│   ├── imagenes/especies/       fotos e ilustraciones del catálogo
+│   └── manifest.webmanifest
+├── scripts/
+│   ├── preparar-detector.mjs    modelo del detector de personas
+│   ├── generar-plantillas.py    genera plantillas.json
+│   └── plantillas_contornos.py  contornos de cada especie
+├── src/
+│   ├── app/                     rutas, cabecera, ayuda y recarga segura
+│   ├── almacenamiento/          base de datos local (IndexedDB) y modelo de datos
+│   ├── apariencia/              paletas, fondos y tamaño de texto
+│   ├── calculos/                biodiversidad (Shannon, Pielou) y cobertura
+│   ├── catalogos/               catálogo, Mi catálogo, tipos, hábitats, fotos y fichas
+│   ├── dibujos/                 unir los puntos y dibujo libre
+│   ├── fotos/                   compresión y preparación de fotos
+│   ├── importacion-exportacion/ copias ZIP, CSV, PDF e importación
+│   ├── juego/                   «¿Qué especie es?»
+│   ├── laboratorios/            Biodiversidad (parcelas y transectos)
+│   ├── modelos/                 investigaciones de ejemplo
+│   └── ubicacion/               coordenadas y mapa
+├── tests/                       pruebas con Vitest
+└── CAMBIOS.md                   historial de cambios
 ```
 
-## Decisiones técnicas
+**Tecnologías:** React 19, Vite 8, React Router, IndexedDB (idb), vite-plugin-pwa (Workbox), jsPDF, fflate para los ZIP y MediaPipe para detectar personas. Las pruebas usan Vitest y fake-indexeddb.
 
-- **Rutas con almohadilla** (`#/investigaciones`): funcionan en GitHub Pages y sin conexión sin configurar redirecciones.
-- **Service worker** generado por `vite-plugin-pwa`. Precarga la app, el catálogo y las tipografías. Cuando hay una versión nueva, la app lo avisa y no se recarga sola en mitad de un registro.
-- **Datos locales** en IndexedDB, con almacenes separados para investigaciones, parcelas, observaciones y fotos. Las escrituras son transaccionales. La app pide al navegador almacenamiento persistente, sin prometer que no se borre.
-- **Fotos de campo**: opcionales, una por observación. Se reducen a 1600 px, se recodifican en JPEG (sin metadatos ni ubicación) y se guardan solo en el dispositivo.
-- **Copia de seguridad**: un ZIP con `proyecto.json`, la carpeta `fotos/` y `LEEME.txt`. Se importa tal cual, sin descomprimir. Siguen aceptándose las copias `.json` anteriores (sin fotos).
-- **Cuaderno en PDF**: generado en el dispositivo con jsPDF, también sin conexión. Incluye portada, resultados y observaciones con sus fotos.
-- **Formato de los datos**: `naturalab-investigacion`, versión de esquema 1. Las migraciones futuras se añaden en `migrarPaquete()` (`src/importacion-exportacion/esquema.js`) y en `upgrade()` (`src/almacenamiento/db.js`).
-- **Importación**: valida tipos, tamaños (5 MB como máximo) y referencias, y descarta campos desconocidos. Deduplica por identificador y, ante cambios distintos en un mismo registro, pide una decisión. Permite fusionar o importar como copia independiente.
-- **Ejemplo del Salar** con identificadores fijos: cargarlo varias veces no duplica recuentos.
-- **Tipografías** Alegreya y Atkinson Hyperlegible Next incluidas en la app (SIL OFL 1.1), sin peticiones externas.
-- Las copias del prototipo anterior (`naturalab_copia.json`) no son compatibles con este formato.
+---
 
-## Catálogo e imágenes
+## Catálogo y plantillas
 
-Las fotos de referencia se preparan desde la propia app, en *Catálogo → preparar fotos del catálogo* (o desde la ficha de cada especie):
+- **El catálogo publicado** está en `public/data/especies.json`. Cada especie tiene identificador, nombres común y científico, familia, tipo y grupo, hábitat natural, descripción, rasgos, imagen con su autoría y licencia, y estado de validación. Los nombres están pendientes de revisión botánica.
+- **Las plantillas de «unir los puntos»** se generan con Python 3 y la librería shapely:
 
-1. Elige la especie y la foto.
-2. Ajusta el encuadre 4:3.
-3. Revisa el aviso del detector de personas y, si marca zonas, pixélalas o cambia el encuadre.
-4. Indica autoría, procedencia y licencia, y descarga la foto (`<id>.webp`, 1200 × 900 como máximo y sin metadatos de ubicación).
-5. Cuando tengas todas, descarga `especies.json` y copia los archivos con los comandos que muestra la herramienta.
+  ```bash
+  pip install shapely
+  python3 scripts/generar-plantillas.py
+  ```
 
-La detección de personas usa MediaPipe (Apache 2.0) y se ejecuta en el navegador; la foto no sale del dispositivo. Es una ayuda, no una garantía. Los modelos se descargan de Google la primera vez que se ejecuta `npm run dev` o `npm run build`, y se guardan en `public/modelos/` (excluido de git y de la caché sin conexión).
+  Para añadir una especie, se define su contorno en `scripts/plantillas_contornos.py` y se vuelve a ejecutar el generador.
+- **Las imágenes del catálogo** solo se incorporan con licencia compatible y su atribución. La herramienta «Preparar fotos del catálogo», dentro de la app, ayuda a recortarlas y documentarlas.
 
-La app solo muestra imágenes que tengan licencia indicada. Al revisar una ficha botánicamente, actualiza `estadoValidacion` a `validada` y `fechaRevision`.
+---
 
-## Próximas fases
+## Compatibilidad de datos
 
-- Consulta externa con Lens desde la foto de una observación.
-- Revisión de identificaciones pendientes.
+- Esquema de datos: versión 2. Base de datos local: versión 4. Las copias y los datos de versiones anteriores se adaptan solos.
+- Por compatibilidad, los identificadores internos conservan el nombre antiguo de la app: la base de datos `naturalab` y los formatos de copia `naturalab-investigacion` y `naturalab-catalogo-propio`. Cambiarlos dejaría sin abrir los datos y las copias ya guardados.
+
+---
+
+## Pendiente
+
+- Crear plantillas de «unir los puntos» desde la app, a partir de la foto de una especie (fase 4b).
 - Laboratorio de Microplásticos.
+- Fondos de las paletas en mayor resolución.

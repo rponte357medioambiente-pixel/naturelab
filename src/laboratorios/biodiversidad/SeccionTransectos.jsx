@@ -7,6 +7,8 @@ import { resumirTransecto, validarLongitudTransecto } from '../../calculos/cober
 import { formatearNumero, formatearPorcentaje, plural } from '../../calculos/formato.js';
 import { IconoEditar, IconoMas, IconoPapelera } from '../../componentes/Iconos.jsx';
 import { Campo, CamposTransecto } from './PaginasFormularioInvestigacion.jsx';
+import { UbicacionUnidad } from '../../ubicacion/CamposCoordenadas.jsx';
+import { camposDe, leerCoordenadas } from '../../ubicacion/coordenadas.js';
 
 export function SeccionTransectos() {
   const { investigacion, parcelas: transectos, observaciones, catalogo } = useOutletContext();
@@ -150,6 +152,7 @@ function FormularioTransecto({ inicial, investigacionId, transectos, tieneMancha
     orientacion: inicial?.orientacion ?? orientacionLibre,
     modoAnotacion: inicial?.modoAnotacion ?? transectos[0]?.modoAnotacion ?? 'longitudes',
     descripcion: inicial?.descripcion ?? '',
+    ubicacion: { propia: Boolean(inicial?.coordenadas), ...camposDe(inicial?.coordenadas) },
   }));
   const [errores, setErrores] = useState({});
   const prefijo = `transecto-${inicial?.id ?? 'nuevo'}-`;
@@ -166,6 +169,9 @@ function FormularioTransecto({ inicial, investigacionId, transectos, tieneMancha
       nuevos.codigo = `Ya hay un transecto con el código ${codigo}.`;
     }
     if (!longitud.valida) nuevos.longitudCm = longitud.mensaje;
+    const ubicacion = campos.ubicacion.propia ? leerCoordenadas(campos.ubicacion) : { coordenadas: null, errores: {} };
+    if (ubicacion.errores.lat) nuevos.lat = ubicacion.errores.lat;
+    if (ubicacion.errores.lon) nuevos.lon = ubicacion.errores.lon;
     setErrores(nuevos);
     if (Object.keys(nuevos).length) {
       document.getElementById(`campo-${prefijo}${Object.keys(nuevos)[0]}`)?.focus();
@@ -179,6 +185,7 @@ function FormularioTransecto({ inicial, investigacionId, transectos, tieneMancha
         longitudCm: longitud.valor,
         orientacion: campos.orientacion,
         modoAnotacion: tieneManchas ? base.modoAnotacion : campos.modoAnotacion,
+        coordenadas: ubicacion.coordenadas,
         descripcion: campos.descripcion.trim(),
       });
       anunciar(inicial ? 'Transecto actualizado.' : `Transecto ${codigo} creado.`);
@@ -211,6 +218,13 @@ function FormularioTransecto({ inicial, investigacionId, transectos, tieneMancha
           placeholder="Por ejemplo: dentro del polígono de 4 × 4 m"
         />
       </Campo>
+      <UbicacionUnidad
+        prefijo={prefijo}
+        nombre="del transecto"
+        valor={campos.ubicacion}
+        alCambiar={(ubicacion) => setCampos((c) => ({ ...c, ubicacion }))}
+        errores={{ lat: errores.lat, lon: errores.lon }}
+      />
       <div className="acciones" style={{ marginTop: 0 }}>
         <button type="submit" className="boton">
           {inicial ? 'Guardar transecto' : 'Crear transecto'}

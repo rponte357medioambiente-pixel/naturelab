@@ -22,6 +22,8 @@ import { useApariencia, useVistaPreviaPaleta } from '../../apariencia/Apariencia
 import { SelectorPaleta } from '../../apariencia/SelectorPaleta.jsx';
 import { UNIDADES_SUPERFICIE, validarSuperficie } from '../../calculos/biodiversidad.js';
 import { validarLongitudTransecto } from '../../calculos/cobertura.js';
+import { CamposCoordenadas } from '../../ubicacion/CamposCoordenadas.jsx';
+import { camposDe, leerCoordenadas } from '../../ubicacion/coordenadas.js';
 import { hoyISO } from '../../calculos/formato.js';
 import { IconoAtras, IconoPapelera } from '../../componentes/Iconos.jsx';
 import { PaginaNoEncontrada } from '../../app/PaginaNoEncontrada.jsx';
@@ -74,6 +76,7 @@ function FormularioInvestigacion({ inicial }) {
     titulo: inicial?.titulo ?? '',
     fechaObservacion: inicial?.fechaObservacion ?? hoyISO(),
     lugarTexto: inicial?.lugarTexto ?? '',
+    ubicacion: camposDe(inicial?.coordenadas),
     equipoAlias: inicial?.equipoAlias ?? '',
     descripcion: inicial?.descripcion ?? '',
     codigoParcela: 'P1',
@@ -108,6 +111,9 @@ function FormularioInvestigacion({ inicial }) {
       if (!campos.codigoTransecto.trim()) nuevosErrores.codigoTransecto = 'Escribe un código para el transecto.';
       if (!longitud.valida) nuevosErrores.longitudCm = longitud.mensaje;
     }
+    const ubicacion = leerCoordenadas(campos.ubicacion);
+    if (ubicacion.errores.lat) nuevosErrores['investigacion-lat'] = ubicacion.errores.lat;
+    if (ubicacion.errores.lon) nuevosErrores['investigacion-lon'] = ubicacion.errores.lon;
     setErrores(nuevosErrores);
     if (Object.keys(nuevosErrores).length > 0) {
       document.getElementById(`campo-${Object.keys(nuevosErrores)[0]}`)?.focus();
@@ -119,6 +125,7 @@ function FormularioInvestigacion({ inicial }) {
       paleta: campos.paleta,
       fechaObservacion: campos.fechaObservacion,
       lugarTexto: campos.lugarTexto.trim(),
+      coordenadas: ubicacion.coordenadas,
       equipoAlias: campos.equipoAlias.trim(),
       descripcion: campos.descripcion.trim(),
     };
@@ -194,7 +201,7 @@ function FormularioInvestigacion({ inicial }) {
       <Campo
         id="lugarTexto"
         etiqueta="Lugar (opcional)"
-        ayuda="Una descripción general, sin coordenadas ni direcciones exactas."
+        ayuda="Una descripción general, por ejemplo el paraje y el municipio."
       >
         <input
           id="campo-lugarTexto"
@@ -205,6 +212,20 @@ function FormularioInvestigacion({ inicial }) {
           placeholder="Por ejemplo: Salar de los Canos, Vera"
         />
       </Campo>
+
+      <fieldset className="formulario ubicacion-unidad">
+        <legend>Coordenadas (opcional)</legend>
+        <CamposCoordenadas
+          prefijo="investigacion-"
+          valor={campos.ubicacion}
+          alCambiar={(ubicacion) => setCampos((c) => ({ ...c, ubicacion }))}
+          errores={{ lat: errores['investigacion-lat'], lon: errores['investigacion-lon'] }}
+        />
+        <p className="ayuda" style={{ margin: 0 }}>
+          En grados decimales, como en los mapas. Salen en el cuaderno en PDF y en la copia de seguridad. Si la ubicación de
+          una especie protegida no debe difundirse, déjalas vacías.
+        </p>
+      </fieldset>
 
       <Campo id="equipoAlias" etiqueta="Equipo (opcional)" ayuda="Usa un alias, no nombres reales.">
         <input

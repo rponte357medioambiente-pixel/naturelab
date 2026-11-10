@@ -9,7 +9,13 @@ import { IconoAtras, IconoEditar, IconoPapelera } from '../componentes/Iconos.js
 import { PaginaNoEncontrada } from '../app/PaginaNoEncontrada.jsx';
 import { tieneImagen as conImagen, useCatalogo } from './catalogo.js';
 import { ESTADOS_VALIDACION_PROPIA } from './especiesPropias.js';
-import { FotoDeCampo } from './FotoDeCampo.jsx';
+import { GaleriaFotos, MiniaturasFotos } from './GaleriaFotos.jsx';
+import { EtiquetasHabitat } from './Habitats.jsx';
+import { EtiquetasClasificacion, PanelClasificacion } from './Clasificacion.jsx';
+import { listarInvestigacionesConDatos } from '../almacenamiento/repositorio.js';
+import { useConsulta } from '../almacenamiento/useConsulta.js';
+import { EnlaceMapa } from '../ubicacion/CamposCoordenadas.jsx';
+import { dondeSeHaObservado, formatearCoordenadas } from '../ubicacion/coordenadas.js';
 
 export function PaginaFichaEspecie() {
   const { especieId } = useParams();
@@ -42,6 +48,7 @@ export function PaginaFichaEspecie() {
         )}
         {especie.fotoLocal && <span className="estado imagen-ficha__marca">Tu foto</span>}
       </div>
+      <MiniaturasFotos especie={especie} />
       <h1>{especie.nombreComun}</h1>
       {especie.nombreCientifico && <p className="cientifico nombre-cientifico">{especie.nombreCientifico}</p>}
 
@@ -63,7 +70,11 @@ export function PaginaFichaEspecie() {
         )}
       </p>
 
-      {!especie.propia && <FotoDeCampo key={especie.id} especie={especie} />}
+      <GaleriaFotos key={especie.id} especie={especie} />
+
+      <EtiquetasClasificacion especie={especie} />
+      {especie.propia && <PanelClasificacion key={`${especie.id}-${especie.fechaModificacion}`} especie={especie} />}
+      <EtiquetasHabitat especie={especie} />
 
       {especie.descripcion && <p>{especie.descripcion}</p>}
 
@@ -151,6 +162,8 @@ export function PaginaFichaEspecie() {
         )}
       </dl>
 
+      <DondeSeHaObservado especie={especie} />
+
       {especie.propia && <AccionesEspeciePropia especie={especie} />}
     </article>
   );
@@ -196,5 +209,46 @@ function AccionesEspeciePropia({ especie }) {
         </button>
       </div>
     </>
+  );
+}
+
+/** Investigaciones de este dispositivo en las que aparece la especie, con su ubicación. */
+function DondeSeHaObservado({ especie }) {
+  const { datos } = useConsulta(listarInvestigacionesConDatos, []);
+  const lugares = dondeSeHaObservado(especie.id, datos ?? []);
+  if (lugares.length === 0) return null;
+  return (
+    <section className="panel donde-observada" aria-labelledby="titulo-donde">
+      <h2 id="titulo-donde">Dónde se ha observado</h2>
+      <p className="texto-suave texto-pequeno">En tus investigaciones de este dispositivo.</p>
+      <ul className="lista">
+        {lugares.map(({ investigacion, unidades, coordenadas }) => {
+          // Si alguna parcela o transecto tiene ubicación propia, se muestra cada uno.
+          const propias = unidades.filter((u) => u.coordenadas && u.coordenadas !== investigacion.coordenadas);
+          const filas = propias.length ? unidades : [{ id: 'general', codigo: null, coordenadas }];
+          return (
+            <li key={investigacion.id}>
+              <Link to={`/investigaciones/${investigacion.id}`} className="donde-observada__titulo">
+                {investigacion.titulo}
+              </Link>
+              <span className="texto-suave texto-pequeno">
+                {[investigacion.lugarTexto, investigacion.fechaObservacion && formatearFecha(investigacion.fechaObservacion)]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </span>
+              {filas.map((u) => (
+                <span key={u.id} className="donde-observada__coordenadas">
+                  <span>
+                    {u.codigo && <strong>{u.codigo}: </strong>}
+                    {u.coordenadas ? formatearCoordenadas(u.coordenadas) : <span className="texto-suave">Sin coordenadas</span>}
+                  </span>
+                  <EnlaceMapa coordenadas={u.coordenadas} />
+                </span>
+              ))}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

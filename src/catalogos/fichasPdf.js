@@ -1,5 +1,7 @@
 import { formatearFecha } from '../calculos/formato.js';
 import { textoPdf } from '../importacion-exportacion/pdfCuaderno.js';
+import { habitatsDe } from './habitats.js';
+import { textoClasificacion, tipoPorId } from './tipos.js';
 
 /**
  * Fichas de especies en PDF, para estudiar y para recortar.
@@ -38,7 +40,10 @@ export function asignarLetras(total, azar = Math.random) {
 /** Apartados de la tarjeta de características (sin el nombre, que es lo que hay que adivinar). */
 export function contenidoFicha(especie) {
   const apartados = [];
+  if (tipoPorId(especie.tipo)) apartados.push({ titulo: 'Grupo', texto: textoClasificacion(especie) });
   if (especie.familia) apartados.push({ titulo: 'Familia', texto: especie.familia });
+  const habitats = habitatsDe(especie);
+  if (habitats.length) apartados.push({ titulo: 'Hábitat natural', texto: habitats.map((h) => h.nombre).join(', ') });
   if (especie.descripcion) apartados.push({ titulo: null, texto: especie.descripcion });
   if (especie.rasgos?.length) apartados.push({ titulo: 'Cómo reconocerla', lista: especie.rasgos });
   if (especie.habitat) apartados.push({ titulo: 'Dónde vive', texto: especie.habitat });

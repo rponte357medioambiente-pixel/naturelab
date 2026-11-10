@@ -39,7 +39,7 @@ export function SeccionResultados() {
   function descargarObservaciones() {
     descargarArchivo(
       nombreArchivo(investigacion, 'observaciones', 'csv'),
-      csvObservaciones({ parcelas, observaciones }, catalogo.buscarEspecie),
+      csvObservaciones({ investigacion, parcelas, observaciones }, catalogo.buscarEspecie),
       'text/csv;charset=utf-8',
     );
   }

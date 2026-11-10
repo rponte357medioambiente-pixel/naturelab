@@ -4,6 +4,53 @@ Cuaderno de campo digital para talleres de exploración ambiental. Aplicación w
 
 ---
 
+## 10 de noviembre de 2026 · Plantas, animales e insectos, y hasta tres fotos
+
+### Tipos y grupos
+
+- El catálogo admite tres tipos: **plantas**, **animales** e **insectos u otros invertebrados**, cada uno con sus grupos (árboles, arbustos y matas…; aves, mamíferos, reptiles…; mariposas, escarabajos…). Las aves tienen además subgrupos: acuáticas y patos, limícolas, garzas y afines, gaviotas y charranes, rapaces, pájaros y otras.
+- El Catálogo tiene pestañas **Todas, Plantas, Animales e Insectos**, filtros por grupo y un acceso a las especies **pendientes de clasificar**.
+- Las 13 plantas del catálogo publicado tienen ya su grupo.
+
+### Especies siempre en el catálogo
+
+- Desaparece «Otra especie o sin identificar» con nombre libre. En su lugar, **Añadir especie nueva**, al registrar una observación o al anotar un transecto: basta un nombre provisional y, si se sabe, el tipo («No lo sé» también vale). La especie se guarda en Mi catálogo, pendiente de identificar, y se usa en ese momento.
+- En la ficha de una especie de Mi catálogo, **Completar la clasificación** permite elegir después el tipo, el grupo, el subgrupo y el nombre definitivo. Las observaciones se actualizan solas.
+- Las observaciones antiguas con nombre libre tienen un botón **Pasar al catálogo**, que crea la especie y enlaza todas las que tengan ese mismo nombre.
+
+### Hasta tres fotos por especie
+
+- Cada especie admite **hasta tres fotos propias**: una principal y dos más, cada una con la parte que muestra (planta entera, hoja, flor, fruto, tallo o corteza; cuerpo entero, detalle, huellas; vista de arriba, de lado, detalle).
+- En la ficha se ven en miniatura bajo la principal y se amplían al tocarlas. Se puede elegir la principal y quitar fotos.
+- En las especies publicadas, sin foto principal propia se sigue viendo la imagen del catálogo.
+- El juego «¿Qué especie es?» pregunta con cualquiera de las fotos de cada especie.
+- Las fotos viajan en la copia de seguridad de Mi catálogo.
+
+### Autoría más sencilla
+
+- Las fotos preguntan **«¿Quién hizo la foto?»**. Si es tuya, basta tu nombre y la licencia: la procedencia queda como «Fotografía propia» y no hace falta confirmar derechos. Si es de otra persona, se piden procedencia, licencia y confirmación.
+
+---
+
+## 9 de noviembre de 2026 · Ubicación y hábitat natural
+
+### Ubicación con coordenadas
+
+- Cada investigación puede guardar sus **coordenadas** en grados decimales: con el botón **Usar mi ubicación** (solo actúa si se pulsa e indica la precisión del GPS) o escritas a mano. Incluye un enlace **Ver en el mapa** (OpenStreetMap).
+- Cada parcela o transecto puede usar la ubicación de la investigación o **una propia**, cuando están en sitios distintos.
+- Las coordenadas salen **exactas** en el cuaderno en PDF (portada y cada parcela o transecto), en los CSV (columnas Latitud y Longitud) y en la copia de seguridad.
+- La ficha de cada especie muestra sola **Dónde se ha observado**: las investigaciones del dispositivo en las que aparece, con su lugar, fecha, parcela o transecto, coordenadas y enlace al mapa. La ubicación se escribe una sola vez, en la investigación.
+- La ubicación del GPS solo funciona con conexión segura (https o localhost); en otro caso se escriben a mano.
+
+### Hábitat natural
+
+- Seis hábitats: dunares y de costa, crasas de desierto, de alta montaña, forestales y de bosque, acuáticas y de ribera, y praderas y campo abierto. Una especie puede tener varios.
+- Al añadir o editar una especie de **Mi catálogo** se elige su hábitat en una lista con descripción y ejemplos.
+- Las 13 especies del catálogo publicado ya tienen su hábitat (pendiente de revisión botánica).
+- El hábitat aparece como etiqueta en la ficha, como **filtro** en el Catálogo y en las características de las fichas para imprimir.
+
+---
+
 ## 7 de noviembre de 2026 · Fichas para imprimir
 
 - Nuevo botón en el Catálogo: **Fichas para imprimir**. Crea un PDF en A4 con una fila por especie: a la izquierda, su imagen con el nombre y un número; a la derecha, sus características (familia, descripción, cómo reconocerla y dónde vive) con una letra.

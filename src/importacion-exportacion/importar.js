@@ -12,6 +12,7 @@ const CAMPOS_PARCELA = [
   'unidadSuperficie',
   'descripcion',
   'notas',
+  'coordenadas',
   // Transectos
   'longitudCm',
   'orientacion',

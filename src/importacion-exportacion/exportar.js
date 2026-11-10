@@ -1,3 +1,4 @@
+import { coordenadasDe } from '../ubicacion/coordenadas.js';
 import { ESTADOS_IDENTIFICACION, VERSION_ESQUEMA } from '../almacenamiento/modelo.js';
 import { UNIDADES_SUPERFICIE } from '../calculos/biodiversidad.js';
 import { FORMATO_PAQUETE } from './esquema.js';
@@ -81,11 +82,19 @@ export function aCsv(filas) {
 
 const num = (valor, decimales) => ({ numero: numeroCsv(valor, decimales) });
 
-export function csvObservaciones({ parcelas, observaciones }, buscarEspecie = () => null) {
+/** Latitud y longitud de una parcela o transecto (las suyas o las de la investigación). */
+function columnasCoordenadas(parcela, investigacion) {
+  const c = coordenadasDe(parcela, investigacion);
+  return c ? [num(c.lat, 5), num(c.lon, 5)] : ['', ''];
+}
+
+export function csvObservaciones({ investigacion = null, parcelas, observaciones }, buscarEspecie = () => null) {
   const parcelasPorId = new Map(parcelas.map((p) => [p.id, p]));
   const filas = [
     [
       'Parcela',
+      'Latitud',
+      'Longitud',
       'Superficie',
       'Unidad',
       'Nombre común',
@@ -103,6 +112,7 @@ export function csvObservaciones({ parcelas, observaciones }, buscarEspecie = ()
     const especie = buscarEspecie(o.especieId);
     filas.push([
       parcela?.codigo ?? '',
+      ...columnasCoordenadas(parcela, investigacion),
       num(parcela?.superficie),
       parcela?.superficie ? UNIDADES_SUPERFICIE[parcela.unidadSuperficie]?.etiqueta ?? '' : '',
       especie?.nombreComun ?? o.nombreComun,
@@ -146,10 +156,12 @@ export function csvResultados(resumen, ambito) {
 /* ---------- CSV de transectos ---------- */
 
 /** Una fila por especie y transecto, con cada mancha tal como se anotó. */
-export function csvAnotaciones({ parcelas, observaciones }, buscarEspecie = () => null) {
+export function csvAnotaciones({ investigacion = null, parcelas, observaciones }, buscarEspecie = () => null) {
   const filas = [
     [
       'Transecto',
+      'Latitud',
+      'Longitud',
       'Longitud (cm)',
       'Orientación',
       'Nombre común',
@@ -176,6 +188,7 @@ export function csvAnotaciones({ parcelas, observaciones }, buscarEspecie = () =
           : (o.longitudes ?? []).reduce((s, v) => s + v, 0);
       filas.push([
         t.codigo,
+        ...columnasCoordenadas(t, investigacion),
         num(t.longitudCm),
         t.orientacion,
         especie?.nombreComun ?? o.nombreComun,
@@ -191,6 +204,7 @@ export function csvAnotaciones({ parcelas, observaciones }, buscarEspecie = () =
     if (t.modoAnotacion !== 'tramos' && (t.sueloDesnudo ?? []).length > 0) {
       filas.push([
         t.codigo,
+        ...columnasCoordenadas(t, investigacion),
         num(t.longitudCm),
         t.orientacion,
         'Suelo desnudo',

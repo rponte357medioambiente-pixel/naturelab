@@ -11,6 +11,7 @@ import {
   BotonesFoto,
   CamposLicencia,
   RevisionPersonas,
+  textoFuente,
   textoLicencia,
   textoModificaciones,
   useEditorFoto,
@@ -19,6 +20,9 @@ import {
   VistaEncuadre,
 } from './fotos/EditorFoto.jsx';
 import { autorReciente } from './autorReciente.js';
+import { SelectorHabitats } from './Habitats.jsx';
+import { SelectorClasificacion } from './Clasificacion.jsx';
+import { limpiarClasificacion } from './tipos.js';
 
 /** Añadir una especie a «Mi catálogo» (sin especieId) o editar una existente. */
 export function PaginaEspeciePropia() {
@@ -85,6 +89,8 @@ function FormularioEspeciePropia({ registro, autorInicial }) {
     lugarTexto: registro?.lugarTexto ?? '',
     notas: registro?.notas ?? '',
     comprobada: registro?.estadoValidacion === 'validada',
+    habitatsNaturales: registro?.habitatsNaturales ?? [],
+    clasificacion: { tipo: registro?.tipo ?? null, grupo: registro?.grupo ?? null, subgrupo: registro?.subgrupo ?? null },
   });
   // Foto ya guardada: 'conservar' | 'quitar' | 'ninguna'. Una foto nueva del editor la sustituye.
   const [fotoGuardada, setFotoGuardada] = useState(registro?.foto?.blob ? 'conservar' : 'ninguna');
@@ -141,8 +147,10 @@ function FormularioEspeciePropia({ registro, autorInicial }) {
         lugarTexto: datos.lugarTexto.trim(),
         notas: datos.notas.trim(),
         estadoValidacion: datos.comprobada ? 'validada' : 'pendiente',
+        habitatsNaturales: datos.habitatsNaturales,
+        ...limpiarClasificacion(datos.clasificacion),
         imagenAutor: conFoto ? licencia.autor.trim() : '',
-        imagenFuente: conFoto ? licencia.fuente.trim() : '',
+        imagenFuente: conFoto ? textoFuente(licencia) : '',
         imagenLicencia: conFoto ? textoLicencia(licencia) : '',
         imagenModificaciones: conFoto ? modificaciones : '',
       };
@@ -280,6 +288,15 @@ function FormularioEspeciePropia({ registro, autorInicial }) {
             placeholder="Rasgos, hábitat, época de floración, dudas…"
           />
         </div>
+        <SelectorClasificacion
+          prefijo="especie-"
+          valor={datos.clasificacion}
+          alCambiar={(clasificacion) => setDatos((d) => ({ ...d, clasificacion }))}
+        />
+        <SelectorHabitats
+          valor={datos.habitatsNaturales}
+          alCambiar={(habitatsNaturales) => setDatos((d) => ({ ...d, habitatsNaturales }))}
+        />
         <label className="casilla">
           <input type="checkbox" checked={datos.comprobada} onChange={cambiar('comprobada')} />
           <span>

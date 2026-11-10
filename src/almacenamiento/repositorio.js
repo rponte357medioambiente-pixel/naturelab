@@ -1,6 +1,6 @@
 import { abrirBD, ALMACENES as A } from './db.js';
 import { generarId } from './ids.js';
-import { VERSION_ESQUEMA } from './modelo.js';
+import { crearEspeciePropia, VERSION_ESQUEMA } from './modelo.js';
 
 /**
  * Acceso a los datos locales. Cada escritura emite un evento «cambio» para que
@@ -345,6 +345,9 @@ export async function guardarEspeciePropia(especie, { foto } = {}) {
     registro = {
       ...especie,
       foto: fotoFinal,
+      // Las fotos adicionales se gestionan desde la ficha: si no llegan, se conservan.
+      fotosExtra: especie.fotosExtra ?? anterior?.fotosExtra ?? [],
+      partePrincipal: especie.partePrincipal ?? anterior?.partePrincipal ?? null,
       versionEsquema: VERSION_ESQUEMA,
       fechaCreacion: anterior?.fechaCreacion ?? especie.fechaCreacion ?? marca,
       fechaModificacion: marca,
@@ -459,3 +462,89 @@ export async function eliminarDibujo(id) {
   });
   notificar();
 }
+
+/* ---------- Clasificación y especies creadas en el campo ---------- */
+
+/** Cambia algunos datos de una especie de «Mi catálogo» sin tocar el resto (fotos incluidas). */
+export async function actualizarEspeciePropia(id, cambios) {
+  let registro = null;
+  await enTransaccion([A.especiesPropias], async (tx) => {
+    const almacen = tx.objectStore(A.especiesPropias);
+    const anterior = await almacen.get(id);
+    if (!anterior) throw new Error('La especie ya no existe.');
+    registro = { ...anterior, ...cambios, id, fechaModificacion: ahora() };
+    await almacen.put(registro);
+  });
+  notificar();
+  return registro;
+}
+
+/**
+ * Pasa a «Mi catálogo» una especie que se registró solo con un nombre libre
+ * (versiones anteriores): crea la especie, pendiente de identificar, y enlaza con
+ * ella todas las observaciones con ese mismo nombre y sin especie del catálogo.
+ * @returns {Promise<object>} la especie creada
+ */
+export async function pasarAlCatalogo(nombreComun, nombreCientifico = '') {
+  const nombre = nombreComun.trim();
+  const clave = nombre.toLocaleLowerCase('es');
+  const marca = ahora();
+  const especie = {
+    ...crearEspeciePropia({ nombreComun: nombre, nombreCientifico: nombreCientifico.trim() }),
+    fechaCreacion: marca,
+    fechaModificacion: marca,
+  };
+  await enTransaccion([A.especiesPropias, A.observaciones, A.investigaciones], async (tx) => {
+    await tx.objectStore(A.especiesPropias).put(especie);
+    const observaciones = await tx.objectStore(A.observaciones).getAll();
+    const tocadas = new Set();
+    for (const o of observaciones) {
+      if (!o.especieId && String(o.nombreComun ?? '').trim().toLocaleLowerCase('es') === clave) {
+        await tx.objectStore(A.observaciones).put({ ...o, especieId: especie.id, fechaModificacion: marca });
+        tocadas.add(o.investigacionId);
+      }
+    }
+    for (const id of tocadas) await tocarInvestigacion(tx, id, marca);
+  });
+  notificar();
+  return especie;
+}
+
+/**
+ * Cambia las fotos de una especie (principal y adicionales) con una función pura
+ * de catalogos/fotosEspecie.js. En «Mi catálogo» se guardan en la propia especie;
+ * en las publicadas, en sus fotos de campo.
+ * @param {(registro) => object} cambiar  devuelve los campos que cambian
+ */
+export async function modificarFotosEspecie(especie, cambiar) {
+  const marca = ahora();
+  if (especie.propia) {
+    await enTransaccion([A.especiesPropias], async (tx) => {
+      const almacen = tx.objectStore(A.especiesPropias);
+      const anterior = await almacen.get(especie.id);
+      if (!anterior) throw new Error('La especie ya no existe.');
+      await almacen.put({ ...anterior, ...cambiar(anterior), fechaModificacion: marca });
+    });
+  } else {
+    await enTransaccion([A.fotosCatalogo], async (tx) => {
+      const almacen = tx.objectStore(A.fotosCatalogo);
+      const anterior = (await almacen.get(especie.id)) ?? { especieId: especie.id, foto: null, fotosExtra: [] };
+      const nuevo = { ...anterior, ...cambiar(anterior), especieId: especie.id, fechaModificacion: marca };
+      if (!nuevo.foto && !(nuevo.fotosExtra ?? []).length) await almacen.delete(especie.id);
+      else await almacen.put(nuevo);
+    });
+  }
+  notificar();
+  solicitarPersistencia();
+}
+
+/** Prepara una foto generada para guardarla. */
+export const datosFoto = (foto) => ({
+  blob: foto.blob,
+  tipoMime: foto.blob.type,
+  tamano: foto.blob.size,
+  ancho: foto.ancho ?? null,
+  alto: foto.alto ?? null,
+});
+
+export { generarId as generarIdFoto };

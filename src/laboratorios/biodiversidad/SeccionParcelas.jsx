@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { UbicacionUnidad } from '../../ubicacion/CamposCoordenadas.jsx';
+import { camposDe, leerCoordenadas } from '../../ubicacion/coordenadas.js';
 import { useAnunciar } from '../../accesibilidad/Anunciador.jsx';
 import { crearParcela } from '../../almacenamiento/modelo.js';
 import { eliminarParcela, guardarParcela } from '../../almacenamiento/repositorio.js';
@@ -109,6 +111,7 @@ function FormularioParcela({ inicial, investigacionId, parcelas, alTerminar, seP
     superficie: inicial?.superficie ? String(inicial.superficie).replace('.', ',') : '',
     unidadSuperficie: inicial?.unidadSuperficie ?? 'm2',
     descripcion: inicial?.descripcion ?? '',
+    ubicacion: { propia: Boolean(inicial?.coordenadas), ...camposDe(inicial?.coordenadas) },
   }));
   const [errores, setErrores] = useState({});
   const prefijo = `parcela-${inicial?.id ?? 'nueva'}-`;
@@ -128,6 +131,9 @@ function FormularioParcela({ inicial, investigacionId, parcelas, alTerminar, seP
       nuevosErrores.codigo = `Ya hay una parcela con el código ${codigo}.`;
     }
     if (!superficie.valida) nuevosErrores.superficie = superficie.mensaje;
+    const ubicacion = campos.ubicacion.propia ? leerCoordenadas(campos.ubicacion) : { coordenadas: null, errores: {} };
+    if (ubicacion.errores.lat) nuevosErrores.lat = ubicacion.errores.lat;
+    if (ubicacion.errores.lon) nuevosErrores.lon = ubicacion.errores.lon;
     setErrores(nuevosErrores);
     if (Object.keys(nuevosErrores).length) return;
 
@@ -140,6 +146,7 @@ function FormularioParcela({ inicial, investigacionId, parcelas, alTerminar, seP
         codigo,
         superficie: superficie.valor,
         unidadSuperficie: campos.unidadSuperficie,
+        coordenadas: ubicacion.coordenadas,
         descripcion: campos.descripcion.trim(),
       });
       anunciar(inicial ? 'Parcela actualizada.' : `Parcela ${codigo} creada.`);
@@ -178,6 +185,13 @@ function FormularioParcela({ inicial, investigacionId, parcelas, alTerminar, seP
           placeholder="Por ejemplo: borde del saladar, suelo arenoso"
         />
       </Campo>
+      <UbicacionUnidad
+        prefijo={prefijo}
+        nombre="de la parcela"
+        valor={campos.ubicacion}
+        alCambiar={(ubicacion) => setCampos((c) => ({ ...c, ubicacion }))}
+        errores={{ lat: errores.lat, lon: errores.lon }}
+      />
       <div className="acciones" style={{ marginTop: 0 }}>
         <button type="submit" className="boton">
           {inicial ? 'Guardar parcela' : 'Crear parcela'}

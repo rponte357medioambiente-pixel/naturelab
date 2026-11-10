@@ -1,14 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
+import { EspecieNueva } from '../../catalogos/Clasificacion.jsx';
 import { useAnunciar } from '../../accesibilidad/Anunciador.jsx';
 import { useTituloDocumento } from '../../accesibilidad/useTituloDocumento.js';
 import { crearIntercepcion, esTransecto, MODOS_ANOTACION } from '../../almacenamiento/modelo.js';
-import {
-  eliminarObservacion,
-  guardarObservacion,
-  guardarParcela,
-  obtenerDatosInvestigacion,
-} from '../../almacenamiento/repositorio.js';
+import { eliminarObservacion, guardarObservacion, guardarParcela, obtenerDatosInvestigacion, pasarAlCatalogo } from '../../almacenamiento/repositorio.js';
 import { useConsulta } from '../../almacenamiento/useConsulta.js';
 import {
   leerLongitudes,
@@ -172,6 +168,24 @@ function ResumenAnotacion({ resumen, modo }) {
 
 /* ---------- Fila de una especie ---------- */
 
+/** Para especies registradas con nombre libre en versiones anteriores. */
+function BotonPasarAlCatalogo({ nombre, cientifico }) {
+  const anunciar = useAnunciar();
+  async function pasar() {
+    try {
+      const especie = await pasarAlCatalogo(nombre, cientifico ?? '');
+      anunciar(`«${especie.nombreComun}» está ya en Mi catálogo. Complétala desde su ficha.`);
+    } catch (e) {
+      anunciar(`No se ha podido pasar al catálogo: ${e.message}`, { tipo: 'error' });
+    }
+  }
+  return (
+    <button type="button" className="boton boton--sencillo" onClick={pasar}>
+      Pasar al catálogo
+    </button>
+  );
+}
+
 function FilaEspecie({ observacion, transecto, modo, catalogo, abierta, alAbrir }) {
   const especie = catalogo.buscarEspecie(observacion.especieId);
   const nombre = especie?.nombreComun ?? observacion.nombreComun;
@@ -218,6 +232,7 @@ function FilaEspecie({ observacion, transecto, modo, catalogo, abierta, alAbrir 
             <button type="button" className="boton boton--sencillo" onClick={() => alAbrir(true)}>
               {modo === 'tramos' ? 'Editar tramos y notas' : 'Notas e identificación'}
             </button>
+            {!especie && <BotonPasarAlCatalogo nombre={observacion.nombreComun} cientifico={observacion.nombreCientifico} />}
           </div>
         )}
       </div>
@@ -451,41 +466,24 @@ function PanelEdicion({ observacion, transecto, modo, nombre, alCerrar }) {
 
 /* ---------- Añadir una especie al transecto ---------- */
 
-const OTRA = '__otra__';
-
 function SelectorNuevaEspecie({ investigacion, transecto, presentes, catalogo, alTerminar }) {
   const anunciar = useAnunciar();
   const [busqueda, setBusqueda] = useState('');
   const [seleccion, setSeleccion] = useState(null);
-  const [nombreOtra, setNombreOtra] = useState('');
+  const [creandoEspecie, setCreandoEspecie] = useState(false);
   const [error, setError] = useState('');
   const yaEstan = new Set(presentes.map((o) => o.especieId).filter(Boolean));
   const disponibles = catalogo.especies.filter((e) => !yaEstan.has(e.id));
   const resultados = buscarEspecies(disponibles, busqueda);
 
-  async function anadir(evento) {
-    evento.preventDefault();
-    let campos;
-    if (seleccion === OTRA) {
-      const nombre = nombreOtra.trim();
-      if (!nombre) {
-        setError('Escribe un nombre provisional, por ejemplo «Gramínea de hoja fina».');
-        return;
-      }
-      campos = { especieId: null, nombreComun: nombre, nombreCientifico: '', estadoIdentificacion: 'pendiente' };
-    } else {
-      const especie = catalogo.buscarEspecie(seleccion);
-      if (!especie) {
-        setError('Elige una especie de la lista.');
-        return;
-      }
-      campos = {
-        especieId: especie.id,
-        nombreComun: especie.nombreComun,
-        nombreCientifico: especie.nombreCientifico,
-        estadoIdentificacion: 'confirmada',
-      };
-    }
+  async function anadirEspecie(especie, confirmada = false) {
+    const campos = {
+      especieId: especie.id,
+      nombreComun: especie.nombreComun,
+      nombreCientifico: especie.nombreCientifico ?? '',
+      // Una especie recién creada en el campo queda pendiente de identificar.
+      estadoIdentificacion: confirmada ? 'confirmada' : 'pendiente',
+    };
     try {
       const nueva = crearIntercepcion(investigacion.id, transecto.id, campos);
       await guardarObservacion(nueva);
@@ -494,6 +492,16 @@ function SelectorNuevaEspecie({ investigacion, transecto, presentes, catalogo, a
     } catch (e) {
       anunciar(`No se ha podido añadir: ${e.message}`, { tipo: 'error' });
     }
+  }
+
+  async function anadir(evento) {
+    evento.preventDefault();
+    const especie = catalogo.buscarEspecie(seleccion);
+    if (!especie) {
+      setError('Elige una especie de la lista o añade una especie nueva.');
+      return;
+    }
+    await anadirEspecie(especie, true);
   }
 
   return (
@@ -540,36 +548,19 @@ function SelectorNuevaEspecie({ investigacion, transecto, presentes, catalogo, a
               {busqueda ? `Ninguna especie del catálogo coincide con «${busqueda}».` : 'Ya están todas las del catálogo.'}
             </p>
           )}
-          <label className="opcion-especie">
-            <input
-              type="radio"
-              name="especie-transecto"
-              value={OTRA}
-              checked={seleccion === OTRA}
-              onChange={() => {
-                setSeleccion(OTRA);
-                setError('');
-              }}
-            />
-            <span className="nombres">
-              <strong>Otra especie o sin identificar</strong>
-              <span className="texto-suave texto-pequeno">Quedará pendiente de revisar</span>
-            </span>
-          </label>
         </div>
-      </fieldset>
-      {seleccion === OTRA && (
-        <div className="campo">
-          <label htmlFor="nombre-otra-transecto">Nombre provisional</label>
-          <input
-            id="nombre-otra-transecto"
-            value={nombreOtra}
-            onChange={(e) => setNombreOtra(e.target.value)}
-            maxLength={200}
-            autoComplete="off"
+        {creandoEspecie ? (
+          <EspecieNueva
+            nombreInicial={busqueda.trim()}
+            alCancelar={() => setCreandoEspecie(false)}
+            alCrear={(especie) => anadirEspecie(especie)}
           />
-        </div>
-      )}
+        ) : (
+          <button type="button" className="boton boton--secundario boton-agregar-especie" onClick={() => setCreandoEspecie(true)}>
+            Añadir especie nueva
+          </button>
+        )}
+      </fieldset>
       {error && (
         <p className="error-campo" role="alert">
           {error}

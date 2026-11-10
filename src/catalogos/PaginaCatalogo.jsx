@@ -6,6 +6,9 @@ import { ImagenEspecie } from '../componentes/ImagenEspecie.jsx';
 import { IconoAtras, IconoCamara } from '../componentes/Iconos.jsx';
 import { buscarEspecies, useCatalogo } from './catalogo.js';
 import { CopiaMiCatalogo } from './CopiaMiCatalogo.jsx';
+import { HABITATS } from './habitats.js';
+import { pendienteDeClasificar, tipoPorId, TIPOS } from './tipos.js';
+import { IconoHabitat } from './Habitats.jsx';
 
 const IconoJuego = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
@@ -27,8 +30,30 @@ export function PaginaCatalogo() {
   useTituloDocumento('Catálogo de especies');
   const { cargando, error, especies, catalogo } = useCatalogo();
   const [consulta, setConsulta] = useState('');
-  const buscando = consulta.trim() !== '';
-  const resultados = useMemo(() => buscarEspecies(especies, consulta), [especies, consulta]);
+  const [habitat, setHabitat] = useState('');
+  const [tipo, setTipo] = useState('');
+  const [grupo, setGrupo] = useState(''); // un grupo o 'pendientes'
+  const buscando = consulta.trim() !== '' || habitat !== '' || tipo !== '' || grupo !== '';
+  const delTipo = tipo ? especies.filter((e) => e.tipo === tipo) : especies;
+  const pendientes = especies.filter((e) => e.propia && pendienteDeClasificar(e));
+  // Solo se ofrecen los grupos y hábitats que tienen alguna especie.
+  const gruposPresentes = (tipoPorId(tipo)?.grupos ?? []).filter((g) => delTipo.some((e) => e.grupo === g.id));
+  const habitatsPresentes = HABITATS.filter((h) => delTipo.some((e) => e.habitatsNaturales?.includes(h.id)));
+  const resultados = useMemo(
+    () =>
+      buscarEspecies(especies, consulta).filter(
+        (e) =>
+          (grupo === 'pendientes' ? e.propia && pendienteDeClasificar(e) : !tipo || e.tipo === tipo) &&
+          (!grupo || grupo === 'pendientes' || e.grupo === grupo) &&
+          (!habitat || e.habitatsNaturales?.includes(habitat)),
+      ),
+    [especies, consulta, habitat, tipo, grupo],
+  );
+  const elegirTipo = (t) => {
+    setTipo(t);
+    setGrupo('');
+    setHabitat('');
+  };
   const propias = resultados.filter((e) => e.propia);
   const publicadas = resultados.filter((e) => !e.propia);
   // El catálogo publicado se agrupa por zona, en el orden en que aparecen en especies.json.
@@ -49,7 +74,7 @@ export function PaginaCatalogo() {
       </Link>
       <header className="encabezado-pagina">
         <h1>Catálogo de especies</h1>
-        <p>Las plantas de los lugares estudiados y las que añadas tú en tus salidas.</p>
+        <p>Plantas, animales e insectos de los lugares estudiados, y las especies que añadas tú en tus salidas.</p>
       </header>
 
       <div className="acciones-apiladas-catalogo">
@@ -78,6 +103,56 @@ export function PaginaCatalogo() {
           enterKeyHint="search"
         />
       </div>
+      <div className="pestanas-tipo" role="group" aria-label="Tipo de especie">
+        <button type="button" aria-pressed={tipo === '' && grupo !== 'pendientes'} onClick={() => elegirTipo('')}>
+          Todas
+        </button>
+        {TIPOS.map((t) => (
+          <button key={t.id} type="button" aria-pressed={tipo === t.id} onClick={() => elegirTipo(t.id)}>
+            {t.plural}
+          </button>
+        ))}
+      </div>
+      {(gruposPresentes.length > 0 || pendientes.length > 0) && (
+        <div className="pastillas filtro-habitat" role="group" aria-label="Filtrar por grupo">
+          {gruposPresentes.length > 0 && (
+            <button type="button" aria-pressed={grupo === ''} onClick={() => setGrupo('')}>
+              Todos los grupos
+            </button>
+          )}
+          {gruposPresentes.map((g) => (
+            <button key={g.id} type="button" aria-pressed={grupo === g.id} onClick={() => setGrupo(grupo === g.id ? '' : g.id)}>
+              {g.nombre}
+            </button>
+          ))}
+          {pendientes.length > 0 && (
+            <button
+              type="button"
+              className="pastilla-pendientes"
+              aria-pressed={grupo === 'pendientes'}
+              onClick={() => {
+                setTipo('');
+                setGrupo(grupo === 'pendientes' ? '' : 'pendientes');
+              }}
+            >
+              Pendientes de clasificar · {pendientes.length}
+            </button>
+          )}
+        </div>
+      )}
+      {habitatsPresentes.length > 0 && (tipo === '' || tipo === 'planta') && grupo !== 'pendientes' && (
+        <div className="pastillas filtro-habitat" role="group" aria-label="Filtrar por hábitat natural">
+          <button type="button" aria-pressed={habitat === ''} onClick={() => setHabitat('')}>
+            Todos los hábitats
+          </button>
+          {habitatsPresentes.map((h) => (
+            <button key={h.id} type="button" aria-pressed={habitat === h.id} onClick={() => setHabitat(habitat === h.id ? '' : h.id)}>
+              <IconoHabitat id={h.id} tamano={16} />
+              {h.nombre}
+            </button>
+          ))}
+        </div>
+      )}
       <p className="texto-suave texto-pequeno" role="status" style={{ marginTop: '0.5rem' }}>
         {cargando ? 'Cargando…' : plural(resultados.length, 'especie', 'especies')}
       </p>
@@ -118,7 +193,7 @@ export function PaginaCatalogo() {
       ))}
 
       {buscando && resultados.length === 0 && !cargando && (
-        <p className="texto-suave">Ninguna especie coincide con «{consulta.trim()}».</p>
+        <p className="texto-suave">{consulta.trim() ? `Ninguna especie coincide con «${consulta.trim()}»${habitat ? ' en este hábitat' : ''}.` : 'Ninguna especie con estos filtros.'}</p>
       )}
 
       <p className="texto-suave texto-pequeno" style={{ marginTop: '1.75rem' }}>

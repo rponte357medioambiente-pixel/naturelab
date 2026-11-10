@@ -1,5 +1,7 @@
 import { strToU8, zipSync } from 'fflate';
 import { PREFIJO_ESPECIE_PROPIA, VERSION_ESQUEMA } from '../almacenamiento/modelo.js';
+import { limpiarHabitats } from './habitats.js';
+import { limpiarClasificacion } from './tipos.js';
 import {
   esZip,
   extensionDeTipo,
@@ -72,17 +74,34 @@ const urlsFotosCatalogo = crearCacheUrls();
  * catálogo publicado.
  * @returns {Map<string, {imagenUrl, imagenAutor, imagenFuente, imagenLicencia, imagenModificaciones, fechaModificacion}>}
  */
+/** Fotos adicionales con su URL temporal (la clave incluye el id, que no cambia). */
+function prepararExtras(cache, clave, extras = []) {
+  return extras.map((x) => ({
+    id: x.id,
+    url: cache.url(`${clave}#${x.id}`, x.foto?.blob, x.id),
+    parte: x.parte ?? null,
+    imagenAutor: x.imagenAutor ?? '',
+    imagenFuente: x.imagenFuente ?? '',
+    imagenLicencia: x.imagenLicencia ?? '',
+    imagenModificaciones: x.imagenModificaciones ?? '',
+  }));
+}
+
+const clavesDe = (clave, extras = []) => [clave, ...extras.map((x) => `${clave}#${x.id}`)];
+
 export function prepararFotosCatalogo(registros) {
-  urlsFotosCatalogo.conservar(new Set(registros.map((r) => r.especieId)));
+  urlsFotosCatalogo.conservar(new Set(registros.flatMap((r) => clavesDe(r.especieId, r.fotosExtra))));
   return new Map(
     registros.map((r) => [
       r.especieId,
       {
-        imagenUrl: urlsFotosCatalogo.url(r.especieId, r.foto?.blob, r.fechaModificacion),
+        imagenUrl: r.foto ? urlsFotosCatalogo.url(r.especieId, r.foto.blob, r.fechaModificacion) : null,
         imagenAutor: r.imagenAutor,
         imagenFuente: r.imagenFuente,
         imagenLicencia: r.imagenLicencia,
         imagenModificaciones: r.imagenModificaciones,
+        partePrincipal: r.partePrincipal ?? null,
+        imagenesExtra: prepararExtras(urlsFotosCatalogo, r.especieId, r.fotosExtra),
         fechaModificacion: r.fechaModificacion,
       },
     ]),
@@ -91,9 +110,12 @@ export function prepararFotosCatalogo(registros) {
 
 /** Especie publicada con la foto de campo en lugar de su imagen; conserva la original para poder volver. */
 export function aplicarFotoCatalogo(especie, foto) {
-  if (!foto?.imagenUrl) return especie;
+  if (!foto) return especie;
+  if (!foto.imagenUrl) return { ...especie, imagenesExtra: foto.imagenesExtra ?? [] };
   return {
     ...especie,
+    imagenesExtra: foto.imagenesExtra ?? [],
+    partePrincipal: foto.partePrincipal ?? null,
     fotoLocal: true,
     imagenUrl: foto.imagenUrl,
     imagenTipo: 'foto-local',
@@ -114,11 +136,16 @@ export function aplicarFotoCatalogo(especie, foto) {
  * catálogo publicado, marcadas con «propia» y con la URL de su foto.
  */
 export function prepararEspeciesPropias(registros) {
-  urlsFotos.conservar(new Set(registros.map((r) => r.id)));
+  urlsFotos.conservar(new Set(registros.flatMap((r) => clavesDe(r.id, r.fotosExtra))));
   return registros.map((r) => {
     // eslint-disable-next-line no-unused-vars
-    const { foto, ...datos } = r;
-    return { ...datos, propia: true, imagenUrl: urlsFotos.url(r.id, r.foto?.blob, r.fechaModificacion) };
+    const { foto, fotosExtra, ...datos } = r;
+    return {
+      ...datos,
+      propia: true,
+      imagenUrl: urlsFotos.url(r.id, r.foto?.blob, r.fechaModificacion),
+      imagenesExtra: prepararExtras(urlsFotos, r.id, fotosExtra),
+    };
   });
 }
 
@@ -145,25 +172,36 @@ export async function construirZipCatalogoPropio(registros, fotosCatalogo = []) 
   const archivos = {};
   const especies = [];
   const fotos = [];
-  for (const registro of fotosCatalogo) {
-    if (!registro.foto?.blob) continue;
-    const { foto, ...datos } = registro;
+  // Guarda una foto en el ZIP y devuelve su vínculo. Las imágenes ya están
+  // comprimidas: se guardan sin volver a comprimir.
+  async function vincular(foto, nombre) {
+    if (!foto?.blob) return null;
     const tipo = foto.tipoMime ?? foto.blob.type;
-    const ruta = `fotos/catalogo-${registro.especieId}.${extensionDeTipo(tipo)}`;
+    const ruta = `fotos/${nombre}.${extensionDeTipo(tipo)}`;
     archivos[ruta] = [new Uint8Array(await foto.blob.arrayBuffer()), { level: 0 }];
-    fotos.push({ ...datos, foto: { archivo: ruta, tipoMime: tipo, ancho: foto.ancho ?? null, alto: foto.alto ?? null } });
+    return { archivo: ruta, tipoMime: tipo, ancho: foto.ancho ?? null, alto: foto.alto ?? null };
+  }
+  async function vincularExtras(extras = [], prefijo) {
+    const salida = [];
+    for (const x of extras) {
+      const vinculo = await vincular(x.foto, `${prefijo}-${x.id}`);
+      if (vinculo) salida.push({ ...x, foto: vinculo });
+    }
+    return salida;
+  }
+  for (const registro of fotosCatalogo) {
+    const { foto, fotosExtra, ...datos } = registro;
+    const extras = await vincularExtras(fotosExtra, `catalogo-${registro.especieId}`);
+    const vinculo = await vincular(foto, `catalogo-${registro.especieId}`);
+    if (vinculo || extras.length) fotos.push({ ...datos, foto: vinculo, fotosExtra: extras });
   }
   for (const registro of registros) {
-    const { foto, ...datos } = registro;
-    let vinculo = null;
-    if (foto?.blob) {
-      const tipo = foto.tipoMime ?? foto.blob.type;
-      const ruta = `fotos/${registro.id}.${extensionDeTipo(tipo)}`;
-      // Las imágenes ya están comprimidas: se guardan sin volver a comprimir.
-      archivos[ruta] = [new Uint8Array(await foto.blob.arrayBuffer()), { level: 0 }];
-      vinculo = { archivo: ruta, tipoMime: tipo, ancho: foto.ancho ?? null, alto: foto.alto ?? null };
-    }
-    especies.push({ ...datos, foto: vinculo });
+    const { foto, fotosExtra, ...datos } = registro;
+    especies.push({
+      ...datos,
+      foto: await vincular(foto, registro.id),
+      fotosExtra: await vincularExtras(fotosExtra, registro.id),
+    });
   }
   const paquete = {
     formato: FORMATO_CATALOGO_PROPIO,
@@ -183,6 +221,59 @@ export function nombreArchivoCatalogoPropio() {
 }
 
 /* ---------- Importación ---------- */
+
+/** Foto dentro del ZIP a partir de su vínculo; null si no está o no es una imagen válida. */
+function leerFotoDelZip(vinculo, archivos, error, que) {
+  const ruta = vinculo?.archivo;
+  const bytes = typeof ruta === 'string' && RUTA_FOTO.test(ruta) ? archivos[ruta] : null;
+  const tipo = bytes ? tipoDeBytes(bytes) : null;
+  if (!bytes) {
+    error(`falta ${que} dentro del ZIP.`);
+    return null;
+  }
+  if (!tipo) {
+    error(`${que} no es una imagen JPG, PNG o WebP válida.`);
+    return null;
+  }
+  return {
+    blob: new Blob([bytes], { type: tipo }),
+    tipoMime: tipo,
+    tamano: bytes.length,
+    ancho: Number.isFinite(vinculo.ancho) && vinculo.ancho > 0 && vinculo.ancho < 100000 ? Math.round(vinculo.ancho) : null,
+    alto: Number.isFinite(vinculo.alto) && vinculo.alto > 0 && vinculo.alto < 100000 ? Math.round(vinculo.alto) : null,
+  };
+}
+
+const ID_FOTO_EXTRA = /^[A-Za-z0-9_-]{1,60}$/;
+
+/** Hasta dos fotos adicionales, cada una con su parte y su autoría. */
+function leerFotosExtra(lista, archivos, error) {
+  if (lista === undefined || lista === null) return [];
+  if (!Array.isArray(lista)) {
+    error('la lista de fotos adicionales no es válida.');
+    return [];
+  }
+  const texto = (v, max) => (typeof v === 'string' ? v.slice(0, max).trim() : '');
+  const salida = [];
+  for (const x of lista.slice(0, 2)) {
+    if (!esObjeto(x) || typeof x.id !== 'string' || !ID_FOTO_EXTRA.test(x.id)) {
+      error('una foto adicional no tiene un formato válido.');
+      continue;
+    }
+    const foto = leerFotoDelZip(x.foto, archivos, error, 'una foto adicional');
+    if (!foto) continue;
+    salida.push({
+      id: x.id,
+      foto,
+      parte: texto(x.parte, 60) || null,
+      imagenAutor: texto(x.imagenAutor, 200),
+      imagenFuente: texto(x.imagenFuente, 500),
+      imagenLicencia: texto(x.imagenLicencia, 200),
+      imagenModificaciones: texto(x.imagenModificaciones, 200),
+    });
+  }
+  return salida;
+}
 
 const esObjeto = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 const fechaValida = (v) => typeof v === 'string' && v.length <= 40 && !Number.isNaN(Date.parse(v));
@@ -239,7 +330,11 @@ function limpiarEspecie(entrada, archivos, errores, numero) {
     lugarTexto: texto(entrada.lugarTexto, 'lugar', textoCorto),
     notas: texto(entrada.notas, 'notas', textoLargo),
     estadoValidacion: entrada.estadoValidacion === 'validada' ? 'validada' : 'pendiente',
+    habitatsNaturales: limpiarHabitats(entrada.habitatsNaturales),
+    ...limpiarClasificacion(entrada),
     foto,
+    partePrincipal: foto && typeof entrada.partePrincipal === 'string' ? entrada.partePrincipal.slice(0, 60).trim() || null : null,
+    fotosExtra: leerFotosExtra(entrada.fotosExtra, archivos, error),
     imagenAutor: foto ? texto(entrada.imagenAutor, 'autoría', textoCorto) : '',
     imagenFuente: foto ? texto(entrada.imagenFuente, 'procedencia', 500) : '',
     imagenLicencia: foto ? texto(entrada.imagenLicencia, 'licencia', textoCorto) : '',
@@ -320,31 +415,23 @@ function limpiarFotoCatalogo(entrada, archivos, errores, numero) {
     error('no indica una especie válida.');
     return null;
   }
-  const ruta = entrada.foto?.archivo;
-  const bytes = typeof ruta === 'string' && RUTA_FOTO.test(ruta) ? archivos[ruta] : null;
-  const tipo = bytes ? tipoDeBytes(bytes) : null;
-  if (!bytes) {
-    error('falta la foto dentro del ZIP.');
-    return null;
-  }
-  if (!tipo) {
-    error('la foto no es una imagen JPG, PNG o WebP válida.');
+  const foto = entrada.foto ? leerFotoDelZip(entrada.foto, archivos, error, 'la foto') : null;
+  if (entrada.foto && !foto) return null;
+  const fotosExtra = leerFotosExtra(entrada.fotosExtra, archivos, error);
+  if (!foto && fotosExtra.length === 0) {
+    error('no trae ninguna foto.');
     return null;
   }
   const texto = (valor, max) => (typeof valor === 'string' ? valor.slice(0, max).trim() : '');
   return {
     especieId: entrada.especieId,
-    foto: {
-      blob: new Blob([bytes], { type: tipo }),
-      tipoMime: tipo,
-      tamano: bytes.length,
-      ancho: medidaValida(entrada.foto.ancho),
-      alto: medidaValida(entrada.foto.alto),
-    },
-    imagenAutor: texto(entrada.imagenAutor, LIMITES_CATALOGO_PROPIO.textoCorto),
-    imagenFuente: texto(entrada.imagenFuente, 500),
-    imagenLicencia: texto(entrada.imagenLicencia, LIMITES_CATALOGO_PROPIO.textoCorto),
-    imagenModificaciones: texto(entrada.imagenModificaciones, LIMITES_CATALOGO_PROPIO.textoCorto),
+    foto,
+    imagenAutor: foto ? texto(entrada.imagenAutor, LIMITES_CATALOGO_PROPIO.textoCorto) : '',
+    imagenFuente: foto ? texto(entrada.imagenFuente, 500) : '',
+    imagenLicencia: foto ? texto(entrada.imagenLicencia, LIMITES_CATALOGO_PROPIO.textoCorto) : '',
+    imagenModificaciones: foto ? texto(entrada.imagenModificaciones, LIMITES_CATALOGO_PROPIO.textoCorto) : '',
+    partePrincipal: foto ? texto(entrada.partePrincipal, 60) || null : null,
+    fotosExtra,
     fechaModificacion: fechaValida(entrada.fechaModificacion) ? entrada.fechaModificacion : new Date().toISOString(),
   };
 }
