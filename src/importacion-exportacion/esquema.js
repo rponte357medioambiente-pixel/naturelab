@@ -9,6 +9,7 @@ import { UNIDADES_SUPERFICIE, validarAbundancia, validarSuperficie } from '../ca
 import { LIMITES_TRANSECTO, validarLongitudTransecto } from '../calculos/cobertura.js';
 import { esPaletaValida } from '../apariencia/paletas.js';
 import { limpiarCoordenadas } from '../ubicacion/coordenadas.js';
+import { leerEspeciesDeCopia } from '../catalogos/especiesPropias.js';
 import { LIMITES_ZIP, RUTA_DIBUJO, RUTA_FOTO, esZip, leerZip, tipoDeBytes } from './copiaZip.js';
 
 /**
@@ -444,9 +445,21 @@ export function validarPaquete(datos, { archivos = null } = {}) {
     return { ok: false, errores: errores.slice(0, LIMITES.erroresMostrados), totalErrores: errores.length };
   }
 
+  // Especies de «Mi catálogo» que usa la investigación. Un problema con ellas no impide importar.
+  const propias = leerEspeciesDeCopia(migrado.especiesPropias, archivos);
+  avisos.push(...propias.avisos);
+
   return {
     ok: true,
-    paquete: { investigacion, parcelas, observaciones, fotos, dibujos, versionCatalogo: migrado.versionCatalogo ?? null },
+    paquete: {
+      investigacion,
+      parcelas,
+      observaciones,
+      fotos,
+      dibujos,
+      especiesPropias: propias.especies,
+      versionCatalogo: migrado.versionCatalogo ?? null,
+    },
     avisos,
   };
 }

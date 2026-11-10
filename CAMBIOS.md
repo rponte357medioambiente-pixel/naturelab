@@ -6,6 +6,12 @@ Cuaderno de campo digital para talleres de exploración ambiental. Aplicación w
 
 ## 10 de noviembre de 2026 · Plantas, animales e insectos, y hasta tres fotos
 
+### Las especies viajan con la investigación
+
+- La copia de seguridad de cada investigación incluye ahora las especies de **Mi catálogo** que usa (por ejemplo, las creadas en el campo con «Añadir especie nueva»), con sus fotos.
+- Al importarla en otro dispositivo, esas especies se añaden solas a Mi catálogo, o se actualizan si la copia trae una versión más reciente. Ya no hace falta exportar e importar Mi catálogo por separado.
+- Las copias hechas antes de este cambio no traen las especies: para recuperarlas, exporta Mi catálogo en el dispositivo de origen e impórtalo en el otro, o vuelve a exportar la investigación con la app actualizada.
+
 ### Fauna del Salar de los Canos
 
 - El catálogo publicado incluye **22 especies de fauna** además de las 13 plantas:

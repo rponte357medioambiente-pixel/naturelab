@@ -157,3 +157,48 @@ describe('fauna del catálogo publicado', () => {
     }
   });
 });
+
+describe('las especies de Mi catálogo viajan con la investigación', () => {
+  it('la copia incluye las especies que usa, con sus fotos, y se recuperan en otro dispositivo', async () => {
+    const { serializarEspeciesPropias, planificarImportacionPropias } = await import('../src/catalogos/especiesPropias.js');
+    const { construirZip } = await import('../src/importacion-exportacion/copiaZip.js');
+    const { leerArchivoCopia, validarPaquete } = await import('../src/importacion-exportacion/esquema.js');
+    const { construirPaquete } = await import('../src/importacion-exportacion/exportar.js');
+    const { guardarEspeciesPropias } = await import('../src/almacenamiento/repositorio.js');
+
+    // Dispositivo 1: una especie creada en el campo y una observación que la usa
+    await guardarLote(crearEjemploSalar());
+    const pato = await guardarEspeciePropia(crearEspeciePropia({ nombreComun: 'Pato de cabeza verde', tipo: 'animal' }), {
+      foto: { blob: jpeg(7), ancho: 800, alto: 600 },
+    });
+    const datos = await obtenerDatosInvestigacion(ID_EJEMPLO);
+    await guardarObservacion({ ...crearObservacion(ID_EJEMPLO, datos.parcelas[0].id), especieId: pato.id, nombreComun: pato.nombreComun, abundancia: 4 });
+    const conPato = await obtenerDatosInvestigacion(ID_EJEMPLO);
+    const propias = (await listarEspeciesPropias()).filter((e) => conPato.observaciones.some((o) => o.especieId === e.id));
+    const zip = await construirZip(construirPaquete(conPato, null), [], [], await serializarEspeciesPropias(propias));
+
+    // Dispositivo 2: base de datos vacía
+    await cerrarBD();
+    await new Promise((resolve) => {
+      const r = indexedDB.deleteDatabase(NOMBRE_BD);
+      r.onsuccess = r.onerror = r.onblocked = resolve;
+    });
+    const leida = await leerArchivoCopia(new File([await zip.arrayBuffer()], 'copia.zip', { type: 'application/zip' }));
+    expect(leida.ok).toBe(true);
+    expect(leida.paquete.especiesPropias).toHaveLength(1);
+    expect(leida.paquete.especiesPropias[0].foto.blob).toBeTruthy();
+    await guardarLote(leida.paquete);
+    const plan = planificarImportacionPropias(leida.paquete.especiesPropias, await listarEspeciesPropias());
+    await guardarEspeciesPropias([...plan.nuevas, ...plan.actualizadas]);
+    const [recuperada] = await listarEspeciesPropias();
+    expect(recuperada.id).toBe(pato.id);
+    expect(recuperada.tipo).toBe('animal');
+    const importada = await obtenerDatosInvestigacion(ID_EJEMPLO);
+    expect(importada.observaciones.some((o) => o.especieId === pato.id)).toBe(true);
+
+    // Una copia en JSON trae las especies, pero sin fotos
+    const sinFotos = validarPaquete({ ...construirPaquete(conPato, null), especiesPropias: [{ ...propias[0], foto: { archivo: 'fotos/x.jpg' } }] });
+    expect(sinFotos.paquete.especiesPropias[0].foto).toBeNull();
+    expect(sinFotos.avisos.join(' ')).toMatch(/sin sus fotos/);
+  });
+});

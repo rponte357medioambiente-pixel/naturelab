@@ -30,6 +30,8 @@ Este archivo contiene:
 - proyecto.json: la investigación, sus parcelas y sus observaciones.
 - fotos/: las fotografías de las observaciones, si las hay.
 - dibujos/: los dibujos de la investigación, si los hay.
+- Las especies de «Mi catálogo» que usa la investigación van en proyecto.json,
+  con sus fotos en fotos/: al importar la copia se añaden a «Mi catálogo».
 
 Para recuperarla, abre NatureLab, ve a Investigaciones y pulsa «Importar copia».
 No hace falta descomprimir el archivo.
@@ -61,8 +63,12 @@ export function esZip(bytes) {
  * @param {object[]} fotos  registros de fotos (con blob)
  * @returns {Promise<Blob>}
  */
-export async function construirZip(paquete, fotos = [], dibujos = []) {
-  const archivos = {};
+/**
+ * @param {{entradas: object[], archivos: object}} especies  especies de «Mi catálogo» que usa la
+ *   investigación, preparadas con serializarEspeciesPropias()
+ */
+export async function construirZip(paquete, fotos = [], dibujos = [], especies = { entradas: [], archivos: {} }) {
+  const archivos = { ...especies.archivos };
   const vinculos = [];
   const vinculosDibujos = [];
   for (const dibujo of dibujos) {
@@ -88,7 +94,7 @@ export async function construirZip(paquete, fotos = [], dibujos = []) {
     });
   }
   archivos[NOMBRE_DATOS] = strToU8(
-    `${JSON.stringify({ ...paquete, fotos: vinculos, dibujos: vinculosDibujos }, null, 2)}\n`,
+    `${JSON.stringify({ ...paquete, fotos: vinculos, dibujos: vinculosDibujos, especiesPropias: especies.entradas }, null, 2)}\n`,
   );
   archivos['LEEME.txt'] = strToU8(LEEME);
   return new Blob([zipSync(archivos, { level: 6 })], { type: 'application/zip' });

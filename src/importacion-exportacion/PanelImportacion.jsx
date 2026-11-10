@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { planificarImportacionPropias } from '../catalogos/especiesPropias.js';
 import { useAnunciar } from '../accesibilidad/Anunciador.jsx';
 import { generarId } from '../almacenamiento/ids.js';
-import { guardarLote, obtenerDatosInvestigacion } from '../almacenamiento/repositorio.js';
+import { guardarEspeciesPropias, guardarLote, listarEspeciesPropias, obtenerDatosInvestigacion } from '../almacenamiento/repositorio.js';
 import { plural } from '../calculos/formato.js';
 import { IconoSubir } from '../componentes/Iconos.jsx';
 import { leerArchivoCopia } from './esquema.js';
@@ -59,7 +60,19 @@ export function PanelImportacion() {
     setOcupado(true);
     try {
       await guardarLote(lote);
-      anunciar(mensaje);
+      // Las especies de «Mi catálogo» que trae la copia se añaden, o se actualizan si son más recientes.
+      const propias = paquete.especiesPropias ?? [];
+      if (propias.length) {
+        const planEspecies = planificarImportacionPropias(propias, await listarEspeciesPropias());
+        const cambios = [...planEspecies.nuevas, ...planEspecies.actualizadas];
+        if (cambios.length) {
+          await guardarEspeciesPropias(cambios);
+          mensaje += ` ${plural(planEspecies.nuevas.length, 'especie añadida', 'especies añadidas')} a Mi catálogo${
+            planEspecies.actualizadas.length ? ` y ${plural(planEspecies.actualizadas.length, 'actualizada', 'actualizadas')}` : ''
+          }.`;
+        }
+      }
+      anunciar(mensaje, { duracion: 6000 });
       setEstado({ fase: 'inicio' });
       navegar(`/investigaciones/${lote.investigacion.id}`);
     } catch (error) {
@@ -119,7 +132,9 @@ export function PanelImportacion() {
               ? `${plural(estado.paquete.parcelas.length, 'transecto', 'transectos')}, ${plural(estado.paquete.observaciones.length, 'especie anotada', 'especies anotadas')}`
               : `${plural(estado.paquete.parcelas.length, 'parcela', 'parcelas')}, ${plural(estado.paquete.observaciones.length, 'observación', 'observaciones')}`}
             {estado.paquete.fotos.length > 0 && `, ${plural(estado.paquete.fotos.length, 'foto', 'fotos')}`}
-            {(estado.paquete.dibujos ?? []).length > 0 && `, ${plural(estado.paquete.dibujos.length, 'dibujo', 'dibujos')}`}.
+            {(estado.paquete.dibujos ?? []).length > 0 && `, ${plural(estado.paquete.dibujos.length, 'dibujo', 'dibujos')}`}
+            {(estado.paquete.especiesPropias ?? []).length > 0 &&
+              `, ${plural(estado.paquete.especiesPropias.length, 'especie de Mi catálogo', 'especies de Mi catálogo')}`}.
           </p>
           {estado.avisos.map((a) => (
             <p key={a} className="aviso aviso--ocre">

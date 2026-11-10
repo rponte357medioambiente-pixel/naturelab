@@ -165,6 +165,59 @@ Las fotografías pueden incluir lugares reconocibles: compártelo con cuidado.
 `;
 
 /**
+ * Prepara especies de «Mi catálogo» para guardarlas en un ZIP: devuelve sus datos
+ * con vínculos a las fotos y los archivos de las fotos. Lo usan la copia de «Mi
+ * catálogo» y la copia de cada investigación (con las especies que usa).
+ * @returns {Promise<{entradas: object[], archivos: object}>}
+ */
+export async function serializarEspeciesPropias(registros) {
+  const archivos = {};
+  async function vincular(foto, nombre) {
+    if (!foto?.blob) return null;
+    const tipo = foto.tipoMime ?? foto.blob.type;
+    const ruta = `fotos/${nombre}.${extensionDeTipo(tipo)}`;
+    archivos[ruta] = [new Uint8Array(await foto.blob.arrayBuffer()), { level: 0 }];
+    return { archivo: ruta, tipoMime: tipo, ancho: foto.ancho ?? null, alto: foto.alto ?? null };
+  }
+  const entradas = [];
+  for (const registro of registros) {
+    const { foto, fotosExtra, ...datos } = registro;
+    const extras = [];
+    for (const x of fotosExtra ?? []) {
+      const vinculo = await vincular(x.foto, `${registro.id}-${x.id}`);
+      if (vinculo) extras.push({ ...x, foto: vinculo });
+    }
+    entradas.push({ ...datos, foto: await vincular(foto, registro.id), fotosExtra: extras });
+  }
+  return { entradas, archivos };
+}
+
+/**
+ * Lee las especies de «Mi catálogo» que trae una copia de investigación. Sin las
+ * fotos (copia en JSON) se importan sin ellas. Las que no son válidas se omiten.
+ * @returns {{especies: object[], avisos: string[]}}
+ */
+export function leerEspeciesDeCopia(lista, archivos = null) {
+  if (!Array.isArray(lista) || lista.length === 0) return { especies: [], avisos: [] };
+  const avisos = [];
+  const especies = [];
+  const vistas = new Set();
+  lista.slice(0, LIMITES_CATALOGO_PROPIO.especies).forEach((entrada, i) => {
+    const errores = [];
+    const datos = archivos ? entrada : { ...entrada, foto: null, fotosExtra: [] };
+    const especie = limpiarEspecie(datos, archivos ?? {}, errores, i + 1);
+    if (especie && errores.length === 0 && !vistas.has(especie.id)) {
+      vistas.add(especie.id);
+      especies.push(especie);
+    } else if (errores.length) {
+      avisos.push(`Una especie de Mi catálogo no se ha podido leer y se omite (${errores[0]}).`);
+    }
+  });
+  if (!archivos && especies.length) avisos.push('Las especies de Mi catálogo de esta copia se importan sin sus fotos.');
+  return { especies, avisos };
+}
+
+/**
  * @param {object[]} registros  especies tal como están guardadas (con foto.blob)
  * @param {object[]} fotosCatalogo  fotos de campo de especies publicadas (con foto.blob)
  */
